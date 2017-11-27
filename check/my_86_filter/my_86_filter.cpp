@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/* test if 7-zip uses 86 filter on this machine */
+/* test if 7-zip uses x86 filter on this machine */
 
 
 #include "CpuArch.h"

@@ -12,16 +12,5 @@ PCH_NAME=$(PRE_COMPILED_HEADER)
 
 LIBS=`wx-config --unicode=yes --libs` $(LOCAL_LIBS_DLL)
 
-OBJS=\
-  FileDir.o \
-  FileFind.o \
-  MyString.o \
-  MyVector.o \
- IntToString.o \
-StringConvert.o \
-wine_date_and_time.o \
-Threads.o \
-  wxP7ZIP.o
-
 include ../../../../makefile.glb
 

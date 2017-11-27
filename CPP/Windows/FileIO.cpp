@@ -98,7 +98,7 @@ bool CFileBase::Create(LPCSTR filename, DWORD dwDesiredAccess,
     UString ustr = MultiByteToUnicodeString(AString(name), 0);
     AString resultString;
     int is_good = 1;
-    for (int i = 0; i < ustr.Length(); i++)
+    for (int i = 0; i < ustr.Len(); i++)
     {
       if (ustr[i] >= 256) {
         is_good = 0;
@@ -358,6 +358,11 @@ bool COutFile::Open(LPCTSTR fileName, DWORD creationDisposition)
 bool COutFile::Create(LPCTSTR fileName, bool createAlways)
 {
   return Open(fileName, GetCreationDisposition(createAlways));
+}
+
+bool COutFile::CreateAlways(LPCTSTR fileName, DWORD /* flagsAndAttributes */ )
+{
+  return Open(fileName, true); // FIXME
 }
 
 #ifndef _UNICODE

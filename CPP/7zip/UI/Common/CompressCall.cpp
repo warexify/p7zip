@@ -15,225 +15,224 @@
 
 #undef _WIN32
 
-#include "CompressCall.h"
+#include "../../../Common/IntToString.h"
+#include "../../../Common/MyCom.h"
+#include "../../../Common/Random.h"
+#include "../../../Common/StringConvert.h"
 
-// FIXME #include "Common/Random.h"
-#include "Common/IntToString.h"
-#include "Common/MyCom.h"
-#include "Common/StringConvert.h"
+#include "../../../Windows/DLL.h"
+#include "../../../Windows/ErrorMsg.h"
+#include "../../../Windows/FileDir.h"
+// #include "../../../Windows/FileMapping.h"
+// #include "../../../Windows/ProcessUtils.h"
+#include "../../../Windows/Synchronization.h"
 
-#include "Windows/Synchronization.h"
-// FIXME #include "Windows/FileMapping.h"
-#include "Windows/FileDir.h"
-
-#include "../FileManager/ProgramLocation.h"
 #include "../FileManager/RegistryUtils.h"
 
-#define NEED_NAME_WINDOWS_TO_UNIX
-#include "myPrivate.h"
-
-#ifndef _UNICODE
-extern bool g_IsNT;
-#endif // _UNICODE
+#include "CompressCall.h"
 
 using namespace NWindows;
 
+#define MY_TRY_BEGIN try {
+#define MY_TRY_FINISH } \
+  catch(...) { ErrorMessageHRESULT(E_FAIL); return E_FAIL; }
+#define MY_TRY_FINISH_VOID } \
+  catch(...) { ErrorMessageHRESULT(E_FAIL); }
+
 static LPCWSTR kShowDialogSwitch = L" -ad";
 static LPCWSTR kEmailSwitch = L" -seml.";
-static LPCWSTR kMapSwitch = L" -i#";
-static LPCWSTR kArchiveNoNameSwitch = L" -an";
+static LPCWSTR kIncludeSwitch = L" -i";
 static LPCWSTR kArchiveTypeSwitch = L" -t";
-static LPCWSTR kArchiveMapSwitch = L" -ai#";
+static LPCWSTR kArcIncludeSwitches = L" -an -ai";
+static LPCWSTR kHashIncludeSwitches = L" -i";
 static LPCWSTR kStopSwitchParsing = L" --";
 static LPCWSTR kLargePagesDisable = L" -slp-";
 
-static void AddLagePagesSwitch(UString &params)
+extern HWND g_HWND;
+
+UString GetQuotedString(const UString &s)
 {
-#ifdef _WIN32
-  if (!ReadLockMemoryEnable())
-    params += kLargePagesDisable;
-#endif
+  return UString(L'\"') + s + UString(L'\"');
 }
 
-HRESULT MyCreateProcess(const UString &params,
-    LPCWSTR curDir, bool waitFinish,
-    NWindows::NSynchronization::CBaseEvent *event)
+static void ErrorMessage(LPCWSTR message)
 {
-	printf("MyCreateProcess: waitFinish=%d event=%p\n",(unsigned)waitFinish,event);
-	printf("\tparams : %ls\n",(const wchar_t*)params);
-	printf("\tcurDir : %ls\n",(const wchar_t*)curDir);
+  MessageBoxW(g_HWND, message, L"7-Zip", MB_ICONERROR | MB_OK);
+}
 
-	wxString cmd(params);
+static void ErrorMessageHRESULT(HRESULT res, LPCWSTR s = NULL)
+{
+  UString s2 = NError::MyFormatMessage(res);
+  if (s)
+  {
+    s2 += L'\n';
+    s2 += s;
+  }
+  ErrorMessage(s2);
+}
+
+static HRESULT MyCreateProcess(LPCWSTR imageName, const UString &params,
+    // LPCWSTR curDir,
+    bool waitFinish,
+    NSynchronization::CBaseEvent *event)
+{
+#ifdef _WIN32
+  CProcess process;
+  WRes res = process.Create(imageName, params, NULL); // curDir);
+  if (res != 0)
+  {
+    ErrorMessageHRESULT(res, imageName);
+    return res;
+  }
+  if (waitFinish)
+    process.Wait();
+  else if (event != NULL)
+  {
+    HANDLE handles[] = { process, *event };
+    ::WaitForMultipleObjects(ARRAY_SIZE(handles), handles, FALSE, INFINITE);
+  }
+#else
+	printf("MyCreateProcess: waitFinish=%d event=%p\n",(unsigned)waitFinish,event);
+	printf("\timageName : %ls\n",(const wchar_t*)imageName);
+	printf("\tparams : %ls\n",(const wchar_t*)params);
+	// printf("\tcurDir : %ls\n",(const wchar_t*)curDir);
+
+	wxString cmd;
+	cmd = (const wchar_t*)imageName;
+	cmd += L" ";
+	cmd += (const wchar_t*)params;
 	wxString memoCurDir = wxGetCwd();
 
+/*
 	if (curDir) {  // FIXME
 		wxSetWorkingDirectory(wxString(curDir));
-		
-		
+
+
 		// under MacOSX, a bundle does not keep the current directory
 		// between 7zFM and 7zG ...
-		// So, try to use the environment variable P7ZIP_CURRENT_DIR	
-	
+		// So, try to use the environment variable P7ZIP_CURRENT_DIR
+
 		char p7zip_current_dir[MAX_PATH];
-			
+
 		AString aCurPath = GetAnsiString(curDir);
-			
+
 		const char *dir2 = nameWindowToUnix((const char *)aCurPath);
-			
+
 		snprintf(p7zip_current_dir,sizeof(p7zip_current_dir),"P7ZIP_CURRENT_DIR=%s/",dir2);
-			
+
 		p7zip_current_dir[sizeof(p7zip_current_dir)-1] = 0;
-			
+
 		putenv(p7zip_current_dir);
-			
+
 		printf("putenv(%s)\n",p7zip_current_dir);
-		
-	}	
-	
+
+	}
+*/
 
 	printf("MyCreateProcess: cmd='%ls'\n",(const wchar_t *)cmd);
 	long pid = 0;
 	if (waitFinish) pid = wxExecute(cmd, wxEXEC_SYNC); // FIXME process never ends and stays zombie ...
 	else            pid = wxExecute(cmd, wxEXEC_ASYNC);
 
-	if (curDir) wxSetWorkingDirectory(memoCurDir);
+//	if (curDir) wxSetWorkingDirectory(memoCurDir);
 
 
 	// FIXME if (pid == 0) return E_FAIL;
 
 	return S_OK;
-#ifdef _WIN32 // FIXME
-  const UString params2 = params;
-  BOOL result;
-  {
-    STARTUPINFOW startupInfo;
-    startupInfo.cb = sizeof(startupInfo);
-    startupInfo.lpReserved = 0;
-    startupInfo.lpDesktop = 0;
-    startupInfo.lpTitle = 0;
-    startupInfo.dwFlags = 0;
-    startupInfo.cbReserved2 = 0;
-    startupInfo.lpReserved2 = 0;
-    
-    result = ::CreateProcessW(NULL, (LPWSTR)(LPCWSTR)params,
-      NULL, NULL, FALSE, 0, NULL,
-      curDir,
-      &startupInfo, &processInformation);
-  }
-  if (result == 0)
-    return ::GetLastError();
-  else
-  {
-    ::CloseHandle(processInformation.hThread);
-    if (waitFinish)
-      WaitForSingleObject(processInformation.hProcess, INFINITE);
-    else if (event != NULL)
-    {
-      HANDLE handles[] = {processInformation.hProcess, *event };
-      ::WaitForMultipleObjects(sizeof(handles) / sizeof(handles[0]),
-        handles, FALSE, INFINITE);
-    }
-    ::CloseHandle(processInformation.hProcess);
-  }
-  return S_OK;
+
 #endif
+  return S_OK;
 }
 
-UString GetQuotedString(const UString &s)
+static void AddLagePagesSwitch(UString &params)
 {
-  return UString(L"\"") + s + UString(L"\"");
+  if (!ReadLockMemoryEnable())
+    params += kLargePagesDisable;
 }
 
 static UString Get7zGuiPath()
 {
-  UString path;
-  UString folder;
-  if (GetProgramFolderPath(folder))
-    path += folder;
 #ifdef _WIN32
-  path += L"7zG.exe";
+  return fs2us(NWindows::NDLL::GetModuleDirPrefix()) + L"7zG.exe";
 #else
-  path += L"7zG";
+  return fs2us(NWindows::NDLL::GetModuleDirPrefix()) + L"7zG";
 #endif
-  return GetQuotedString(path);
 }
+
+class CRandNameGenerator
+{
+  CRandom _random;
+public:
+  CRandNameGenerator() { _random.Init(); }
+  UString GenerateName()
+  {
+    wchar_t temp[16];
+    ConvertUInt32ToString((UInt32)_random.Generate(), temp);
+    return temp;
+  }
+};
 
 #ifdef _WIN32
-static HRESULT CreateTempEvent(const wchar_t *name,
-    NSynchronization::CManualResetEvent &event, UString &eventName)
-{
-  CRandom random;
-  random.Init(GetTickCount());
-  for (;;)
-  {
-    int number = random.Generate();
-    wchar_t temp[32];
-    ConvertUInt64ToString((UInt32)number, temp);
-    eventName = name;
-    eventName += temp;
-    RINOK(event.CreateWithName(false, GetSystemString(eventName)));
-    if (::GetLastError() != ERROR_ALREADY_EXISTS)
-      return S_OK;
-    event.Close();
-  }
-}
-
 static HRESULT CreateMap(const UStringVector &names,
-    const UString &id,
     CFileMapping &fileMapping, NSynchronization::CManualResetEvent &event,
     UString &params)
 {
-  UInt32 extraSize = 2;
-  UInt32 dataSize = 0;
-  for (int i = 0; i < names.Size(); i++)
-    dataSize += (names[i].Length() + 1) * sizeof(wchar_t);
-  UInt32 totalSize = extraSize + dataSize;
-  
+  UInt32 totalSize = 1;
+  FOR_VECTOR (i, names)
+    totalSize += (names[i].Len() + 1);
+  totalSize *= sizeof(wchar_t);
+
+  CRandNameGenerator random;
+
   UString mappingName;
-  
-  CRandom random;
-  random.Init(GetTickCount());
   for (;;)
   {
-    int number = random.Generate();
-    wchar_t temp[32];
-    ConvertUInt64ToString(UInt32(number), temp);
-    mappingName = id;
-    mappingName += L"Mapping";
-    mappingName += temp;
-    if (!fileMapping.Create(INVALID_HANDLE_VALUE, NULL,
-        PAGE_READWRITE, totalSize, GetSystemString(mappingName)))
-      return E_FAIL;
-    if (::GetLastError() != ERROR_ALREADY_EXISTS)
+    mappingName = L"7zMap" + random.GenerateName();
+
+    WRes res = fileMapping.Create(PAGE_READWRITE, totalSize, GetSystemString(mappingName));
+    if (fileMapping.IsCreated() && res == 0)
       break;
+    if (res != ERROR_ALREADY_EXISTS)
+      return res;
     fileMapping.Close();
   }
-  
-  UString eventName;
-  RINOK(CreateTempEvent(id + L"MappingEndEvent", event, eventName));
 
+  UString eventName;
+  for (;;)
+  {
+    eventName = L"7zEvent" + random.GenerateName();
+    WRes res = event.CreateWithName(false, GetSystemString(eventName));
+    if (event.IsCreated() && res == 0)
+      break;
+    if (res != ERROR_ALREADY_EXISTS)
+      return res;
+    event.Close();
+  }
+
+  params += L'#';
   params += mappingName;
-  params += L":";
-  wchar_t string[10];
-  ConvertUInt64ToString(totalSize, string);
-  params += string;
-  
-  params += L":";
+  params += L':';
+  wchar_t temp[16];
+  ConvertUInt32ToString(totalSize, temp);
+  params += temp;
+
+  params += L':';
   params += eventName;
 
-  LPVOID data = fileMapping.MapViewOfFile(FILE_MAP_WRITE, 0, totalSize);
+  LPVOID data = fileMapping.Map(FILE_MAP_WRITE, 0, totalSize);
   if (data == NULL)
     return E_FAIL;
+  CFileUnmapper unmapper(data);
   {
-    wchar_t *curData = (wchar_t *)data;
-    *curData = 0;
-    curData++;
-    for (int i = 0; i < names.Size(); i++)
+    wchar_t *cur = (wchar_t *)data;
+    *cur++ = 0;
+    FOR_VECTOR (i, names)
     {
       const UString &s = names[i];
-      memcpy(curData, (const wchar_t *)s, s.Length() * sizeof(wchar_t));
-      curData += s.Length();
-      *curData++ = L'\0';
+      int len = s.Len() + 1;
+      memcpy(cur, (const wchar_t *)s, len * sizeof(wchar_t));
+      cur += len;
     }
   }
   return S_OK;
@@ -241,74 +240,25 @@ static HRESULT CreateMap(const UStringVector &names,
 #endif
 
 HRESULT CompressFiles(
-    const UString &curDir,
-    const UString &archiveName,
-    const UString &archiveType,
+    const UString &arcPathPrefix,
+    const UString &arcName,
+    const UString &arcType,
+    bool addExtension,
     const UStringVector &names,
-    // const UString &outFolder,
-    bool email,
-    bool showDialog,
-    bool waitFinish)
+    bool email, bool showDialog, bool waitFinish)
 {
-  /*
-  UString curDir;
-  if (names.Size() > 0)
-  {
-    NFile::NDirectory::GetOnlyDirPrefix(names[0], curDir);
-  }
-  */
-  UString params;
-  params = Get7zGuiPath();
-  params += L" a";
-#ifdef _WIN32
-  params += kMapSwitch;
-  // params += _fileNames[0];
-  
-  UInt32 extraSize = 2;
-  UInt32 dataSize = 0;
-  for (int i = 0; i < names.Size(); i++)
-    dataSize += (names[i].Length() + 1) * sizeof(wchar_t);
-  UInt32 totalSize = extraSize + dataSize;
-  
-  UString mappingName;
-  
-  CFileMapping fileMapping;
-  CRandom random;
-  random.Init(GetTickCount());
-  for (;;)
-  {
-    int number = random.Generate();
-    wchar_t temp[32];
-    ConvertUInt64ToString(UInt32(number), temp);
-    mappingName = L"7zCompressMapping";
-    mappingName += temp;
-    if (!fileMapping.Create(INVALID_HANDLE_VALUE, NULL,
-      PAGE_READWRITE, totalSize, GetSystemString(mappingName)))
-    {
-      // MyMessageBox(IDS_ERROR, 0x02000605);
-      return E_FAIL;
-    }
-    if (::GetLastError() != ERROR_ALREADY_EXISTS)
-      break;
-    fileMapping.Close();
-  }
-  
-  NSynchronization::CManualResetEvent event;
-  UString eventName;
-  RINOK(CreateTempEvent(L"7zCompressMappingEndEvent", event, eventName));
+  MY_TRY_BEGIN
+  UString params = L'a';
 
-  params += mappingName;
-  params += L":";
-  wchar_t string[10];
-  ConvertUInt64ToString(totalSize, string);
-  params += string;
-  
-  params += L":";
-  params += eventName;
+#ifdef _WIN32
+  CFileMapping fileMapping;
+  params += kIncludeSwitch;
+  RINOK(CreateMap(names, fileMapping, event, params));
 #else
+  NSynchronization::CManualResetEvent event;
   char tempFile[256];
   static int count = 1000;
-  
+
   sprintf(tempFile,"/tmp/7zCompress_%d_%d.tmp",(int)getpid(),count++);
 
   FILE * file = fopen(tempFile,"w");
@@ -325,10 +275,10 @@ HRESULT CompressFiles(
   params += GetUnicodeString(tempFile);
 #endif
 
-  if (!archiveType.IsEmpty())
+  if (!arcType.IsEmpty())
   {
     params += kArchiveTypeSwitch;
-    params += archiveType;
+    params += arcType;
   }
 
   if (email)
@@ -339,132 +289,119 @@ HRESULT CompressFiles(
 
   AddLagePagesSwitch(params);
 
+  if (arcName.IsEmpty())
+    params += L" -an";
+
+  if (addExtension)
+    params += L" -saa";
+  else
+    params += L" -sae";
+
   params += kStopSwitchParsing;
-  params += L" ";
-  
-  params += GetQuotedString(archiveName);
-  
-#ifdef _WIN32
-  LPVOID data = fileMapping.MapViewOfFile(FILE_MAP_WRITE, 0, totalSize);
-  if (data == NULL)
-  {
-    // MyMessageBox(IDS_ERROR, 0x02000605);
-    return E_FAIL;
-  }
-  try
-  {
-    wchar_t *curData = (wchar_t *)data;
-    *curData = 0;
-    curData++;
-    for (int i = 0; i < names.Size(); i++)
-    {
-      const UString &unicodeString = names[i];
-      memcpy(curData, (const wchar_t *)unicodeString ,
-        unicodeString .Length() * sizeof(wchar_t));
-      curData += unicodeString.Length();
-      *curData++ = L'\0';
-    }
-    // MessageBox(0, params, 0, 0);
-    RINOK(MyCreateProcess(params,
-      (curDir.IsEmpty()? 0: (LPCWSTR)curDir),
-      waitFinish, &event));
-  }
-  catch(...)
-  {
-    UnmapViewOfFile(data);
-    throw;
-  }
-  UnmapViewOfFile(data);
-  
+  params += L' ';
 
-  /*
-  CThreadCompressMain *compressor = new CThreadCompressMain();;
-  compressor->FileNames = _fileNames;
-  CThread thread;
-  if (!thread.Create(CThreadCompressMain::MyThreadFunction, compressor))
-  throw 271824;
-  */
-#else
-  printf("CompressFiles : -%ls-\n",(const wchar_t *)params);
-  HRESULT res = MyCreateProcess(params,
-      (curDir.IsEmpty()? 0: (LPCWSTR)curDir),
-	  true, /* &event FIXME */ 0);
-  printf("CompressFiles : END\n");
+  if (!arcName.IsEmpty())
+  {
+    params += GetQuotedString(
+    // #ifdef UNDER_CE
+      arcPathPrefix +
+    // #endif
+    arcName);
+  }
 
-  remove(tempFile);
-#endif
-  return S_OK;
+  return MyCreateProcess(Get7zGuiPath(), params,
+      // (arcPathPrefix.IsEmpty()? 0: (LPCWSTR)arcPathPrefix),
+      waitFinish, &event);
+  MY_TRY_FINISH
+
 }
 
-static HRESULT ExtractGroupCommand(const UStringVector &archivePaths,
-    const UString &params)
+static void ExtractGroupCommand(const UStringVector &arcPaths, UString &params, bool isHash)
 {
-  UString params2 = params;
-  AddLagePagesSwitch(params2);
-  params2 += kArchiveNoNameSwitch;
+  AddLagePagesSwitch(params);
+  params += isHash ? kHashIncludeSwitches : kArcIncludeSwitches;
+
 #ifdef _WIN32
-  params2 += kArchiveMapSwitch;
   CFileMapping fileMapping;
   NSynchronization::CManualResetEvent event;
-  RINOK(CreateMap(archivePaths, L"7zExtract", fileMapping, event, params2));
-  return MyCreateProcess(params2, 0, false, &event);
+  HRESULT result = CreateMap(arcPaths, fileMapping, event, params);
+
+  if (result == S_OK)
+    result = MyCreateProcess(Get7zGuiPath(), params, false, &event);
+  if (result != S_OK)
+    ErrorMessageHRESULT(result);
 #else
   char tempFile[256];
   static int count = 1000;
-  
+
   sprintf(tempFile,"/tmp/7zExtract_%d_%d.tmp",(int)getpid(),count++);
 
   FILE * file = fopen(tempFile,"w");
   if (file)
   {
-    for (int i = 0; i < archivePaths.Size(); i++) {
-	  fprintf(file,"%ls\n",(const wchar_t *)archivePaths[i]);
-	  printf(" TMP_%d : '%ls'\n",i,(const wchar_t *)archivePaths[i]);
+    for (int i = 0; i <  arcPaths.Size(); i++) {
+	  fprintf(file,"%ls\n",(const wchar_t *)arcPaths[i]);
+	  printf(" TMP_%d : '%ls'\n",i,(const wchar_t *)arcPaths[i]);
     }
 
     fclose(file);
   }
-  params2 += L" -ai@";
-  params2 += GetUnicodeString(tempFile);
-  printf("ExtractGroupCommand : -%ls-\n",(const wchar_t *)params2);
-  HRESULT res = MyCreateProcess(params2, 0, true, /* &event FIXME */ 0);
+  params += L" -ai@";
+  params += GetUnicodeString(tempFile);
+  printf("ExtractGroupCommand : -%ls-\n",(const wchar_t *)params);
+  HRESULT result = MyCreateProcess(Get7zGuiPath(),params, true, /* &event FIXME */ 0);
   printf("ExtractGroupCommand : END\n");
-
   remove(tempFile);
 
-  return res;
+  if (result != S_OK)
+    ErrorMessageHRESULT(result);
+
 #endif
 }
 
-HRESULT ExtractArchives(const UStringVector &archivePaths,
-    const UString &outFolder, bool showDialog)
+void ExtractArchives(const UStringVector &arcPaths, const UString &outFolder, bool showDialog, bool elimDup)
 {
-  UString params;
-  params = Get7zGuiPath();
-  params += L" x";
+  MY_TRY_BEGIN
+  UString params = L'x';
   if (!outFolder.IsEmpty())
   {
-    params += L" \"-o";
-    params += outFolder;
-    params += L"\"";
+    params += L" -o";
+    params += GetQuotedString(outFolder);
   }
+  if (elimDup)
+    params += L" -spe";
   if (showDialog)
     params += kShowDialogSwitch;
-  return ExtractGroupCommand(archivePaths, params);
+  ExtractGroupCommand(arcPaths, params, false);
+  MY_TRY_FINISH_VOID
 }
 
-HRESULT TestArchives(const UStringVector &archivePaths)
+void TestArchives(const UStringVector &arcPaths)
 {
-  UString params;
-  params = Get7zGuiPath();
-  params += L" t";
-  return ExtractGroupCommand(archivePaths, params);
+  MY_TRY_BEGIN
+  UString params = L't';
+  ExtractGroupCommand(arcPaths, params, false);
+  MY_TRY_FINISH_VOID
 }
 
-HRESULT Benchmark()
+void CalcChecksum(const UStringVector &paths, const UString &methodName)
 {
-  UString params;
-  params = Get7zGuiPath();
-  params += L" b";
-  return MyCreateProcess(params, 0, false, NULL);
+  MY_TRY_BEGIN
+  UString params = L'h';
+  if (!methodName.IsEmpty())
+  {
+    params += L" -scrc";
+    params += methodName;
+  }
+  ExtractGroupCommand(paths, params, true);
+  MY_TRY_FINISH_VOID
+}
+
+void Benchmark(bool totalMode)
+{
+  MY_TRY_BEGIN
+  HRESULT result = MyCreateProcess(Get7zGuiPath(), totalMode ? L"b -mm=*" : L"b", false, NULL);
+  if (result != S_OK)
+    ErrorMessageHRESULT(result);
+  MY_TRY_FINISH_VOID
 }

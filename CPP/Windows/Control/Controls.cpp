@@ -151,11 +151,11 @@ namespace NWindows {
 			       	_choice->SetClientData( index, (void *)(((char *)0) + val));
 		       	}
 
-			int CComboBox::GetItemData(int index)
+			LRESULT CComboBox::GetItemData(int index)
 			{
 				LockGUI lock;
 				void * data = _choice->GetClientData(index);
-				int ret = (int)(((char *)data) - ((char *)0));
+				LRESULT ret = (LRESULT)(((char *)data) - ((char *)0));
 				return ret;
 			}
 
@@ -510,6 +510,13 @@ namespace NControl {
 	{
 		/* FIXME */
 	}
+
+
+	LRESULT CListView2::OnMessage(UINT message, WPARAM wParam, LPARAM lParam)
+	{
+		return 0; // FIXME return CallWindowProc(_origWindowProc, *this, message, wParam, lParam);
+	}
+
 
 }}
 

@@ -2,13 +2,11 @@
 
 #include "StdAfx.h"
 
-#include "Common/NewHandler.h" // FIXME
+#include "../../../Common/MyException.h"
+#include "../../../Common/StdOutStream.h"
 
-#include "Common/MyException.h"
-#include "Common/StdOutStream.h"
-
-#include "Windows/Error.h"
-#include "Windows/NtCheck.h"
+#include "../../../Windows/ErrorMsg.h"
+#include "../../../Windows/NtCheck.h"
 
 #include "../Common/ArchiveCommandLine.h"
 #include "../Common/ExitCode.h"
@@ -21,10 +19,11 @@ CStdOutStream *g_StdStream = 0;
 
 extern int Main2(
   #ifndef _WIN32
-  int numArgs, const char *args[]
+  int numArgs, char *args[]
   #endif
 );
 
+static const char *kException_CmdLine_Error_Message = "\n\nCommand Line Error:\n";
 static const char *kExceptionErrorMessage = "\n\nError:\n";
 static const char *kUserBreak  = "\nBreak signaled\n";
 static const char *kMemoryExceptionMessage = "\n\nERROR: Can't allocate required memory!\n";
@@ -36,7 +35,7 @@ static const char *kInternalExceptionMessage = "\n\nInternal Error #";
 int MY_CDECL main
 (
   #ifndef _WIN32
-  int numArgs, const char *args[]
+  int numArgs, char *args[]
   #endif
 )
 {
@@ -64,9 +63,9 @@ int MY_CDECL main
     (*g_StdStream) << endl << kUserBreak;
     return (NExitCode::kUserBreak);
   }
-  catch(const CArchiveCommandLineException &e)
+  catch(const CArcCmdLineException &e)
   {
-    (*g_StdStream) << kExceptionErrorMessage << e << endl;
+    (*g_StdStream) << kException_CmdLine_Error_Message << e << endl;
     return (NExitCode::kUserError);
   }
   catch(const CSystemException &systemError)
@@ -81,9 +80,8 @@ int MY_CDECL main
       (*g_StdStream) << endl << kUserBreak;
       return (NExitCode::kUserBreak);
     }
-    UString message;
-    NError::MyFormatMessage(systemError.ErrorCode, message);
-    (*g_StdStream) << endl << endl << "System error:" << endl << message << endl;
+    (*g_StdStream) << endl << endl << "System error:" << endl <<
+        NError::MyFormatMessage(systemError.ErrorCode) << endl;
     return (NExitCode::kFatalError);
   }
   catch(NExitCode::EEnum &exitCode)
@@ -123,5 +121,5 @@ int MY_CDECL main
     (*g_StdStream) << kUnknownExceptionMessage;
     return (NExitCode::kFatalError);
   }
-  return  res;
+  return res;
 }

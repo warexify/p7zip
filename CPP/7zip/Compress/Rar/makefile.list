@@ -7,7 +7,7 @@ SRCS=\
  ../../Common/OutBuffer.cpp \
 ../LzOutWindow.cpp \
 ../CodecExports.cpp \
-../DllExports.cpp \
+../DllExportsCompress.cpp \
 ../Rar1Decoder.cpp \
 ../Rar2Decoder.cpp \
 ../Rar3Decoder.cpp \
@@ -25,8 +25,8 @@ MyWindows.o : ../../../Common/MyWindows.cpp
 	$(CXX) $(CC_SHARED) $(CXXFLAGS) ../../../Common/MyWindows.cpp
 MyVector.o : ../../../Common/MyVector.cpp
 	$(CXX) $(CC_SHARED) $(CXXFLAGS) ../../../Common/MyVector.cpp
-DllExports.o : ../DllExports.cpp
-	$(CXX) $(CC_SHARED) $(CXXFLAGS) ../DllExports.cpp
+DllExportsCompress.o : ../DllExportsCompress.cpp
+	$(CXX) $(CC_SHARED) $(CXXFLAGS) ../DllExportsCompress.cpp
 CodecExports.o : ../CodecExports.cpp
 	$(CXX) $(CC_SHARED) $(CXXFLAGS) ../CodecExports.cpp
 InBuffer.o : ../../Common/InBuffer.cpp
@@ -49,6 +49,8 @@ RarCodecsRegister.o : ../RarCodecsRegister.cpp
 	$(CXX) $(CC_SHARED) $(CXXFLAGS) ../RarCodecsRegister.cpp
 Alloc.o : ../../../../C/Alloc.c
 	$(CC) $(CC_SHARED) $(CFLAGS) ../../../../C/Alloc.c
+CpuArch.o : ../../../../C/CpuArch.c
+	$(CC) $(CC_SHARED) $(CFLAGS) ../../../../C/CpuArch.c
 Ppmd7.o : ../../../../C/Ppmd7.c
 	$(CC) $(CC_SHARED) $(CFLAGS) ../../../../C/Ppmd7.c
 Ppmd7Dec.o : ../../../../C/Ppmd7Dec.c
@@ -59,6 +61,3 @@ Ppmd7Dec.o : ../../../../C/Ppmd7Dec.c
 	$(CC) $(CC_SHARED) $(CFLAGS) ../../../../C/7zCrc.c
 7zCrcOpt.o : ../../../../C/7zCrcOpt.c
 	$(CC) $(CC_SHARED) $(CFLAGS) ../../../../C/7zCrcOpt.c
-# CRC32, ASM version
-7zCrcT8.o : ../../../../C/7zCrcT8.c
-	$(CC) $(CC_SHARED) $(CFLAGS) ../../../../C/7zCrcT8.c

@@ -5,7 +5,7 @@
 
 #include "../../../C/LzFind.h"
 
-#include "Common/MyCom.h"
+#include "../../Common/MyCom.h"
 
 #include "../ICoder.h"
 
@@ -49,8 +49,27 @@ struct CTables: public CLevels
 typedef struct _CSeqInStream
 {
   ISeqInStream SeqInStream;
-  CMyComPtr<ISequentialInStream> RealStream;
+  ISequentialInStream *RealStream;
 } CSeqInStream;
+
+struct CEncProps
+{
+  int Level;
+  int algo;
+  int fb;
+  int btMode;
+  UInt32 mc;
+  UInt32 numPasses;
+
+  CEncProps()
+  {
+    Level = -1;
+    mc = 0;
+    algo = fb = btMode = -1;
+    numPasses = (UInt32)(Int32)-1;
+  }
+  void Normalize();
+};
 
 class CCoder
 {
@@ -116,7 +135,6 @@ public:
   COptimal m_Optimum[kNumOpts];
 
   UInt32 m_MatchFinderCycles;
-  // IMatchFinderSetNumPasses *m_SetMfPasses;
 
   void GetMatches();
   void MovePos(UInt32 num);
@@ -147,23 +165,10 @@ public:
   
   void WriteBlockData(bool writeMode, bool finalBlock);
 
-  void ReleaseStreams()
-  {
-    _seqInStream.RealStream.Release();
-    m_OutStream.ReleaseStream();
-  }
-  class CCoderReleaser
-  {
-    CCoder *m_Coder;
-  public:
-    CCoderReleaser(CCoder *coder): m_Coder(coder) {}
-    ~CCoderReleaser() { m_Coder->ReleaseStreams(); }
-  };
-  friend class CCoderReleaser;
-
   UInt32 GetBlockPrice(int tableIndex, int numDivPasses);
   void CodeBlock(int tableIndex, bool finalBlock);
 
+  void SetProps(const CEncProps *props2);
 public:
   CCoder(bool deflate64Mode = false);
   ~CCoder();

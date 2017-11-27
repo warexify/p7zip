@@ -1,14 +1,12 @@
 // Common/StringConvert.cpp
 
 #include "StdAfx.h"
-#include <stdlib.h>
 
 #include "StringConvert.h"
 extern "C"
 {
 int global_use_utf16_conversion = 0;
 }
-
 
 #ifdef LOCALE_IS_UTF8
 
@@ -47,7 +45,7 @@ UString MultiByteToUnicodeString(const AString &srcString, UINT codePage)
   }
 
   UString resultString;
-  for (int i = 0; i < srcString.Length(); i++)
+  for (int i = 0; i < srcString.Len(); i++)
     resultString += wchar_t(srcString[i] & 255);
 
   return resultString;
@@ -81,7 +79,7 @@ AString UnicodeStringToMultiByte(const UString &srcString, UINT codePage)
   }
 
   AString resultString;
-  for (int i = 0; i < srcString.Length(); i++)
+  for (int i = 0; i < srcString.Len(); i++)
   {
     if (srcString[i] >= 256) resultString += '?';
     else                     resultString += char(srcString[i]);
@@ -104,7 +102,7 @@ UString MultiByteToUnicodeString(const AString &srcString, UINT codePage)
   }
 
   UString resultString;
-  for (int i = 0; i < srcString.Length(); i++)
+  for (int i = 0; i < srcString.Len(); i++)
     resultString += wchar_t(srcString[i] & 255);
 
   return resultString;
@@ -120,7 +118,7 @@ AString UnicodeStringToMultiByte(const UString &srcString, UINT codePage)
   }
 
   AString resultString;
-  for (int i = 0; i < srcString.Length(); i++)
+  for (int i = 0; i < srcString.Len(); i++)
   {
     if (srcString[i] >= 256) resultString += '?';
     else                     resultString += char(srcString[i]);
@@ -138,8 +136,19 @@ UString MultiByteToUnicodeString(const AString &srcString, UINT /* codePage */ )
   if ((global_use_utf16_conversion) && (!srcString.IsEmpty()))
   {
     UString resultString;
-    int numChars = mbstowcs(resultString.GetBuffer(srcString.Length()),srcString,srcString.Length()+1);
+    int numChars = mbstowcs(resultString.GetBuffer(srcString.Len()),srcString,srcString.Len()+1);
     if (numChars >= 0) {
+#if WCHAR_MAX > 0xffff
+      for (int i = numChars; i >= 0; i--) {
+        if (resultString[i] > 0xffff) {
+          wchar_t c = resultString[i] - 0x10000;
+          resultString.Delete(i);
+          resultString.Insert(i, ((c >> 10) & 0x3ff) + 0xd800);
+          resultString.Insert(i + 1, (c & 0x3ff) + 0xdc00);
+          numChars++;
+        }
+      }
+#endif
       resultString.ReleaseBuffer(numChars);
       return resultString;
     }
@@ -147,19 +156,33 @@ UString MultiByteToUnicodeString(const AString &srcString, UINT /* codePage */ )
 #endif
 
   UString resultString;
-  for (int i = 0; i < srcString.Length(); i++)
+  for (int i = 0; i < srcString.Len(); i++)
     resultString += wchar_t(srcString[i] & 255);
 
   return resultString;
 }
 
-AString UnicodeStringToMultiByte(const UString &srcString, UINT /* codePage */ )
+AString UnicodeStringToMultiByte(const UString &src, UINT /* codePage */ )
 {
 #ifdef ENV_HAVE_WCSTOMBS
+#if WCHAR_MAX > 0xffff
+  UString srcString(src);
+  for (int i = 0; i < srcString.Len(); i++) {
+    if ((0xd800 <= srcString[i] && srcString[i] <= 0xdbff) && ((i + 1) < srcString.Len()) &&
+        (0xdc00 <= srcString[i + 1] && srcString[i + 1] <= 0xdf00)) {
+      wchar_t c = (((srcString[i] - 0xd800) << 10) | (srcString[i + 1] - 0xdc00)) + 0x10000;
+      srcString.Delete(i, 2);
+      srcString.Insert(i, c);
+    }
+  }
+#else
+  UString &srcString = src;
+#endif
+
   if ((global_use_utf16_conversion) && (!srcString.IsEmpty()))
   {
     AString resultString;
-    int numRequiredBytes = srcString.Length() * 6+1;
+    int numRequiredBytes = srcString.Len() * 6+1;
     int numChars = wcstombs(resultString.GetBuffer(numRequiredBytes),srcString,numRequiredBytes);
     if (numChars >= 0) {
       resultString.ReleaseBuffer(numChars);
@@ -169,7 +192,7 @@ AString UnicodeStringToMultiByte(const UString &srcString, UINT /* codePage */ )
 #endif
 
   AString resultString;
-  for (int i = 0; i < srcString.Length(); i++)
+  for (int i = 0; i < srcString.Len(); i++)
   {
     if (srcString[i] >= 256) resultString += '?';
     else                     resultString += char(srcString[i]);
@@ -178,4 +201,15 @@ AString UnicodeStringToMultiByte(const UString &srcString, UINT /* codePage */ )
 }
 
 #endif /* LOCALE_IS_UTF8 */
+
+
+void MultiByteToUnicodeString2(UString &dest, const AString &srcString, UINT codePage)
+{
+  dest = MultiByteToUnicodeString(srcString,codePage);
+}
+
+void UnicodeStringToMultiByte2(AString &dest, const UString &srcString, UINT codePage)
+{
+  dest = UnicodeStringToMultiByte(srcString,codePage);
+}
 

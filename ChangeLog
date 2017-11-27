@@ -1,4 +1,45 @@
 
+Version 9.38
+==============
+
+  - patch #23 fixes "7z with unicode file name with surrogate pair is not handled well in Linux"
+
+  - bug #139 "password from commanline is visible in processes list"
+      Now the characters of the password are replaced with *.
+
+  - From Windows version of 7-zip 
+     - bug#138 If you extract the password with # program crashes 
+       7z now supports long password in RAR 3 and 4.
+
+   
+
+Version 9.22
+==============
+  - From Windows version of 7-zip 9.22
+    - 7-Zip could ignore some options when you created ZIP archives.
+      For example, it could use ZipCrypto cipher instead of AES-256.
+
+  - From Windows version of 7-zip 9.21
+    - New -mf=FilterID switch to specify compression filter. Examples:
+      7z a -mf=bcj2 a.7z a.tar 
+      7z a -mf=delta:4 a.7z a.wav 
+      7z a -mf=bcj a.tar.xz a.tar 
+
+    - New class FString for file names at file systems.
+    - Speed optimization in CRC code for big-endian CPUs.
+
+  - From  Windows version of 7-zip
+    - Speed optimizations in AES code for Intel's 32nm CPUs.
+    - Speed optimizations in CRC calculation code for Intel's Atom CPUs.
+
+
+  - 7za can run on ANDROID 2.3 !
+
+  - bug with multi archives which are links.
+
+  - #3283518 : Asm/x{32,64}/7zCrcT8U.asm introduces executable stack
+ 
+
 Version 9.20.1
 ==============
 

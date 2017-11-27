@@ -190,7 +190,7 @@ STDMETHODIMP CRootFolder::BindToFolder(const wchar_t *name, IFolderFolder **resu
     return S_OK;
   }
 
-  if (name2.Length () < 2)
+  if (name2.Len() < 2)
     return E_INVALIDARG;
 
   CMyComPtr<IFolderFolder> subFolder;
@@ -205,7 +205,7 @@ STDMETHODIMP CRootFolder::BindToFolder(const wchar_t *name, IFolderFolder **resu
   else
 #endif
   {
-    if (name2[name2.Length () - 1] != WCHAR_PATH_SEPARATOR)
+    if (name2[name2.Len() - 1] != WCHAR_PATH_SEPARATOR)
       name2 += WCHAR_PATH_SEPARATOR;
     NFsFolder::CFSFolder *fsFolderSpec = new NFsFolder::CFSFolder;
     subFolder = fsFolderSpec;

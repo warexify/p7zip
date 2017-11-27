@@ -26,10 +26,11 @@ OPTFLAGS=$(OPTIMIZE) -I$(WATT_ROOT)/inc -L$(WATT_ROOT)/lib
 ALLFLAGS=$(OPTFLAGS) -s \
        -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE \
        -DNDEBUG -D_REENTRANT -DENV_UNIX \
+	-DP7ZIP_USE_ASM \
        $(LOCAL_FLAGS)
 
-CXX=gpp $(ALLFLAGS)
-CC=gcc $(ALLFLAGS)
+CXX=gpp
+CC=gcc
 #LINK_SHARED=-shared
 LINK_SHARED=
 
@@ -44,4 +45,5 @@ ASM=yasm -f coff
 #ASM=nasm -f coff
 CPU=x86
 OBJ_CRC32=$(OBJ_CRC32_x86)
+OBJ_AES=AesOpt.o
 

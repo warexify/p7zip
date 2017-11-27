@@ -19,7 +19,7 @@ all3: 7za sfx 7z 7zr
 all4: 7za sfx 7z 7zr Client7z 7zG 7zFM
 
 all_test : test test_7z test_7zr test_Client7z
-	cd CPP/7zip/Compress/LZMA_Alone  ; $(MAKE) test
+	cd CPP/7zip/Bundles/LzmaCon ; $(MAKE) test
 
 common:
 	$(MKDIR) bin
@@ -57,9 +57,9 @@ depend:
 	cd CPP/7zip/UI/Console           ; $(MAKE) depend
 	cd CPP/7zip/Bundles/Format7zFree ; $(MAKE) depend
 	cd CPP/7zip/Compress/Rar         ; $(MAKE) depend
+	cd check/my_86_filter            ; $(MAKE) depend
 	cd CPP/7zip/UI/GUI               ; $(MAKE) depend
 	cd CPP/7zip/UI/FileManager       ; $(MAKE) depend
-	cd check/my_86_filter            ; $(MAKE) depend
 
 sfx: common
 	$(MKDIR) bin
@@ -94,10 +94,14 @@ clean:
 	cd CPP/7zip/UI/GUI               ; $(MAKE) clean
 	cd CPP/7zip/Bundles/Format7zFree ; $(MAKE) clean
 	cd CPP/7zip/Compress/Rar         ; $(MAKE) clean
-	cd CPP/7zip/Compress/LZMA_Alone  ; $(MAKE) clean
+	cd CPP/7zip/Bundles/LzmaCon      ; $(MAKE) clean
 	cd CPP/7zip/Bundles/AloneGCOV    ; $(MAKE) clean
 	cd CPP/7zip/TEST/TestUI          ; $(MAKE) clean
 	cd check/my_86_filter            ; $(MAKE) clean
+	cd CPP/ANDROID                   ; $(MAKE) clean
+	cd Utils/CPUTest/MemLat          ; $(MAKE) clean
+	cd Utils/CPUTest/PipeLen         ; $(MAKE) clean
+	cd CPP/7zip/UI/P7ZIP             ; $(MAKE) clean
 	rm -fr bin
 	rm -fr p7zip.app
 	rm -fr CPP/7zip/P7ZIP.*
@@ -107,6 +111,10 @@ clean:
 	rm -f  CPP/7zip/QMAKE/*/Makefile
 	rm -f  CPP/7zip/QMAKE/*/*.pro.user
 	rm -f  CPP/7zip/QMAKE/*/*.x
+	-find . -name "build*"  -exec rm -fr {} \;
+	-find . -name "*.user"  -exec rm -f {} \;
+	rm -fr CPP/7zip/ANDROID/libs
+	rm -fr CPP/7zip/ANDROID/obj
 	rm -f make.log 1 2
 	rm -f check/7z.so
 	rm -fr p7zip.app/Contents/MacOS
@@ -119,7 +127,7 @@ clean:
 	find . -name "makefile*" -exec chmod -x {} \;
 	find . -name ".DS_Store" -exec rm -f {} \;
 	find . -name "._*"       -exec rm -f {} \;
-	chmod -x ChangeLog README TODO man1/* DOCS/*.txt
+	chmod -x ChangeLog README TODO man1/* DOC/*.txt
 	chmod +x contrib/VirtualFileSystemForMidnightCommander/u7z
 	chmod +x contrib/gzip-like_CLI_wrapper_for_7z/p7zip
 	chmod +x install.sh check/check.sh check/clean_all.sh check/check_7zr.sh 
@@ -165,10 +173,10 @@ src_7z : clean
 tar_bin:
 	rm -f  ../$(ARCHIVE)_x86_linux_bin.tar.bz2
 	chmod +x install.sh contrib/VirtualFileSystemForMidnightCommander/u7z contrib/gzip-like_CLI_wrapper_for_7z/p7zip
-	cd .. ; (tar cf - $(ARCHIVE)/bin $(ARCHIVE)/contrib $(ARCHIVE)/man1 $(ARCHIVE)/install.sh $(ARCHIVE)/ChangeLog $(ARCHIVE)/DOCS $(ARCHIVE)/README $(ARCHIVE)/TODO | bzip2 -9 > $(ARCHIVE)_x86_linux_bin.tar.bz2)
+	cd .. ; (tar cf - $(ARCHIVE)/bin $(ARCHIVE)/contrib $(ARCHIVE)/man1 $(ARCHIVE)/install.sh $(ARCHIVE)/ChangeLog $(ARCHIVE)/DOC $(ARCHIVE)/README $(ARCHIVE)/TODO | bzip2 -9 > $(ARCHIVE)_x86_linux_bin.tar.bz2)
 
 tar_bin2:
 	rm -f  ../$(ARCHIVE)_x86_linux_bin.tar.bz2
 	chmod +x install.sh contrib/VirtualFileSystemForMidnightCommander/u7z contrib/gzip-like_CLI_wrapper_for_7z/p7zip
-	cd .. ; (tar cf - $(ARCHIVE)/bin $(ARCHIVE)/contrib $(ARCHIVE)/man1 $(ARCHIVE)/install.sh $(ARCHIVE)/ChangeLog $(ARCHIVE)/DOCS $(ARCHIVE)/README $(ARCHIVE)/TODO | 7za a -mx=9 -tbzip2 -si $(ARCHIVE)_x86_linux_bin.tar.bz2)
+	cd .. ; (tar cf - $(ARCHIVE)/bin $(ARCHIVE)/contrib $(ARCHIVE)/man1 $(ARCHIVE)/install.sh $(ARCHIVE)/ChangeLog $(ARCHIVE)/DOC $(ARCHIVE)/README $(ARCHIVE)/TODO | 7za a -mx=9 -tbzip2 -si $(ARCHIVE)_x86_linux_bin.tar.bz2)
 

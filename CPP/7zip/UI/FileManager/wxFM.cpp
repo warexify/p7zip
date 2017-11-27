@@ -25,6 +25,8 @@
 
 #endif
 
+#include "Windows/Control/Dialog.h" // REGISTER_STRINGTABLE
+
 
 // FIXME
 
@@ -199,7 +201,7 @@ TransformProcessType(&PSN,kProcessTransformToForegroundApplication);
     static char p7zip_home_dir[MAX_PATH];
 
     UString fullPath;
-    NDirectory::MyGetFullPathName(wxApp::argv[0], fullPath);
+    NDir::MyGetFullPathName(wxApp::argv[0], fullPath);
     AString afullPath = GetAnsiString(fullPath);
 
     AString dir,name;
@@ -243,12 +245,33 @@ TransformProcessType(&PSN,kProcessTransformToForegroundApplication);
     return true;
 }
 
-DWORD WINAPI GetTickCount(VOID) {
-	static wxStopWatch sw;
-	return sw.Time();
-}
-
 //////////////////////////////////////////
+
+#include "resourceGui.h"
+
+static CStringTable g_stringTable[] =
+{
+  /* resourceGui.rc */
+  /******************/
+  { IDS_MESSAGE_NO_ERRORS     ,L"There are no errors" },
+
+  { IDS_PROGRESS_TESTING      ,L"Testing" },
+
+  { IDS_CHECKSUM_CALCULATING    ,L"Checksum calculating..." },
+  { IDS_CHECKSUM_INFORMATION    ,L"Checksum information" },
+  { IDS_CHECKSUM_CRC_DATA       ,L"CRC checksum for data:" },
+  { IDS_CHECKSUM_CRC_DATA_NAMES ,L"CRC checksum for data and names:" },
+  { IDS_CHECKSUM_CRC_STREAMS_NAMES ,L"CRC checksum for streams and names:" },
+
+  { IDS_INCORRECT_VOLUME_SIZE ,L"Incorrect volume size" },
+
+  { IDS_OPENNING  ,L"Opening..." },
+  { IDS_SCANNING  ,L"Scanning..." },
+
+	{ 0 , 0 }
+};
+
+REGISTER_STRINGTABLE(g_stringTable)
 
 #if 0
 #include "resource.h"

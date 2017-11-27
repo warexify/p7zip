@@ -1,4 +1,4 @@
-	p7zip 9.20
+	p7zip 9.38
 	==========
 
 Homepage : http://p7zip.sourceforge.net/
@@ -13,8 +13,9 @@ Homepage : www.7-zip.org
   7za handles less archive formats than 7z.exe.
   7zr is a light stand-alone executable that supports only 7z/LZMA/BCJ/BCJ2.
 
-NEW:
-  7zG : see GUI/readme.txt
+  Some GUI :
+  7zG  : alpha stage
+  7zFM : alpha stage
 
 CAUTION :
 ---------
@@ -83,18 +84,18 @@ BUILD :
   this procedure has been tested on :
    - x86 CPU :
 	Linux - Debian 3.0 Stable
-	Linux - Ubuntu 10.10
+	Linux - Ubuntu 14.10
 	MacOS 10.6.6 
 
    - AMD64 CPU :
-	Linux - Ubuntu 10.10
+	Linux - Ubuntu 14.10
 	MacOS 10.6.6 
-
-   - sparc CPU :
-	Solaris 8 (sparc) with gcc 2.95.2
 
    - powerpc CPU :
 	MacOS X 10.4 (ppc)
+
+   - arm :
+	Android (Galaxy Note 3)
 
   Some older versions of p7zip were tested :
    - x86 CPU :
@@ -128,6 +129,10 @@ BUILD :
 
    - sparc CPU :
 	Solaris 9 (sparc) with gcc 3.3.2
+
+   - sparc CPU :
+	Solaris 8 (sparc) with gcc 2.95.2
+
 
    - powerpc CPU :
 	MacOS X 10.1/darwin 5.5 with gcc 932.1 (gcc 2.95.2)
@@ -217,7 +222,7 @@ USAGE:
   For .7z archive only, you can enable archive header encryption with "-mhe"
   7za a -mhe=on -pmy_password archive.7z  dir1
 
-  For more, see the documentation of 7za.exe in DOCS/MANUAL directory
+  For more, see the documentation of 7za.exe in DOC/MANUAL directory
   7za a -t7z  -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on archive.7z  dir1
       adds all files from directory "dir1" to archive archive.7z
       using "ultra settings".
@@ -236,6 +241,8 @@ BENCHMARKS :
 ------------
   7za b : bench LZMA codec
   7z b -mm=crc : make internal crc check.
+  7za b "-mm=*" : test all methods
+
 
 
 hugetlbfs (large pages)
@@ -312,7 +319,7 @@ hugetlbfs (large pages)
 
 LICENSE :
 ---------
-  please read DOCS/License.txt.
+  please read DOC/License.txt.
 
 LIMITATIONS from 7-zip :
 ------------------------
@@ -347,6 +354,18 @@ LIMITATIONS for Unix version only :
 
 DEVELOPPER CORNER:
 ------------------
+
+  - static analysis with cppcheck
+	make cppcheck
+
+  - static analysis with clang
+	scan-build make all3
+
+  - dynamic analysis : valgrind
+
+  - dynamic analysis : gcc sanitize
+	cp makefile.linux_amd64_sanitizer makefile.machine
+	make test
 
   - WaitForMultipleObject has no equivalence on Unix.
   - Events don't exist.

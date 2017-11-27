@@ -8,9 +8,11 @@
 #include <locale.h>
 #endif
 
+#include <string.h> // memset
+
 extern void my_windows_split_path(const AString &p_path, AString &dir , AString &base);
 
-void mySplitCommandLine(int numArguments,const char *arguments[],UStringVector &parts) {
+void mySplitCommandLine(int numArguments, char *arguments[],UStringVector &parts) {
 
   { // define P7ZIP_HOME_DIR
     static char p7zip_home_dir[MAX_PATH];
@@ -62,6 +64,15 @@ void mySplitCommandLine(int numArguments,const char *arguments[],UStringVector &
       // tmp.Trim(); " " is a valid filename ...
       if (!tmp.IsEmpty()) {
         parts.Add(tmp);
+      }
+      // try to hide the password
+      {
+        char * arg = arguments[ind];
+	size_t len = strlen(arg);
+        if ( (len > 2) && (arg[0] == '-') && ( (arg[1]=='p') || (arg[1]=='P') ) )
+        {
+          memset(arg+2,'*',len-2);
+        }
       }
     }
   }

@@ -94,6 +94,9 @@ public:
 
 	operator HWND() const;
 
+        void SetUnicodeFormat() { /* FIXME */ ; }
+
+
 	int GetItemCount() const;
 
 	int InsertItem(int index, LPCTSTR text);
@@ -125,7 +128,12 @@ public:
 
 	void SetItemState_FocusedSelected(int index) { SetItemState(index, LVIS_FOCUSED | LVIS_SELECTED, LVIS_FOCUSED | LVIS_SELECTED); }
 
+	void SetItemState_Selected(int index, bool select) { SetItemState(index, select ? LVIS_SELECTED : 0, LVIS_SELECTED); }
+	void SetItemState_Selected(int index) { SetItemState(index, LVIS_SELECTED, LVIS_SELECTED); }
+
 	UINT GetItemState(int index, UINT mask) const;
+
+	bool IsItemSelected(int index) const { return GetItemState(index, LVIS_SELECTED) == LVIS_SELECTED; }
 
 	void /* bool */  Update();
 
@@ -158,6 +166,22 @@ public:
 
 
 };
+
+class CListView2: public CListView
+{
+// FIXME   WNDPROC _origWindowProc;
+public:
+  // void SetWindowProc();
+  virtual LRESULT OnMessage(UINT message, WPARAM wParam, LPARAM lParam);
+};
+
+/*
+class CListView3: public CListView2
+{
+public:
+  virtual LRESULT OnMessage(UINT message, WPARAM wParam, LPARAM lParam);
+};
+*/
 
 }}
 #endif

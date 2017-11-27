@@ -1,5 +1,5 @@
 #
-# makefile for Linux (x86, PPC, alpha ...)
+# makefile for Linux (other)
 #
 
 OPTFLAGS=-O
@@ -10,8 +10,8 @@ ALLFLAGS=${OPTFLAGS} -pipe -s \
 	-D_7ZIP_LARGE_PAGES \
 	$(LOCAL_FLAGS)
 
-CXX=/home/me/BUILDROOT/buildroot-2010.11/output/staging/usr/bin/i386-unknown-linux-uclibc-g++ $(ALLFLAGS)
-CC=/home/me/BUILDROOT/buildroot-2010.11/output/staging/usr/bin/i386-unknown-linux-uclibc-gcc $(ALLFLAGS)
+CXX=/home/me/BUILDROOT/buildroot-2010.11/output/staging/usr/bin/i386-unknown-linux-uclibc-g++
+CC=/home/me/BUILDROOT/buildroot-2010.11/output/staging/usr/bin/i386-unknown-linux-uclibc-gcc
 CC_SHARED=-fPIC
 LINK_SHARED=-fPIC -shared
 
@@ -20,4 +20,5 @@ LOCAL_LIBS=-lpthread
 LOCAL_LIBS_DLL=$(LOCAL_LIBS) -ldl
 
 OBJ_CRC32=$(OBJ_CRC32_C)
+OBJ_AES=
 

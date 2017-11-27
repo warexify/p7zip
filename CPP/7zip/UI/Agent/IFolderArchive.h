@@ -3,7 +3,8 @@
 #ifndef __IFOLDER_ARCHIVE_H
 #define __IFOLDER_ARCHIVE_H
 
-#include "../../IDecl.h"
+#include "../../../Common/MyString.h"
+
 #include "../../Archive/IArchive.h"
 #include "../../UI/Common/LoadCodecs.h"
 #include "../../UI/FileManager/IFolder.h"
@@ -16,12 +17,14 @@
 
 #define INTERFACE_IArchiveFolder(x) \
   STDMETHOD(Extract)(const UInt32 *indices, UInt32 numItems, \
+      Int32 includeAltStreams, \
+      Int32 replaceAltStreamCharsMode, \
       NExtract::NPathMode::EEnum pathMode, \
       NExtract::NOverwriteMode::EEnum overwriteMode, \
       const wchar_t *path, Int32 testMode, \
       IFolderArchiveExtractCallback *extractCallback2) x; \
 
-FOLDER_ARCHIVE_INTERFACE(IArchiveFolder, 0x05)
+FOLDER_ARCHIVE_INTERFACE(IArchiveFolder, 0x0D)
 {
   INTERFACE_IArchiveFolder(PURE)
 };
@@ -57,15 +60,21 @@ FOLDER_ARCHIVE_INTERFACE_SUB(IFolderArchiveUpdateCallback, IProgress, 0x0B)
 #define INTERFACE_IOutFolderArchive(x) \
   STDMETHOD(SetFolder)(IFolderFolder *folder) x; \
   STDMETHOD(SetFiles)(const wchar_t *folderPrefix, const wchar_t **names, UInt32 numNames) x; \
-  STDMETHOD(DeleteItems)(const wchar_t *newArchiveName, \
+  STDMETHOD(DeleteItems)(ISequentialOutStream *outArchiveStream, \
       const UInt32 *indices, UInt32 numItems, IFolderArchiveUpdateCallback *updateCallback) x; \
-  STDMETHOD(DoOperation)(CCodecs *codecs, int index, \
-      const wchar_t *newArchiveName, const Byte *stateActions, const wchar_t *sfxModule, \
+  STDMETHOD(DoOperation)( \
+      FStringVector *requestedPaths, \
+      FStringVector *processedPaths, \
+      CCodecs *codecs, int index, \
+      ISequentialOutStream *outArchiveStream, const Byte *stateActions, const wchar_t *sfxModule, \
       IFolderArchiveUpdateCallback *updateCallback) x; \
-  STDMETHOD(DoOperation2)(const wchar_t *newArchiveName, const Byte *stateActions, \
-      const wchar_t *sfxModule, IFolderArchiveUpdateCallback *updateCallback) x; \
+  STDMETHOD(DoOperation2)( \
+      FStringVector *requestedPaths, \
+      FStringVector *processedPaths, \
+      ISequentialOutStream *outArchiveStream, const Byte *stateActions, const wchar_t *sfxModule, \
+      IFolderArchiveUpdateCallback *updateCallback) x; \
 
-FOLDER_ARCHIVE_INTERFACE(IOutFolderArchive, 0x0A)
+FOLDER_ARCHIVE_INTERFACE(IOutFolderArchive, 0x0F)
 {
   INTERFACE_IOutFolderArchive(PURE)
 };
