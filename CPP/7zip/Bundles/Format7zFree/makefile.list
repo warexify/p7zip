@@ -146,6 +146,7 @@ SRCS=\
  ../../Archive/Common/ItemNameUtils.cpp \
  ../../Archive/Common/MultiStream.cpp \
  ../../Archive/Common/OutStreamWithCRC.cpp \
+ ../../Archive/Common/OutStreamWithSha1.cpp \
  ../../Archive/Common/ParseProperties.cpp \
  ../../Archive/Cpio/CpioHandler.cpp \
  ../../Archive/Cpio/CpioHeader.cpp \
@@ -198,7 +199,10 @@ SRCS=\
  ../../Archive/Zip/ZipItem.cpp \
  ../../Archive/Zip/ZipOut.cpp \
  ../../Archive/Zip/ZipRegister.cpp \
- ../../Archive/Zip/ZipUpdate.cpp
+ ../../Archive/Zip/ZipUpdate.cpp \
+ ../../Archive/Wim/WimHandler.cpp \
+ ../../Archive/Wim/WimIn.cpp \
+ ../../Archive/Wim/WimRegister.cpp
 
 
 SRCS_C=\
@@ -524,6 +528,8 @@ MultiStream.o : ../../Archive/Common/MultiStream.cpp
 	$(CXX) $(CC_SHARED) $(CFLAGS) ../../Archive/Common/MultiStream.cpp
 OutStreamWithCRC.o : ../../Archive/Common/OutStreamWithCRC.cpp
 	$(CXX) $(CC_SHARED) $(CFLAGS) ../../Archive/Common/OutStreamWithCRC.cpp
+OutStreamWithSha1.o : ../../Archive/Common/OutStreamWithSha1.cpp
+	$(CXX) $(CC_SHARED) $(CFLAGS) ../../Archive/Common/OutStreamWithSha1.cpp
 ParseProperties.o : ../../Archive/Common/ParseProperties.cpp
 	$(CXX) $(CC_SHARED) $(CFLAGS) ../../Archive/Common/ParseProperties.cpp
 CpioHandler.o : ../../Archive/Cpio/CpioHandler.cpp
@@ -630,6 +636,12 @@ ZipRegister.o : ../../Archive/Zip/ZipRegister.cpp
 	$(CXX) $(CC_SHARED) $(CFLAGS) ../../Archive/Zip/ZipRegister.cpp
 ZipUpdate.o : ../../Archive/Zip/ZipUpdate.cpp
 	$(CXX) $(CC_SHARED) $(CFLAGS) ../../Archive/Zip/ZipUpdate.cpp
+WimHandler.o : ../../Archive/Wim/WimHandler.cpp
+	$(CXX) $(CC_SHARED) $(CFLAGS) ../../Archive/Wim/WimHandler.cpp
+WimIn.o : ../../Archive/Wim/WimIn.cpp
+	$(CXX) $(CC_SHARED) $(CFLAGS) ../../Archive/Wim/WimIn.cpp
+WimRegister.o : ../../Archive/Wim/WimRegister.cpp
+	$(CXX) $(CC_SHARED) $(CFLAGS) ../../Archive/Wim/WimRegister.cpp
 aescrypt.o : ../../Crypto/AES/aescrypt.c
 	$(CC) $(CC_SHARED) $(CFLAGS) ../../Crypto/AES/aescrypt.c
 aeskey.o : ../../Crypto/AES/aeskey.c

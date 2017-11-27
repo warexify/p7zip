@@ -4,7 +4,7 @@
 #
 
 # OPTFLAGS=-fast -msse3 -s
-OPTFLAGS=-O2 -msse2 -s
+OPTFLAGS=-O2 -msse2 -s -Wcheck -fstack-security-check
 
 ALLFLAGS=${OPTFLAGS} \
     	-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE \

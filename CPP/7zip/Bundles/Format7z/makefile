@@ -119,8 +119,7 @@ BranchIA64.o \
 BranchPPC.o \
 BranchSPARC.o \
 BranchX86.o \
-RangeCoderBit.o \
-
+RangeCoderBit.o
 
 include ../../../../makefile.glb
 

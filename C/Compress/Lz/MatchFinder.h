@@ -7,22 +7,9 @@
 
 typedef UInt32 CLzRef;
 
-/* define STRICT_POINTERS, if pointers are not allowed to be out of allocated block */
-#define STRICT_POINTERS
-
-#ifdef STRICT_POINTERS
-#define MF_BUF(p, pos) ((p)->bufferBase + ((p)->bufferOffset + (pos)))
-#else
-#define MF_BUF(p, pos) ((p)->buffer + (pos))
-#endif
-
 typedef struct _CMatchFinder
 {
-  #ifdef STRICT_POINTERS
-  size_t bufferOffset;
-  #else
   Byte *buffer;
-  #endif
   UInt32 pos;
   UInt32 posLimit;
   UInt32 streamPos;
@@ -58,8 +45,8 @@ typedef struct _CMatchFinder
   HRes result;
 } CMatchFinder;
 
-#define Inline_MatchFinder_GetPointerToCurrentPos(p) (MF_BUF(p, (p)->pos))
-#define Inline_MatchFinder_GetIndexByte(p, index) *MF_BUF(p, (size_t)(p)->pos + (Int32)(index))
+#define Inline_MatchFinder_GetPointerToCurrentPos(p) ((p)->buffer)
+#define Inline_MatchFinder_GetIndexByte(p, index) ((p)->buffer[(Int32)(index)])
 
 #define Inline_MatchFinder_GetNumAvailableBytes(p) ((p)->streamPos - (p)->pos)
 
@@ -81,17 +68,7 @@ void MatchFinder_Free(CMatchFinder *p, ISzAlloc *alloc);
 void MatchFinder_Normalize3(UInt32 subValue, CLzRef *items, UInt32 numItems);
 void MatchFinder_ReduceOffsets(CMatchFinder *p, UInt32 subValue);
 
-#ifdef STRICT_POINTERS
-#define MF_BUF_PARAMS_DECL const Byte *bufferBase, size_t bufferOffset
-#define MF_BUF_POS(pos) bufferBase + (bufferOffset + ((size_t)pos))
-#else
-#define MF_BUF_PARAMS_DECL const Byte *buffer
-#define MF_BUF_POS(pos) buffer + (size_t)pos
-#endif
-
-
-UInt32 * GetMatchesSpec1(UInt32 lenLimit, UInt32 curMatch, UInt32 pos, 
-    MF_BUF_PARAMS_DECL, CLzRef *son, 
+UInt32 * GetMatchesSpec1(UInt32 lenLimit, UInt32 curMatch, UInt32 pos, const Byte *buffer, CLzRef *son, 
     UInt32 _cyclicBufferPos, UInt32 _cyclicBufferSize, UInt32 _cutValue, 
     UInt32 *distances, UInt32 maxLen);
 

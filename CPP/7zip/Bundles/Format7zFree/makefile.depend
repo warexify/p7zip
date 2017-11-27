@@ -1,9 +1,3 @@
-myGetTickCount.o: ../../../myWindows/myGetTickCount.cpp \
-  ../../../myWindows/StdAfx.h ../../../myWindows/config.h \
-  ../../../Common/MyWindows.h ../../../Common/MyGuidDef.h \
-  ../../../Common/Types.h ../../../Common/Types.h \
-  ../../../include_windows/windows.h ../../../Common/MyWindows.h \
-  ../../../include_windows/basetyps.h ../../../include_windows/tchar.h
 wine_date_and_time.o: ../../../myWindows/wine_date_and_time.cpp \
   ../../../myWindows/config.h ../../../include_windows/windows.h \
   ../../../Common/MyWindows.h ../../../Common/MyGuidDef.h \
@@ -3174,6 +3168,20 @@ OutStreamWithCRC.o: ../../Archive/Common/OutStreamWithCRC.cpp \
   ../../Archive/Common/../../../Common/Types.h \
   ../../Archive/Common/../../../../C/7zCrc.h \
   ../../Archive/Common/../../../../C/Types.h
+OutStreamWithSha1.o: ../../Archive/Common/OutStreamWithSha1.cpp \
+  ../../../myWindows/StdAfx.h ../../../myWindows/config.h \
+  ../../../Common/MyWindows.h ../../../Common/MyGuidDef.h \
+  ../../../Common/Types.h ../../../Common/Types.h \
+  ../../../include_windows/windows.h ../../../Common/MyWindows.h \
+  ../../../include_windows/basetyps.h ../../../include_windows/tchar.h \
+  ../../Archive/Common/OutStreamWithSha1.h \
+  ../../Archive/Common/../../../Common/MyCom.h \
+  ../../Archive/Common/../../../Common/MyWindows.h \
+  ../../Archive/Common/../../IStream.h \
+  ../../Archive/Common/../../../Common/MyUnknown.h \
+  ../../Archive/Common/../../../Common/Types.h \
+  ../../Archive/Common/../../Crypto/Hash/Sha1.h \
+  ../../Archive/Common/../../Crypto/Hash/../../../Common/Types.h
 ParseProperties.o: ../../Archive/Common/ParseProperties.cpp \
   ../../../myWindows/StdAfx.h ../../../myWindows/config.h \
   ../../../Common/MyWindows.h ../../../Common/MyGuidDef.h \
@@ -4472,3 +4480,142 @@ ZipUpdate.o: ../../Archive/Zip/ZipUpdate.cpp ../../../myWindows/StdAfx.h \
   ../../Archive/Zip/../../Common/../../../C/Alloc.h \
   ../../../Common/Types.h ../../../Common/MyVector.h \
   ../../../Windows/Synchronization.h
+WimHandler.o: ../../Archive/Wim/WimHandler.cpp \
+  ../../../myWindows/StdAfx.h ../../../myWindows/config.h \
+  ../../../Common/MyWindows.h ../../../Common/MyGuidDef.h \
+  ../../../Common/Types.h ../../../Common/Types.h \
+  ../../../include_windows/windows.h ../../../Common/MyWindows.h \
+  ../../../include_windows/basetyps.h ../../../include_windows/tchar.h \
+  ../../../Common/IntToString.h ../../../Common/Defs.h \
+  ../../../Common/ComTry.h ../../../Common/MyWindows.h \
+  ../../../Windows/PropVariant.h ../../../Windows/../Common/MyWindows.h \
+  ../../../Windows/../Common/Types.h \
+  ../../Archive/Wim/../../Common/StreamUtils.h \
+  ../../Archive/Wim/../../Common/../IStream.h \
+  ../../Archive/Wim/../../Common/../../Common/MyUnknown.h \
+  ../../Archive/Wim/../../Common/../../Common/MyWindows.h \
+  ../../Archive/Wim/../../Common/../../Common/Types.h \
+  ../../Archive/Wim/../../Common/ProgressUtils.h \
+  ../../Archive/Wim/../../Common/../../Common/MyCom.h \
+  ../../Archive/Wim/../../Common/../ICoder.h \
+  ../../Archive/Wim/../../Common/../IStream.h \
+  ../../Archive/Wim/../../Common/../IProgress.h \
+  ../../Archive/Wim/WimHandler.h ../../../Common/MyCom.h \
+  ../../Archive/Wim/../IArchive.h ../../Archive/Wim/../../IStream.h \
+  ../../Archive/Wim/../../IProgress.h ../../Archive/Wim/../../PropID.h \
+  ../../Archive/Wim/WimIn.h ../../../Common/MyString.h \
+  ../../../Common/MyVector.h ../../../Common/Defs.h \
+  ../../../Common/Buffer.h \
+  ../../Archive/Wim/../../Compress/Lzx/LzxDecoder.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../ICoder.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Compress/Huffman/HuffmanDecoder.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Compress/Huffman/../../../Common/Types.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Compress/LZ/LZOutWindow.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Compress/LZ/../../IStream.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Compress/LZ/../../Common/OutBuffer.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Compress/LZ/../../Common/../IStream.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Compress/LZ/../../Common/../../Common/MyCom.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Compress/LZ/../../Common/../../Common/MyException.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Compress/LZ/../../Common/../../Common/MyWindows.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Common/InBuffer.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Common/../IStream.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Common/../../Common/MyCom.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Common/../../Common/MyException.h \
+  ../../Archive/Wim/../../Compress/Lzx/Lzx.h \
+  ../../Archive/Wim/../../Compress/Lzx/Lzx86Converter.h \
+  ../../../Common/MyCom.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../IStream.h \
+  ../../Archive/Wim/../../Compress/Copy/CopyCoder.h \
+  ../../Archive/Wim/../../Compress/Copy/../../ICoder.h \
+  ../../Archive/Wim/../../Compress/Copy/../../../Common/MyCom.h
+WimIn.o: ../../Archive/Wim/WimIn.cpp ../../../myWindows/StdAfx.h \
+  ../../../myWindows/config.h ../../../Common/MyWindows.h \
+  ../../../Common/MyGuidDef.h ../../../Common/Types.h \
+  ../../../Common/Types.h ../../../include_windows/windows.h \
+  ../../../Common/MyWindows.h ../../../include_windows/basetyps.h \
+  ../../../include_windows/tchar.h ../../../Common/MyCom.h \
+  ../../../Common/MyWindows.h ../../../Common/IntToString.h \
+  ../../Archive/Wim/../../Common/StreamUtils.h \
+  ../../Archive/Wim/../../Common/../IStream.h \
+  ../../Archive/Wim/../../Common/../../Common/MyUnknown.h \
+  ../../Archive/Wim/../../Common/../../Common/MyWindows.h \
+  ../../Archive/Wim/../../Common/../../Common/Types.h \
+  ../../Archive/Wim/../../Common/StreamObjects.h \
+  ../../Archive/Wim/../../Common/../../Common/DynamicBuffer.h \
+  ../../Archive/Wim/../../Common/../../Common/Buffer.h \
+  ../../Archive/Wim/../../Common/../../Common/Defs.h \
+  ../../Archive/Wim/../../Common/../../Common/MyCom.h \
+  ../../Archive/Wim/../../Common/LimitedStreams.h \
+  ../../Archive/Wim/../Common/OutStreamWithSha1.h \
+  ../../Archive/Wim/../Common/../../../Common/MyCom.h \
+  ../../Archive/Wim/../Common/../../IStream.h \
+  ../../Archive/Wim/../Common/../../Crypto/Hash/Sha1.h \
+  ../../Archive/Wim/../Common/../../Crypto/Hash/../../../Common/Types.h \
+  ../../Archive/Wim/WimIn.h ../../../Common/MyString.h \
+  ../../../Common/MyVector.h ../../../Common/Defs.h \
+  ../../../Common/Buffer.h \
+  ../../Archive/Wim/../../Compress/Lzx/LzxDecoder.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../ICoder.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../IStream.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Compress/Huffman/HuffmanDecoder.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Compress/Huffman/../../../Common/Types.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Compress/LZ/LZOutWindow.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Compress/LZ/../../IStream.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Compress/LZ/../../Common/OutBuffer.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Compress/LZ/../../Common/../IStream.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Compress/LZ/../../Common/../../Common/MyCom.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Compress/LZ/../../Common/../../Common/MyException.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Compress/LZ/../../Common/../../Common/MyWindows.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Common/InBuffer.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Common/../IStream.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Common/../../Common/MyCom.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Common/../../Common/MyException.h \
+  ../../Archive/Wim/../../Compress/Lzx/Lzx.h \
+  ../../Archive/Wim/../../Compress/Lzx/Lzx86Converter.h \
+  ../../../Common/MyCom.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../IStream.h \
+  ../../Archive/Wim/../../Compress/Copy/CopyCoder.h \
+  ../../Archive/Wim/../../Compress/Copy/../../ICoder.h \
+  ../../Archive/Wim/../../Compress/Copy/../../../Common/MyCom.h
+WimRegister.o: ../../Archive/Wim/WimRegister.cpp \
+  ../../../myWindows/StdAfx.h ../../../myWindows/config.h \
+  ../../../Common/MyWindows.h ../../../Common/MyGuidDef.h \
+  ../../../Common/Types.h ../../../Common/Types.h \
+  ../../../include_windows/windows.h ../../../Common/MyWindows.h \
+  ../../../include_windows/basetyps.h ../../../include_windows/tchar.h \
+  ../../Archive/Wim/../../Common/RegisterArc.h \
+  ../../Archive/Wim/../../Common/../Archive/IArchive.h \
+  ../../Archive/Wim/../../Common/../Archive/../IStream.h \
+  ../../Archive/Wim/../../Common/../Archive/../../Common/MyUnknown.h \
+  ../../Archive/Wim/../../Common/../Archive/../../Common/MyWindows.h \
+  ../../Archive/Wim/../../Common/../Archive/../../Common/Types.h \
+  ../../Archive/Wim/../../Common/../Archive/../IProgress.h \
+  ../../Archive/Wim/../../Common/../Archive/../PropID.h \
+  ../../Archive/Wim/WimHandler.h ../../../Common/MyCom.h \
+  ../../../Common/MyWindows.h ../../Archive/Wim/../IArchive.h \
+  ../../Archive/Wim/WimIn.h ../../../Common/MyString.h \
+  ../../../Common/MyVector.h ../../../Common/Defs.h \
+  ../../../Common/Buffer.h \
+  ../../Archive/Wim/../../Compress/Lzx/LzxDecoder.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../ICoder.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../IStream.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Compress/Huffman/HuffmanDecoder.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Compress/Huffman/../../../Common/Types.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Compress/LZ/LZOutWindow.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Compress/LZ/../../IStream.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Compress/LZ/../../Common/OutBuffer.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Compress/LZ/../../Common/../IStream.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Compress/LZ/../../Common/../../Common/MyCom.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Compress/LZ/../../Common/../../Common/MyException.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Compress/LZ/../../Common/../../Common/MyWindows.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Common/InBuffer.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Common/../IStream.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Common/../../Common/MyCom.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../Common/../../Common/MyException.h \
+  ../../Archive/Wim/../../Compress/Lzx/Lzx.h \
+  ../../Archive/Wim/../../Compress/Lzx/Lzx86Converter.h \
+  ../../../Common/MyCom.h \
+  ../../Archive/Wim/../../Compress/Lzx/../../IStream.h \
+  ../../Archive/Wim/../../Compress/Copy/CopyCoder.h \
+  ../../Archive/Wim/../../Compress/Copy/../../ICoder.h \
+  ../../Archive/Wim/../../Compress/Copy/../../../Common/MyCom.h

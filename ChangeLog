@@ -1,4 +1,16 @@
 
+Version 4.49
+============
+  - From Windows version of 7-zip 4.49 :
+    - 7-Zip (7z) now can unpack WIM archives
+
+   - fixed : On Sparc Solaris, core dump during "7z a -sfx exe.x dir" with p7zip compiled with makefile.solaris_sparc_CC_32
+
+   - some code cleanup
+
+   - On HPUX, p7zip can get the number of CPU and the size of the memory.
+
+
 Version 4.48
 ============
   - From Windows version of 7-zip 4.48 :

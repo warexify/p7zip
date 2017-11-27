@@ -222,6 +222,10 @@ BranchIA64.o  \
 BranchPPC.o  \
 BranchSPARC.o  \
 BranchX86.o  \
+WimHandler.o \
+WimIn.o \
+WimRegister.o \
+OutStreamWithSha1.o \
 $(OBJ_CRC32)  \
 Sort.o  \
 Threads.o

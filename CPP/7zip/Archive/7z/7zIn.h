@@ -24,7 +24,7 @@ public:
   {
     kUnsupportedVersion = 0,
     kUnexpectedEndOfArchive = 0,
-    kIncorrectHeader,
+    kIncorrectHeader
   } Cause;
   CInArchiveException(CCauseType cause);
 };
