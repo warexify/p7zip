@@ -1,9 +1,6 @@
 #include "StdAfx.h"
 
 #include "Common/String.h"
-#ifdef _UNICODE
-#include "../Common/StringConvert.h"
-#endif
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -16,8 +13,57 @@ extern void my_windows_split_path(const AString &p_path, AString &dir , AString 
 
 #include "myPrivate.h"
 
-//#define TRACEN(u) u;
+// #define TRACEN(u) u;
 #define TRACEN(u)  /* */
+
+static void FILE_SetDosError(void) {
+  int save_errno = errno;
+  switch (save_errno) {
+  case EAGAIN:
+    SetLastError( ERROR_SHARING_VIOLATION );
+    break;
+  case EBADF:
+    SetLastError( ERROR_INVALID_HANDLE );
+    break;
+  case ENOSPC:
+    SetLastError( ERROR_HANDLE_DISK_FULL );
+    break;
+  case EACCES:
+  case EPERM:
+  case EROFS:
+    SetLastError( ERROR_ACCESS_DENIED );
+    break;
+  case EBUSY:
+    SetLastError( ERROR_LOCK_VIOLATION );
+    break;
+  case ENOENT:
+    SetLastError( ERROR_FILE_NOT_FOUND );
+    break;
+  case EISDIR:
+    SetLastError( ERROR_CANNOT_MAKE );
+    break;
+  case ENFILE:
+  case EMFILE:
+    SetLastError( ERROR_NO_MORE_FILES );
+    break;
+  case EEXIST:
+    SetLastError( ERROR_FILE_EXISTS );
+    break;
+  case EINVAL:
+  case ESPIPE:
+    SetLastError( ERROR_SEEK );
+    break;
+  case ENOTEMPTY:
+    SetLastError( ERROR_DIR_NOT_EMPTY );
+    break;
+  case ENOEXEC:
+    SetLastError( ERROR_BAD_FORMAT );
+    break;
+  default:
+    SetLastError( ERROR_GEN_FAILURE );
+    break;
+  }
+}
 
 typedef struct {
 #define IDENT_DIR_HANDLER 0x12345678
@@ -28,16 +74,17 @@ typedef struct {
 }
 t_st_dir;
 
-static void fillin_WIN32_FIND_DATA(WIN32_FIND_DATA *lpFindData,const char *rep,const char *nom) {
+static int fillin_WIN32_FIND_DATA(WIN32_FIND_DATA *lpFindData,const char *rep,const char *nom) {
   struct stat stat_info;
   char filename[MAX_PATHNAME_LEN];
   int ret;
   snprintf(filename,MAX_PATHNAME_LEN,"%s/%s",rep,nom);
   filename[MAX_PATHNAME_LEN-1] = 0;
-  ret = lstat(filename,&stat_info);
+  ret = stat(filename,&stat_info);  // FIXED lstat
   if (ret != 0) {
-    printf("fillin_WIN32_FIND_DATA) - lstat(%s) : error=%d (%s)\n",filename,errno,strerror(errno));
-    exit(EXIT_FAILURE);
+    FILE_SetDosError();
+    TRACEN((printf("fillin_WIN32_FIND_DATA : %s\n",filename)))
+    return ret;
   }
   memset(lpFindData,0,sizeof(*lpFindData));
 
@@ -66,14 +113,9 @@ static void fillin_WIN32_FIND_DATA(WIN32_FIND_DATA *lpFindData,const char *rep,c
        lpFindData->nFileSizeLow  = stat_info2.st_size & 0xffffffff;
     }
   }
-#ifdef _UNICODE
-  UString ustr = MultiByteToUnicodeString(AString(nom));
-  wcsncpy(lpFindData->cFileName,&ustr[0],MAX_PATH);
-  lpFindData->cAlternateFileName[0] = 0;
-#else
   strncpy(lpFindData->cFileName,nom,MAX_PATH);
   lpFindData->cAlternateFileName[0] = 0;
-#endif
+  return 0;
 }
 
 static int filtre_pattern(const char *string , const char *pattern , int flags_nocase) {
@@ -111,7 +153,7 @@ extern "C" HANDLE WINAPI FindFirstFileA(LPCSTR lpFileName, WIN32_FIND_DATA *lpFi
   char cb[MAX_PATHNAME_LEN];
   t_st_dir *retour;
 
-  if (!lpFileName) {
+  if ((!lpFileName) || (lpFileName[0]==0)) {
     SetLastError(ERROR_PATH_NOT_FOUND);
     return INVALID_HANDLE_VALUE;
   }
@@ -139,13 +181,22 @@ extern "C" HANDLE WINAPI FindFirstFileA(LPCSTR lpFileName, WIN32_FIND_DATA *lpFi
     struct dirent *dp;
     while ((dp = readdir(retour->dirp)) != NULL) {
       if (filtre_pattern(dp->d_name,(const char *)retour->pattern,0) == 1) {
-        fillin_WIN32_FIND_DATA(lpFindData,(const char *)retour->directory,dp->d_name);
+        int retf = fillin_WIN32_FIND_DATA(lpFindData,(const char *)retour->directory,dp->d_name);
+        if (retf)
+        {
+           TRACEN((printf("FindFirstFileA : closedir-1(dirp=%p)\n",retour->dirp)))
+           closedir(retour->dirp);
+           delete retour;
+           SetLastError( ERROR_NO_MORE_FILES );
+           return INVALID_HANDLE_VALUE;
+
+        }
         TRACEN((printf("FindFirstFileA -%s- ret_handle=%ld\n",dp->d_name,(unsigned long)retour)))
         return (HANDLE)retour;
       }
     }
   }
-  TRACEN((printf("FindFirstFileA : closedir(dirp=%p)\n",retour->dirp)))
+  TRACEN((printf("FindFirstFileA : closedir-2(dirp=%p)\n",retour->dirp)))
   closedir(retour->dirp);
   delete retour;
   SetLastError( ERROR_NO_MORE_FILES );
@@ -164,13 +215,20 @@ extern "C" BOOL WINAPI FindNextFileA( HANDLE handle, WIN32_FIND_DATA  *lpFindDat
     struct dirent *dp;
     while ((dp = readdir(retour->dirp)) != NULL) {
       if (filtre_pattern(dp->d_name,(const char *)retour->pattern,0) == 1) {
-        fillin_WIN32_FIND_DATA(lpFindData,(const char *)retour->directory,dp->d_name);
+        int retf = fillin_WIN32_FIND_DATA(lpFindData,(const char *)retour->directory,dp->d_name);
+        if (retf)
+        {
+           TRACEN((printf("FindNextFileA -%s- ret_handle=FALSE (errno=%d)\n",dp->d_name,errno)))
+           return FALSE;
+
+        }
         TRACEN((printf("FindNextFileA -%s- ret_handle=%ld\n",dp->d_name,(unsigned long)retour)))
         return TRUE;
       }
     }
   }
 
+  TRACEN((printf("FindNextFileA ret_handle=FALSE (ERROR_NO_MORE_FILES)\n")))
   SetLastError( ERROR_NO_MORE_FILES );
   return FALSE;
 }

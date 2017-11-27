@@ -1,6 +1,5 @@
 #include "StdAfx.h"
 
-
 #include <unistd.h> // rmdir
 #include <errno.h>
 
@@ -11,7 +10,7 @@
 
 #include "myPrivate.h"
 
-//#define TRACEN(u) u;
+// #define TRACEN(u) u;
 #define TRACEN(u)  /* */
 
 static void FILE_SetDosError(void) {
@@ -63,13 +62,6 @@ static void FILE_SetDosError(void) {
   }
 }
 
-#ifdef _UNICODE
-BOOL WINAPI CreateDirectoryW( LPCWSTR path,
-                              LPSECURITY_ATTRIBUTES lpsecattribs ) {
-  return CreateDirectoryA(UnicodeStringToMultiByte(path) , lpsecattribs);
-}
-#endif
-
 BOOL WINAPI CreateDirectoryA( LPCSTR path,
                               LPSECURITY_ATTRIBUTES lpsecattribs ) {
   if (!path || !*path) {
@@ -98,12 +90,6 @@ BOOL WINAPI CreateDirectoryA( LPCSTR path,
   return TRUE;
 }
 
-#ifdef _UNICODE
-BOOL WINAPI MoveFileW( LPCWSTR fn1, LPCWSTR fn2) {
-  return MoveFileA(UnicodeStringToMultiByte(fn1),UnicodeStringToMultiByte(fn2));
-}
-#endif
-
 BOOL WINAPI MoveFileA( LPCSTR fn1, LPCSTR fn2 ) {
   char n1[MAX_PATHNAME_LEN];
   char n2[MAX_PATHNAME_LEN];
@@ -114,12 +100,6 @@ BOOL WINAPI MoveFileA( LPCSTR fn1, LPCSTR fn2 ) {
 
   return (rename(n1,n2) == 0);
 }
-
-#ifdef _UNICODE
-BOOL WINAPI RemoveDirectoryW( LPCWSTR path ) {
-  return RemoveDirectoryA(UnicodeStringToMultiByte(path));
-}
-#endif
 
 BOOL WINAPI RemoveDirectoryA(LPCSTR path) {
   if (!path || !*path) {
@@ -151,13 +131,6 @@ BOOL WINAPI DeleteFileA(LPCSTR lpFileName) {
   /* printf("DeleteFileA(%s)=%d\n",name,(int)ret); */
   return ret;
 }
-
-#ifdef _UNICODE
-BOOL WINAPI DeleteFileW(LPCWSTR lpFileName) {
-	return DeleteFileA(UnicodeStringToMultiByte(lpFileName));
-}
-#endif
-
 
 DWORD WINAPI GetFullPathNameA( LPCSTR name, DWORD len, LPSTR buffer,
                                LPSTR *lastpart ) {
@@ -210,7 +183,7 @@ DWORD WINAPI GetFullPathNameA( LPCSTR name, DWORD len, LPSTR buffer,
   char begin[MAX_PATHNAME_LEN];
   DWORD begin_len = GetCurrentDirectoryA(MAX_PATHNAME_LEN,begin);
   if (begin_len >= 1) {
-    snprintf(buffer,len,"%s\\%s",begin,name);
+    snprintf(buffer,len,"%s/%s",begin,name);
     buffer[len-1]=0;
     ret = strlen(buffer);
     *lastpart=buffer + begin_len + 1;
@@ -243,7 +216,7 @@ UINT WINAPI GetTempFileNameA( LPCSTR path, LPCSTR prefix, UINT unique, LPSTR buf
 }
 
 UINT WINAPI GetWindowsDirectoryA(LPSTR path,UINT len) {
-  static const char *windowsDir = "c:\\tmp";
+  static const char *windowsDir = "c:/tmp";
 
   size_t ret_len = strlen(windowsDir);
 
@@ -253,7 +226,7 @@ UINT WINAPI GetWindowsDirectoryA(LPSTR path,UINT len) {
 }
 
 DWORD WINAPI GetTempPathA(DWORD len ,LPSTR path) {
-  static const char *tmpDir = "c:\\tmp\\"; // final '\\' is needed
+  static const char *tmpDir = "c:/tmp/"; // final '/' is needed
 
   size_t ret_len = strlen(tmpDir);
 
@@ -269,13 +242,6 @@ DWORD WINAPI GetCurrentDirectoryA(DWORD len,LPSTR path) {
     path[1]=':';
     char * cret = getcwd(path+2, len - 3);
     if (cret) {
-      /* transform separators */
-      char *ptr = path;
-      while (*ptr) {
-        if (*ptr == '/')
-          *ptr = '\\';
-        ptr++;
-      }
       return strlen(path);
     }
     return 0;

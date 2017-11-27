@@ -56,14 +56,9 @@ void my_windows_split_path(const AString &p_path, AString &dir , AString &base)
 static const char * myModuleFileName = 0;
 extern "C" void mySetModuleFileNameA(const char * moduleFileName)
 {
-	char  *ptr =  new char[strlen(moduleFileName)+1];
+	char *ptr =  new char[strlen(moduleFileName)+1];
         strcpy(ptr,moduleFileName);
-	char * p = ptr;
-	while (*p) {
-		if (*p == '/') *p = '\\';
-		p++;
-	}
-	myModuleFileName = ptr;
+	myModuleFileName = (const char *)ptr;
 	TRACEN((printf("mySetModuleFileNameA(%s) &myModuleFileName=%p\n",myModuleFileName,&myModuleFileName)))
 }
 
@@ -96,9 +91,12 @@ static DWORD mySearchPathA( LPCSTR path, LPCSTR name, LPCSTR ext,
 		exit(EXIT_FAILURE);
 	}
 
+	TRACEN((printf("mySearchPathA() myModuleFileName=%p\n",myModuleFileName)))
 	if (myModuleFileName)
 	{
+	TRACEN((printf("mySearchPathA() myModuleFileName='%s'\n",myModuleFileName)))
 		FILE *file;
+	TRACEN((printf("mySearchPathA() fopen-1(%s)\n",name)))
 		file = fopen(name,"r");
 		if (file)
 		{
@@ -114,13 +112,14 @@ static DWORD mySearchPathA( LPCSTR path, LPCSTR name, LPCSTR ext,
 			return ret;
 		}
 		AString module_path(myModuleFileName);
-		module_path.Replace('\\','/');
+		// module_path.Replace('\\','/');
 		AString dir,name2,dir_path;
 		my_windows_split_path(module_path,dir,name2);
 		dir_path = dir;
 		dir_path += "/";
 		dir_path += name;
 
+	TRACEN((printf("mySearchPathA() fopen-2(%s)\n",(const char *)dir_path)))
 		file = fopen((const char *)dir_path,"r");
 		if (file)
 		{

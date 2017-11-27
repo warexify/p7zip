@@ -2,10 +2,6 @@
 - creation of SFX archives
   Only SFX archives with "*.exe" filenames are valid. 
 
-- use valgrind to detect errors in the program.
-
-- use a more thread-friendly "WaitForMultipleObjects" (see myEvents.cpp)
-
 - if an error occurs during the execution of 7z, some temporary files are left
   ( ex : 7zi12495.tmp )
 

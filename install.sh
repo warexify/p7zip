@@ -7,6 +7,8 @@
 # global install
 DEST_BIN=/usr/local/bin
 DEST_SHARE=/usr/local/lib/p7zip
+[ "$1" ] && DEST_BIN=$1
+[ "$2" ] && DEST_SHARE=$2
 
 use_share="n"
 

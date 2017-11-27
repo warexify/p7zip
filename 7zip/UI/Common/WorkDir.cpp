@@ -24,7 +24,7 @@ UString GetWorkDir(const NWorkDir::CInfo &workDirInfo, const UString &path)
   {
     mode = NWorkDir::NMode::kCurrent;
     UString prefix = path.Left(3);
-    if (prefix[1] == L':' && prefix[2] == L'\\')
+    if (prefix[1] == L':' && prefix[2] == WCHAR_PATH_SEPARATOR)
     {
       UINT driveType = GetDriveType(GetSystemString(prefix, GetCurrentCodePage()));
       if (driveType == DRIVE_CDROM || driveType == DRIVE_REMOVABLE)

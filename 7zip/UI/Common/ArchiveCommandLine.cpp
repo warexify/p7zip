@@ -271,7 +271,7 @@ static bool TestIsPathLegal(const UString &name)
     return false;
   if (name.Length() < 3)
     return true;
-  if (name[1] == L':' && name[2] == L'\\')
+  if (name[1] == L':' && name[2] == WCHAR_PATH_SEPARATOR)
     return false;
   return true;
 }

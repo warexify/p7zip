@@ -69,23 +69,12 @@ static void FILE_SetDosError(void) {
 }
 
 static void local_nameWindowToUnixA(LPCSTR lpFileName,char name[MAX_PATHNAME_LEN]) {
-  char temp[MAX_PATHNAME_LEN];
-  strcpy(temp,lpFileName);
-
-  if (strncmp("c:\\",temp,3) == 0) {
-    strcpy(name,temp+2);
+  if (strncmp("c:",lpFileName,2) == 0) {
+    strcpy(name,lpFileName+2);
   } else {
-    strcpy(name,temp);
+    strcpy(name,lpFileName);
   }
-
-  /* transform separators */
-  char *ptr = name;
-  while (*ptr) {
-    if (*ptr == '\\')
-      *ptr = '/';
-    ptr++;
-  }
-  TRACEN((printf("local_nameWindowToUnixA: '%s' => '%s'\n",temp,name)))
+  TRACEN((printf("local_nameWindowToUnixA: '%s' => '%s'\n",lpFileName,name)))
 }
 
 
@@ -101,7 +90,7 @@ class CFileHandlerInternal
 };
 
 bool myGetFileLength(t_file_handle hFile,UINT64 &length) {
-  TRACEN((printf("myGetFileLength(%d...)\n",hFile)))
+  TRACEN((printf("myGetFileLength(%p...)\n",hFile)))
 
   if (    (hFile == FILE_HANDLE_INVALID)
        || (hFile->fd == -1)
@@ -125,7 +114,7 @@ bool myGetFileLength(t_file_handle hFile,UINT64 &length) {
 
   length = (UINT64)pos_end;
 
-  TRACEN((printf("myGetFileLength(%d.length=%ld)\n",hFile,(long)length)))
+  TRACEN((printf("myGetFileLength(%p.length=%ld)\n",hFile,(long)length)))
 
   return true;
 }
@@ -237,7 +226,7 @@ BOOL WINAPI myCloseFile(t_file_handle hFile) {
   }
   BOOL ret = (close(hFile->fd) == 0);
   delete hFile;
-  TRACEN((printf("THR 0x%lx : myCloseFile(%d)=%d\n",(unsigned long)pthread_self(),hFile,(unsigned)ret)))
+  TRACEN((printf("THR 0x%lx : myCloseFile(%p)=%d\n",(unsigned long)pthread_self(),hFile,(unsigned)ret)))
   if (!ret)
     printf("myCloseFile : errno = %d (%s)\n",errno,strerror(errno));
   return ret;
@@ -278,7 +267,7 @@ BOOL WINAPI SetFileTime( t_file_handle hFile,
 
 BOOL WINAPI WriteFile( t_file_handle hFile, LPCVOID buffer, DWORD bytesToWrite,
                        LPDWORD bytesWritten, LPOVERLAPPED overlapped ) {
-  TRACEN((printf("THR 0x%lx : WriteFile(%d...)\n",(unsigned long)pthread_self(),hFile)))
+  TRACEN((printf("THR 0x%lx : WriteFile(%p...)\n",(unsigned long)pthread_self(),hFile)))
 
   if (    (hFile == FILE_HANDLE_INVALID)
        || (hFile->fd == -1)
@@ -292,11 +281,11 @@ BOOL WINAPI WriteFile( t_file_handle hFile, LPCVOID buffer, DWORD bytesToWrite,
 
   if (ret != -1) {
     *bytesWritten = ret;
-    TRACEN((printf("WriteFile(%d...)=TRUE\n",hFile)))
+    TRACEN((printf("WriteFile(%p...)=TRUE\n",hFile)))
     return TRUE;
   }
   *bytesWritten =0;
-  TRACEN((printf("WriteFile(%d...)=FALSE\n",hFile)))
+  TRACEN((printf("WriteFile(%p...)=FALSE\n",hFile)))
   return FALSE;
 }
 
@@ -315,7 +304,7 @@ BOOL WINAPI SetEndOfFile(t_file_handle hFile) {
   if (pos_cur != (off_t)-1) {
     ret =  (ftruncate(hFile->fd, pos_cur) == 0);
   }
-  TRACEN((printf("SetEndOfFile(%d...)=%d\n",hFile,(unsigned)ret)))
+  TRACEN((printf("SetEndOfFile(%p...)=%d\n",hFile,(unsigned)ret)))
 
   return ret;
 }
@@ -333,18 +322,18 @@ BOOL WINAPI ReadFile( t_file_handle hFile, LPVOID buffer, DWORD bytesToRead,
 
   if (bytesToRead == 0) {
     *bytesRead =0;
-    TRACEN((printf("ReadFile(%d,,0)=TRUE\n",hFile)))
+    TRACEN((printf("ReadFile(%p,,0)=TRUE\n",hFile)))
     return TRUE;
   }
   ssize_t  ret = read  (hFile->fd,buffer,bytesToRead);
 
   if (ret != -1) {
     *bytesRead = ret;
-    TRACEN((printf("ReadFile(%d,,)=TRUE\n",hFile)))
+    TRACEN((printf("ReadFile(%p,,)=TRUE\n",hFile)))
     return TRUE;
   }
   *bytesRead =0;
-  TRACEN((printf("ReadFile(%d,,)=FALSE\n",hFile)))
+  TRACEN((printf("ReadFile(%p,,)=FALSE\n",hFile)))
   return FALSE;
 }
 
@@ -380,7 +369,7 @@ bool myFileSeek( t_file_handle hFile, INT64 distanceToMove, DWORD moveMethod, UI
       newPosition = (UINT64)newpos;
     }
   }
-  TRACEN((printf("myFileSeek(%d,,)=%d\n",hFile,(unsigned)ret)))
+  TRACEN((printf("myFileSeek(%p,,)=%d\n",hFile,(unsigned)ret)))
 
   return ret;
 }

@@ -18,19 +18,8 @@
 #include <ctype.h>
 #include <unistd.h>
 
-#ifdef __CYGWIN__  // FIXME
-#ifdef __cplusplus 
-extern "C" {
-#endif
-unsigned long wcstoul (const wchar_t*, wchar_t**, int);
-#ifdef __cplusplus
-}	/* end of extern "C" */
-#endif
-#endif
-
 #include <vector>
 #include <memory>
-
 
 /***************************/
 typedef void * HINSTANCE; // FIXME
@@ -45,12 +34,7 @@ typedef int (WINAPI *FARPROC)();
 #define DLL_PROCESS_ATTACH   1
 
 DWORD GetModuleFileNameA( HMODULE hModule, LPSTR lpFilename, DWORD nSize);
-DWORD GetModuleFileNameW( HMODULE hModule, LPWSTR lpFilename, DWORD nSize);
-#ifdef UNICODE
-#define GetModuleFileName  GetModuleFileNameW
-#else
 #define GetModuleFileName  GetModuleFileNameA
-#endif // !UNICODE
 
 typedef struct _STGMEDIUM *STGMEDIUM;
 void ReleaseStgMedium(STGMEDIUM *);
@@ -58,6 +42,5 @@ void ReleaseStgMedium(STGMEDIUM *);
 /***************************/
 
 #include "Common/Types.h"
-typedef UInt16 UINT16;
 
 #endif 

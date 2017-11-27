@@ -58,7 +58,7 @@ void mySplitCommandLine(int numArguments,const char *arguments[],UStringVector &
          if (!tmp.IsEmpty())
          {
            // converting "/" to "\\"
-           tmp.Replace(L'/',L'\\');
+           // tmp.Replace(L'/',L'\\');
            parts.Add(tmp);
          }
       }

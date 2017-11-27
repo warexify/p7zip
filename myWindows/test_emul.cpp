@@ -49,12 +49,12 @@ static void test_path(void)
 	nameWindowToUnixA(pathname,unix_pathname);
 	printf("GetFullPathNameA(%s,%s,%s)=%u => '%s'\n",path,pathname,lastpart,ret,unix_pathname);
 
-	path = "c:\\path1\\path2\\file";
+	path = "c:/path1/path2/file";
 	ret = GetFullPathNameA( path, MAX_PATHNAME_LEN,pathname , &lastpart );
 	nameWindowToUnixA(pathname,unix_pathname);
 	printf("GetFullPathNameA(%s,%s,%s)=%u => '%s'\n",path,pathname,lastpart,ret,unix_pathname);
 
-	path = "\\path3\\path4\\file2";
+	path = "/path3/path4/file2";
 	ret = GetFullPathNameA( path, MAX_PATHNAME_LEN,pathname , &lastpart );
 	nameWindowToUnixA(pathname,unix_pathname);
 	printf("GetFullPathNameA(%s,%s,%s)=%u => '%s'\n",path,pathname,lastpart,ret,unix_pathname);

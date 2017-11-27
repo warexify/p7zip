@@ -4,27 +4,17 @@
 
 #include "myPrivate.h"
 
-//#define TRACEN(u) u;
+// #define TRACEN(u) u;
 #define TRACEN(u)  /* */
 
 void nameWindowToUnixA(LPCSTR lpFileName,char name[MAX_PATHNAME_LEN]) {
-  char temp[MAX_PATHNAME_LEN];
-  strcpy(temp,lpFileName);
-
-  if (strncmp("c:\\",temp,3) == 0) {
-    strcpy(name,temp+2);
+  if (strncmp("c:",lpFileName,2) == 0) {
+    strcpy(name,lpFileName+2);
   } else {
-    strcpy(name,temp);
+    strcpy(name,lpFileName);
   }
 
-  /* transform separators */
-  char *ptr = name;
-  while (*ptr) {
-    if (*ptr == '\\')
-      *ptr = '/';
-    ptr++;
-  }
-  TRACEN((printf("nameWindowToUnixA: '%s' => '%s'\n",temp,name)))
+  TRACEN((printf("nameWindowToUnixA: '%s' => '%s'\n",lpFileName,name)))
 }
 
 BOOL WINAPI AreFileApisANSI(void) {
@@ -35,7 +25,7 @@ void WINAPI SetLastError( DWORD err ) {
   errno = err;
 }
 DWORD WINAPI GetLastError(void) {
-  TRACEN((printf("GetLastError()=%d\n",last_err)))
+  TRACEN((printf("GetLastError()=%d\n",errno)))
   return errno;
 }
 

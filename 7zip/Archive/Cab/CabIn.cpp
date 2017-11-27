@@ -47,6 +47,9 @@ static void SafeReadName(::CInBuffer &inBuffer, AString &name)
       throw CInArchiveException(CInArchiveException::kUnexpectedEndOfArchive);
     if (b == 0)
       return;
+#ifndef _WIN32
+    if (b == '\\') b = '/';
+#endif
     name += char(b);
   }
 }

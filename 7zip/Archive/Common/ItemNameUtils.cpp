@@ -7,7 +7,7 @@
 namespace NArchive {
 namespace NItemName {
 
-static const wchar_t kOSDirDelimiter = '\\';
+static const wchar_t kOSDirDelimiter = CHAR_PATH_SEPARATOR;
 static const wchar_t kDirDelimiter = '/';
 
 UString MakeLegalName(const UString &name)

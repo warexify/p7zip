@@ -50,6 +50,7 @@ LPSTR WINAPI CharPrevA( LPCSTR start, LPCSTR ptr ) { // OK for MBS
 #define MB_LEN_MAX 1024
 #endif
 
+extern int global_use_utf16_conversion;
 
 LPSTR WINAPI CharNextA( LPCSTR ptr ) {
   if (!*ptr)
@@ -57,11 +58,16 @@ LPSTR WINAPI CharNextA( LPCSTR ptr ) {
 #ifdef ENV_MACOSX
   return (LPSTR)(ptr + 1); // FIXME
 #else
-  wchar_t wc;
-  size_t len  = mbrtowc(&wc,ptr,MB_LEN_MAX,0); 
-  if (len >= 1) return (LPSTR)(ptr + len);
-  printf("INTERNAL ERROR - CharNextA\n");
-  exit(EXIT_FAILURE);
+  if (global_use_utf16_conversion)
+  {
+    wchar_t wc;
+    size_t len  = mbrtowc(&wc,ptr,MB_LEN_MAX,0); 
+    if (len >= 1) return (LPSTR)(ptr + len);
+    printf("INTERNAL ERROR - CharNextA\n");
+    exit(EXIT_FAILURE);
+  } else {
+    return (LPSTR)(ptr + 1);
+  }
 #endif
 }
 

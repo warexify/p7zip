@@ -408,7 +408,7 @@ void CCensor::AddItem(const UString &path, bool include, bool recursive)
     if (DoesNameContainWildCard(front))
       break;
     prefix += front;
-    prefix += L'\\';
+    prefix += WCHAR_PATH_SEPARATOR;
     pathParts.Delete(0);
   }
   int index = FindPrefix(prefix);

@@ -15,7 +15,7 @@ static CSysString GetLibraryPath()
 static CSysString GetLibraryFolderPrefix()
 {
   CSysString path = GetLibraryPath();
-  int pos = path.ReverseFind(TEXT('\\'));
+  int pos = path.ReverseFind(TEXT(CHAR_PATH_SEPARATOR));
   return path.Left(pos + 1);
 }
 
@@ -24,11 +24,15 @@ CSysString GetBaseFolderPrefix()
   CSysString libPrefix = GetLibraryFolderPrefix();
   CSysString temp = libPrefix;
   temp.Delete(temp.Length() - 1);
-  int pos = temp.ReverseFind(TEXT('\\'));
+  int pos = temp.ReverseFind(TEXT(CHAR_PATH_SEPARATOR));
   return temp.Left(pos + 1);
 }
 
 CSysString GetCodecsFolderPrefix()
 {
+#ifdef _WIN32
   return GetBaseFolderPrefix() + TEXT("Codecs\\");
+#else
+  return GetBaseFolderPrefix() + TEXT("Codecs/");
+#endif
 }

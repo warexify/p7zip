@@ -1,4 +1,7 @@
 
+DEST_BIN=/usr/local/bin
+DEST_SHARE=/usr/local/lib/p7zip
+
 .PHONY: all 7za sfx 7z common clean tar_src tar_bin
 
 all::7za
@@ -75,7 +78,7 @@ clean:
 	rm -fr bin
 
 install:
-	./install.sh
+	./install.sh $(DEST_BIN) $(DEST_SHARE)
 
 REP=$(shell pwd)
 ARCHIVE=$(shell basename $(REP))

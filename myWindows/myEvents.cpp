@@ -1,109 +1,41 @@
 #include "StdAfx.h"
 
 #include "Windows/Synchronization.h"
-
-//#define TRACEN(u) u;
-#define TRACEN(u)  /* */
+#ifdef DEBUG
+#include <assert.h>
+#endif
 
 static NWindows::NSynchronization::CCriticalSection gbl_criticalSection;
 
 #define myEnter() gbl_criticalSection.Enter()
 #define myLeave() gbl_criticalSection.Leave()
+#define myYield() gbl_criticalSection.WaitCond()
 
-static void myYield() {
-  myLeave();
-  int ret = sched_yield();
-  if (ret != 0) {
-    printf("ERROR : sched_yield()=%d\n",ret);
-    exit(EXIT_FAILURE);
-  }
-  myEnter();
-}
-
-#define MAX_HANDLE 32
-
+typedef struct {
+#ifdef DEBUG
 #define TYPE_UNKNOWN 0
-/* #define TYPE_THREAD  1 */
-#define TYPE_EVENT   2
-/* #define TYPE_FILE    3 */
-
-static struct {
-  HANDLE handle;
+#define TYPE_EVENT   0x78CAFEDE 
   int    type;
-
-  // si EVENT
+#endif
   BOOL manual_reset;
   BOOL state;
-
-}
-listOfHandle[MAX_HANDLE] = { { 0, 0 } };
-
-static int findHandle(HANDLE hHandle) {
-  for(int i = 0; i<MAX_HANDLE; i++) {
-    if (hHandle == listOfHandle[i].handle)
-      return i;
-  }
-  return -1;
-}
-
-static void addHandle(HANDLE hHandle,int type,BOOL manual_reset = FALSE,BOOL initial_state = FALSE) {
-  myEnter();
-  if (hHandle == INVALID_HANDLE_VALUE) {
-    printf("addHandle : INVALID_HANDLE_VALUE\n");
-    myLeave();
-    return ;
-  }
-  for(int i = 0; i<MAX_HANDLE; i++) {
-    if (listOfHandle[i].handle == 0) {
-      listOfHandle[i].handle = hHandle;
-      listOfHandle[i].type = type;
-      listOfHandle[i].manual_reset = manual_reset;
-      listOfHandle[i].state = initial_state;
-      myLeave();
-      return ;
-    }
-  }
-  printf("addHandle : out of handles\n");
-  myLeave();
-  throw "addHandle : out of handles\n";
-}
-
-static void delHandle(HANDLE hHandle) {
-  myEnter();
-  for(int i = 0; i<MAX_HANDLE; i++) {
-    if (listOfHandle[i].handle == hHandle) {
-      listOfHandle[i].handle = 0;
-      listOfHandle[i].type = 0;
-      myLeave();
-      return ;
-    }
-  }
-  myLeave();
-  printf("WARINING delHandle : %p not found\n",hHandle);
-}
-
-
+} EventItem;
 
 /************************* WAITFOR ***************************/
 
 
 DWORD WINAPI myInfiniteWaitForSingleEvent(HANDLE hHandle) {
+  EventItem* hitem = (EventItem *)hHandle;
+#ifdef DEBUG
+  assert(hitem);
+  assert(hitem->type == TYPE_EVENT);
+#endif
   myEnter();
-  int indice = findHandle(hHandle);
-  if (indice == -1) {
-    printf("myWaitForSingleEvent : %p is not a handle\n",hHandle);
-    exit(EXIT_FAILURE);
-  }
-
-  if (listOfHandle[indice].type != TYPE_EVENT) {
-    printf("myWaitForSingleEvent : %p a not an event (type %d)\n",hHandle,listOfHandle[indice].type);
-    exit(EXIT_FAILURE);
-  }
-
   while(true) {
-    if (listOfHandle[indice].state == TRUE) {
-      if (listOfHandle[indice].manual_reset == FALSE)
-        listOfHandle[indice].state = FALSE;
+    if (hitem->state == TRUE) {
+      if (hitem->manual_reset == FALSE) {
+        hitem->state = FALSE;
+      }
       myLeave();
       return WAIT_OBJECT_0;
     }
@@ -111,43 +43,34 @@ DWORD WINAPI myInfiniteWaitForSingleEvent(HANDLE hHandle) {
   }
 }
 
-/* DWORD WINAPI myWaitForMultipleEvents( DWORD count, const HANDLE *handles, BOOL wait_all, DWORD timeout ) */
 DWORD WINAPI WaitForMultipleObjects( DWORD count, const HANDLE *handles, BOOL wait_all, DWORD timeout )
 {
-  if (timeout != INFINITE) {
-    printf("myWaitForMultipleEvents : timeout != INFINITE\n");
-    exit(EXIT_FAILURE);
-  }
+#ifdef DEBUG
+  assert(timeout == INFINITE);
+#endif
 
   myEnter();
-  for(DWORD i=0;i<count;i++) {
-    int indice = findHandle(handles[i]);
-    if (indice == -1) {
-      printf("myWaitForMultipleEvents[%d] : %p is not a handle\n",(int)i,handles[i]);
-      exit(EXIT_FAILURE);
-    }
-    if (listOfHandle[indice].type != TYPE_EVENT) {
-      printf("myWaitForMultipleEvents[%d] : %p is not an event (type %d)\n",(int)i,handles[i],listOfHandle[indice].type);
-      exit(EXIT_FAILURE);
-    }
-  }
   if (wait_all) {
     while(true) {
-      bool tout_trouve = true;
+      bool found_all = true;
       for(DWORD i=0;i<count;i++) {
-        int indice = findHandle(handles[i]);
-
-        if (listOfHandle[indice].state == FALSE) {
-          tout_trouve = false;
+        EventItem* hitem = (EventItem*)handles[i];
+#ifdef DEBUG
+        assert(hitem);
+        assert(hitem->type == TYPE_EVENT);
+#endif
+        if (hitem->state == FALSE) {
+          found_all = false;
           break;
         }
       }
-      if (tout_trouve) {
+      if (found_all) {
         for(DWORD i=0;i<count;i++) {
-          int indice = findHandle(handles[i]);
+          EventItem* hitem = (EventItem*)handles[i];
 
-          if (listOfHandle[indice].manual_reset == FALSE)
-            listOfHandle[indice].state = FALSE;
+          if (hitem->manual_reset == FALSE) {
+            hitem->state = FALSE;
+          }
         }
         myLeave();
         return WAIT_OBJECT_0;
@@ -158,11 +81,15 @@ DWORD WINAPI WaitForMultipleObjects( DWORD count, const HANDLE *handles, BOOL wa
   } else {
     while(true) {
       for(DWORD i=0;i<count;i++) {
-        int indice = findHandle(handles[i]);
-
-        if (listOfHandle[indice].state == TRUE) {
-          if (listOfHandle[indice].manual_reset == FALSE)
-            listOfHandle[indice].state = FALSE;
+        EventItem* hitem = (EventItem*)handles[i];
+#ifdef DEBUG
+        assert(hitem);
+        assert(hitem->type == TYPE_EVENT);
+#endif
+        if (hitem->state == TRUE) {
+          if (hitem->manual_reset == FALSE) {
+            hitem->state = FALSE;
+          }
           myLeave();
           return WAIT_OBJECT_0+i;
         }
@@ -174,42 +101,52 @@ DWORD WINAPI WaitForMultipleObjects( DWORD count, const HANDLE *handles, BOOL wa
 
 /*************** EVENT *******************/
 
-static int count_event = 0x1234000;
-
 HANDLE WINAPI myCreateEvent(BOOL manual_reset,BOOL initial_state) {
-  myEnter();
-  HANDLE ret = (HANDLE)(count_event++);
-  myLeave();
-  addHandle(ret,TYPE_EVENT,manual_reset,initial_state);
-  return ret;
-}
+  EventItem * handle = (EventItem *)malloc(sizeof(*handle));
+  if (handle)
+  {
+#ifdef DEBUG
+    handle->type   = TYPE_EVENT;
+#endif
+    handle->manual_reset = manual_reset;
+    handle->state = initial_state;
 
-BOOL myChangeStateEvent(HANDLE hEvent , BOOL newState) {
-  myEnter();
-  int indice = findHandle(hEvent);
-  if (indice == -1) {
-    printf("myChangeStateEvent : %p is not a handle\n",hEvent);
-    exit(EXIT_FAILURE);
   }
-
-  if (listOfHandle[indice].type != TYPE_EVENT) {
-    printf("myChangeStateEvent : %p is not an event (type %d)\n",hEvent,listOfHandle[indice].type);
-    exit(EXIT_FAILURE);
-  }
-  listOfHandle[indice].state = newState;
-  myLeave();
-
-  return TRUE;
+  return (HANDLE)handle;
 }
 
 BOOL WINAPI mySetEvent(HANDLE hEvent)   {
-  return ::myChangeStateEvent(hEvent,TRUE);
+  EventItem* hitem = (EventItem *)hEvent;
+#ifdef DEBUG
+  assert(hitem);
+  assert(hitem->type == TYPE_EVENT);
+#endif
+  myEnter();
+  hitem->state = TRUE;
+  myLeave();
+  gbl_criticalSection.SignalCond();
+  return TRUE;
 }
 BOOL WINAPI myResetEvent(HANDLE hEvent) {
-  return ::myChangeStateEvent(hEvent,FALSE);
+  EventItem* hitem = (EventItem *)hEvent;
+#ifdef DEBUG
+  assert(hitem);
+  assert(hitem->type == TYPE_EVENT);
+#endif
+  myEnter();
+  hitem->state = FALSE;
+  myLeave();
+  gbl_criticalSection.SignalCond();
+  return TRUE;
 }
-BOOL WINAPI myCloseEvent(HANDLE hFile) {
-  delHandle(hFile);
+
+BOOL WINAPI myCloseEvent(HANDLE hEvent) {
+#ifdef DEBUG
+  assert(hitem);
+  assert(((EventItem*)hEvent)->type == TYPE_EVENT);
+  ((EventItem*)hEvent)->type = TYPE_UNKNOWN;
+#endif
+  free(hEvent);
   return TRUE;
 }
 

@@ -69,11 +69,20 @@ public:
 class CCriticalSection
 {
   pthread_mutex_t _object;
+  pthread_cond_t _cond;
 public:
-  CCriticalSection() { ::pthread_mutex_init(&_object,0); }
-  ~CCriticalSection() { ::pthread_mutex_destroy(&_object); }
+  CCriticalSection() {
+    ::pthread_mutex_init(&_object,0);
+    ::pthread_cond_init(&_cond,0);
+  }
+  ~CCriticalSection() {
+    ::pthread_mutex_destroy(&_object);
+    ::pthread_cond_destroy(&_cond);
+  }
   void Enter() { ::pthread_mutex_lock(&_object); }
   void Leave() { ::pthread_mutex_unlock(&_object); }
+  void WaitCond() { ::pthread_cond_wait(&_cond, &_object); }
+  void SignalCond() { ::pthread_cond_broadcast(&_cond); }
 };
 
 class CCriticalSectionLock

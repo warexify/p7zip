@@ -1,4 +1,12 @@
 
+Version 4.14.01
+===============
+  - huge speed up for multi CPUs machines (Thanks to loderunner - http://sourceforge.net/users/loderunner/).
+  - some code cleanup
+  - Fix problems with link files or directories.
+  - "7z a dummy -tgzip -so Doc.txt > archive.gz" now works.
+  - in the messages, the path separator is now '/' instead of '\'.
+
 Version 4.14
 ============
 

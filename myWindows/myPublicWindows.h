@@ -41,18 +41,11 @@ BOOL WINAPI WriteFile(t_file_handle ,PCVOID,DWORD,PDWORD,LPOVERLAPPED);
 BOOL WINAPI SetEndOfFile(t_file_handle);
 BOOL WINAPI SetFileTime(t_file_handle,const FILETIME*,const FILETIME*,const FILETIME*);
 
-/* t_file_handle WINAPI GetStdHandle(DWORD); */
-
-#ifdef UNICODE
-#define myCreateFile myCreateFileW
-#else
 #define myCreateFile myCreateFileA
-#endif
 
 /************************* EVENTS *************************/
 
 DWORD WINAPI myInfiniteWaitForSingleEvent(HANDLE hHandle);
-/* DWORD WINAPI myWaitForMultipleEvents( DWORD count, const HANDLE *handles, BOOL wait_all, DWORD timeout ); */
 DWORD WINAPI WaitForMultipleObjects( DWORD count, const HANDLE *handles, BOOL wait_all, DWORD timeout );
 HANDLE WINAPI myCreateEvent(BOOL manual_reset,BOOL initial_state);
 BOOL WINAPI mySetEvent(HANDLE hEvent);

@@ -66,7 +66,7 @@ static UString GetModuleFolderPrefix()
 {
   UString path;
   NDLL::MyGetModuleFileName(g_hInstance, path);
-  int pos = path.ReverseFind(L'\\');
+  int pos = path.ReverseFind(WCHAR_PATH_SEPARATOR);
   return path.Left(pos + 1);
 }
 
@@ -249,7 +249,7 @@ void ReadArchiverInfoList(CObjectVector<CArchiverInfo> &archivers)
   #else
 
   UString folderPath = GetBaseFolderPrefixFromRegistry() + 
-      kFormatFolderName + L"\\";
+      kFormatFolderName + WSTRING_PATH_SEPARATOR;
   NFind::CEnumeratorW enumerator(folderPath + L"*");
   NFind::CFileInfoW fileInfo;
   while (enumerator.Next(fileInfo))

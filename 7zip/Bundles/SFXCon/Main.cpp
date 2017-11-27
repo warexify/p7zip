@@ -19,7 +19,9 @@
 #include "../../ICoder.h"
 
 #include "../../UI/Common/OpenArchive.h"
+#ifdef _WIN32
 #include "../../UI/Common/ZipRegistry.h"
+#endif
 #include "../../UI/Common/DefaultName.h"
 #include "../../UI/Common/ExitCode.h"
 #include "../../UI/Common/Extract.h"
@@ -36,7 +38,7 @@ using namespace NCommandLineParser;
 
 static const char *kCopyrightString = 
 "\n7-Zip SFX 4.14 beta  Copyright (c) 1999-2005 Igor Pavlov  2005-01-11\n"
-"p7zip Version 4.14";
+"p7zip Version 4.14.01";
 
 static const int kNumSwitches = 6;
 

@@ -81,13 +81,16 @@ int WINAPI CompareStringA(LCID,DWORD,LPCSTR,int,LPCSTR,int);
 int WINAPI CompareStringW(LCID,DWORD,LPCWSTR,int,LPCWSTR,int);
 int WINAPI WideCharToMultiByte(UINT,DWORD,LPCWSTR,int,LPSTR,int,LPCSTR,LPBOOL);
 int WINAPI MultiByteToWideChar(UINT,DWORD,LPCSTR,int,LPWSTR,int);
+/* END #include <winnls.h> */
+
+/* #include <unknwn.h> */
+#include <basetyps.h>
+struct IEnumSTATPROPSTG;
+
 #ifdef __cplusplus
 }
 #endif
 
-/* END #include <winnls.h> */
-
-#include <unknwn.h>
 
 typedef WCHAR OLECHAR;
 typedef LPWSTR LPOLESTR;
