@@ -1,6 +1,6 @@
 // Update.h
 
-#pragma once
+// #pragma once
 
 #ifndef __UPDATE_H
 #define __UPDATE_H

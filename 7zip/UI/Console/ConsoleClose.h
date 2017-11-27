@@ -1,6 +1,6 @@
 // ConsoleCloseUtils.h
 
-#pragma once
+// #pragma once
 
 #ifndef __CONSOLECLOSEUTILS_H
 #define __CONSOLECLOSEUTILS_H

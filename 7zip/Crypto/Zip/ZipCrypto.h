@@ -1,6 +1,6 @@
 // Crypto/ZipCrypto.h
 
-#pragma once
+// #pragma once
 
 #ifndef __CRYPTO_ZIP_CRYPTO_H
 #define __CRYPTO_ZIP_CRYPTO_H

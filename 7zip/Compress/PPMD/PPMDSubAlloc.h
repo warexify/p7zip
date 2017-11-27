@@ -1,7 +1,7 @@
 // SubAlloc.h
 // This code is based on Dmitry Shkarin's PPMdH code
 
-#pragma once
+// #pragma once
 
 #ifndef __SubAlloc_H
 #define __SubAlloc_H

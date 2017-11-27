@@ -1,6 +1,6 @@
 // Archive/BZip2Item.h
 
-#pragma once
+// #pragma once
 
 #ifndef __ARCHIVE_BZIP2_ITEM_H
 #define __ARCHIVE_BZIP2_ITEM_H

@@ -1,6 +1,6 @@
 // ArError.h
 
-#pragma once
+// #pragma once
 
 #ifndef __ARERROR_H
 #define __ARERROR_H

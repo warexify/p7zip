@@ -19,6 +19,8 @@
 #undef NDEBUG
 #include <assert.h>
 
+#include "Common/StringConvert.cpp"
+
 static void test_path(void)
 {
 	char pathname[MAX_PATHNAME_LEN];

@@ -126,10 +126,13 @@ INT WINAPI CompareStringW(LCID lcid, DWORD style,
 }
 
 INT WINAPI lstrlenW( LPCWSTR str ) {
+/*
   const WCHAR *s = str;
   while (*s)
     s++;
   return s - str;
+*/
+  return wcslen(str);
 }
 
 
@@ -160,3 +163,24 @@ LPWSTR WINAPI CharLowerW(LPWSTR x) {
   else
     return (LPWSTR)((UINT)towlower(LOWORD(x)));
 }
+
+
+
+
+/***********************************************************************************************************/
+#include <limits.h>
+#ifndef MB_LEN_MAX
+#define MB_LEN_MAX 1024
+#endif
+
+LPSTR WINAPI CharNextA( LPCSTR ptr ) {
+  if (!*ptr)
+    return (LPSTR)ptr;
+  wchar_t wc;
+  size_t len  = mbrtowc(&wc,ptr,MB_LEN_MAX,0); 
+  if (len >= 1) return (LPSTR)(ptr + len);
+  printf("INTERNAL ERROR - CharNextA\n");
+  exit(EXIT_FAILURE);
+}
+
+

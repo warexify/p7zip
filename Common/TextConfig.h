@@ -1,6 +1,6 @@
 // Common/TextConfig.h
 
-#pragma once
+// #pragma once
 
 #ifndef __COMMON_TEXTCONFIG_H
 #define __COMMON_TEXTCONFIG_H

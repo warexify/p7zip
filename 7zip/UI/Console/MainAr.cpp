@@ -27,11 +27,12 @@ static const char *kInternalExceptionMessage = "\n\nInternal Error #";
 
 int main(int numArguments, const char *arguments[])
 {
-   setlocale(LC_ALL,""); // FIXED
-
   int result=1;
 #ifdef WIN32  
   NCOM::CComInitializer comInitializer;
+#else
+	setlocale(LC_ALL,""); // FIXED
+	mySetModuleFileName_resolve_link(arguments[0]);
 #endif
   try
   {

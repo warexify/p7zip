@@ -1,6 +1,6 @@
 // Windows/Time.h
 
-#pragma once
+// #pragma once
 
 #ifndef __WINDOWS_TIME_H
 #define __WINDOWS_TIME_H

@@ -1,6 +1,6 @@
 // Archive/ZipIn.h
 
-#pragma once
+// #pragma once
 
 #ifndef __ZIP_IN_H
 #define __ZIP_IN_H

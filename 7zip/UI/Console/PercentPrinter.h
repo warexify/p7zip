@@ -1,6 +1,6 @@
 // PercentPrinter.h
 
-#pragma once
+// #pragma once
 
 #ifndef __PERCENTPRINTER_H
 #define __PERCENTPRINTER_H

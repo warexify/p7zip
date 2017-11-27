@@ -10,7 +10,7 @@
 #include <unistd.h>
 #include <string>
 
-void split_path(const std::string &p_path, std::string &dir , std::string &base)
+static void split_path(const std::string &p_path, std::string &dir , std::string &base)
 {
 	size_t pos = p_path.find_last_of("/");
 	if (pos == std::string::npos) {
@@ -122,7 +122,7 @@ static int filtre_pattern(const char *string , const char *pattern , int flags_n
   return 0;
 }
 
-HANDLE WINAPI FindFirstFileA(LPCSTR lpFileName, WIN32_FIND_DATA *lpFindData ) {
+extern "C" HANDLE WINAPI FindFirstFileA(LPCSTR lpFileName, WIN32_FIND_DATA *lpFindData ) {
   char cb[MAX_PATHNAME_LEN];
   t_st_dir *retour;
 
@@ -167,7 +167,7 @@ HANDLE WINAPI FindFirstFileA(LPCSTR lpFileName, WIN32_FIND_DATA *lpFindData ) {
   return INVALID_HANDLE_VALUE;
 }
 
-BOOL WINAPI FindNextFileA( HANDLE handle, WIN32_FIND_DATA  *lpFindData) {
+extern "C" BOOL WINAPI FindNextFileA( HANDLE handle, WIN32_FIND_DATA  *lpFindData) {
   t_st_dir *retour = (t_st_dir *)handle;
 
   if ((handle == 0) || (handle == INVALID_HANDLE_VALUE) || (retour->IDENT != IDENT_DIR_HANDLER)) {
@@ -189,7 +189,7 @@ BOOL WINAPI FindNextFileA( HANDLE handle, WIN32_FIND_DATA  *lpFindData) {
   return FALSE;
 }
 
-BOOL WINAPI FindClose( HANDLE handle ) {
+extern "C" BOOL WINAPI FindClose( HANDLE handle ) {
   TRACEN((printf("FindClose(%ld)\n",(unsigned long)handle)))
   if (handle != INVALID_HANDLE_VALUE) {
     t_st_dir *retour = (t_st_dir *)handle;

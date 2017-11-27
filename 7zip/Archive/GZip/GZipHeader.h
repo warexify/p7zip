@@ -1,6 +1,6 @@
 // Archive/GZip/Header.h
 
-#pragma once
+// #pragma once
 
 #ifndef __ARCHIVE_GZIP_HEADER_H
 #define __ARCHIVE_GZIP_HEADER_H

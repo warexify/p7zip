@@ -1,4 +1,9 @@
 
+- port plugins from 7-zip to p7zip (ex : paqar)
+
+- rewrite RAR plugin (because 7-zip does not provide source
+  code for this plugin)
+
 - use valgrind to detect errors in the program.
 
 - use a more thread-friendly "WaitForMultipleObjects"
@@ -6,9 +11,6 @@
 
 - if an error occurs during the execution of 7z, some temporary files are left
   ( ex : 7zi12495.tmp )
-
-- supported Archives : 7z, zip, gzip, bzip2, tar
-  but not : rar cab (like windows 7za.exe)
 
 - suppress all DEBUG, exit(EXIT_FAILURE), FIXME, ...
 
@@ -27,5 +29,5 @@
 
 - TESTS on a Big Endian Machine (Solaris Sparc, Linux PPC ?)
 
-- creation of SFX archives
+- creation of SFX archives ?
 

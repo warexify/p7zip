@@ -1,6 +1,6 @@
 // x86.h
 
-#pragma once
+// #pragma once
 
 #ifndef __X86_H
 #define __X86_H

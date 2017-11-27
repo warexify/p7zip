@@ -1,6 +1,6 @@
 // FileStreams.h
 
-#pragma once
+// #pragma once
 
 #ifndef __FILESTREAMS_H
 #define __FILESTREAMS_H

@@ -166,8 +166,15 @@
 // #if defined(__GNUC__) || defined(__GNU_LIBRARY__)
 #if (defined(__GNUC__) || defined(__GNU_LIBRARY__)) && !defined(WIN32) && !defined(__CYGWIN__)
 
-#  include <endian.h>
-#  include <byteswap.h>
+#ifdef __linux__
+#include <endian.h>
+#include <byteswap.h>
+#elif defined(__APPLE_CC__)
+#include <machine/endian.h>
+#else
+#include <sys/endian.h>
+#endif
+
 #elif defined(__CRYPTLIB__)
 #  if defined( INC_ALL )
 #    include "crypt.h"

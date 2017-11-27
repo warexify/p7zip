@@ -32,6 +32,8 @@ extern "C" {
 #include <winerror.h>
 
 #include <string.h>
+#include <stddef.h>
+#include <wchar.h>
 
 #ifdef __cplusplus
 }

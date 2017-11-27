@@ -1,7 +1,7 @@
 // Compress/PPM/PPMD/Context.h
 // This code is based on Dmitry Shkarin's PPMdH code
 
-#pragma once
+// #pragma once
 
 #ifndef __COMPRESS_PPM_PPMD_CONTEXT_H
 #define __COMPRESS_PPM_PPMD_CONTEXT_H

@@ -1,6 +1,6 @@
 // Compress/BZip2/Decoder.h
 
-#pragma once
+// #pragma once
 
 #ifndef __COMPRESS_BZIP2_DECODER_H
 #define __COMPRESS_BZIP2_DECODER_H

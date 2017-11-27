@@ -1,0 +1,62 @@
+DllExports.o : ./DllExports.cpp
+	$(CXX) $(CFLAGS) $<
+CRC.o : ../../../Common/CRC.cpp
+	$(CXX) $(CFLAGS) $<
+NewHandler.o : ../../../Common/NewHandler.cpp
+	$(CXX) $(CFLAGS) $<
+String.o : ../../../Common/String.cpp
+	$(CXX) $(CFLAGS) $<
+StringConvert.o : ../../../Common/StringConvert.cpp
+	$(CXX) $(CFLAGS) $<
+Vector.o : ../../../Common/Vector.cpp
+	$(CXX) $(CFLAGS) $<
+CodecsPath.o : ../Common/CodecsPath.cpp
+	$(CXX) $(CFLAGS) $<
+CoderMixer.o : ../Common/CoderMixer.cpp
+	$(CXX) $(CFLAGS) $<
+CoderMixer2.o : ../Common/CoderMixer2.cpp
+	$(CXX) $(CFLAGS) $<
+CrossThreadProgress.o : ../Common/CrossThreadProgress.cpp
+	$(CXX) $(CFLAGS) $<
+InStreamWithCRC.o : ../Common/InStreamWithCRC.cpp
+	$(CXX) $(CFLAGS) $<
+OutStreamWithCRC.o : ../Common/OutStreamWithCRC.cpp
+	$(CXX) $(CFLAGS) $<
+DLL.o : ../../../Windows/DLL.cpp
+	$(CXX) $(CFLAGS) $<
+FileFind.o : ../../../Windows/FileFind.cpp
+	$(CXX) $(CFLAGS) $<
+PropVariant.o : ../../../Windows/PropVariant.cpp
+	$(CXX) $(CFLAGS) $<
+Synchronization.o : ../../../Windows/Synchronization.cpp
+	$(CXX) $(CFLAGS) $<
+CopyCoder.o : ../../Compress/Copy/CopyCoder.cpp
+	$(CXX) $(CFLAGS) $<
+RarHandler.o : ./RarHandler.cpp
+	$(CXX) $(CFLAGS) $<
+RarHeader.o : ./RarHeader.cpp
+	$(CXX) $(CFLAGS) $<
+RarIn.o : ./RarIn.cpp
+	$(CXX) $(CFLAGS) $<
+RarItem.o : ./RarItem.cpp
+	$(CXX) $(CFLAGS) $<
+RarVolumeInStream.o : ./RarVolumeInStream.cpp
+	$(CXX) $(CFLAGS) $<
+RarAES.o : ../../Crypto/RarAES/RarAES.cpp
+	$(CXX) $(CFLAGS) $<
+sha1.o : ../../Crypto/RarAES/sha1.cpp
+	$(CXX) $(CFLAGS) $<
+Rar20Cipher.o : ../../Crypto/Rar20/Rar20Cipher.cpp
+	$(CXX) $(CFLAGS) $<
+Rar20Crypto.o : ../../Crypto/Rar20/Rar20Crypto.cpp
+	$(CXX) $(CFLAGS) $<
+LimitedStreams.o : ../../Common/LimitedStreams.cpp
+	$(CXX) $(CFLAGS) $<
+ProgressUtils.o : ../../Common/ProgressUtils.cpp
+	$(CXX) $(CFLAGS) $<
+StreamBinder.o : ../../Common/StreamBinder.cpp
+	$(CXX) $(CFLAGS) $<
+StreamObjects.o : ../../Common/StreamObjects.cpp
+	$(CXX) $(CFLAGS) $<
+7zMethods.o : ../7z/7zMethods.cpp
+	$(CXX) $(CFLAGS) $<

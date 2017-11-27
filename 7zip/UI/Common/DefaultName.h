@@ -1,6 +1,6 @@
 // DefaultName.h
 
-#pragma once
+// #pragma once
 
 #ifndef __DEFAULTNAME_H
 #define __DEFAULTNAME_H

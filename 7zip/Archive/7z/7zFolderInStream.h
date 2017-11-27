@@ -1,6 +1,6 @@
 // 7z/FolderInStream.h
 
-#pragma once
+// #pragma once
 
 #ifndef __7Z_FOLDERINSTREAM_H
 #define __7Z_FOLDERINSTREAM_H

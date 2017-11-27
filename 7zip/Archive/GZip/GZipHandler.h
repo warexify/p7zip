@@ -1,6 +1,6 @@
 // GZip/Handler.h
 
-#pragma once
+// #pragma once
 
 #ifndef __GZIP_HANDLER_H
 #define __GZIP_HANDLER_H

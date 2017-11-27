@@ -100,4 +100,15 @@ AString UnicodeStringToMultiByte(const UString &srcString, UINT /* codePage */ )
   return resultString;
 }
 
+int WINAPI CompareStringA(LCID lcid,DWORD style,LPCSTR str1,int len1,LPCSTR str2,int len2) {
+  INT ret, len;
+
+  if (!str1 || !str2) {
+    SetLastError(ERROR_INVALID_PARAMETER);
+    return 0;
+  }
+
+  return CompareStringW(lcid, style, MultiByteToUnicodeString(str1), len1, MultiByteToUnicodeString(str2), len2);
+}
+
 #endif

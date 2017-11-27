@@ -1,6 +1,6 @@
 // DeflateEncoder.h
 
-#pragma once
+// #pragma once
 
 #ifndef __DEFLATE_ENCODER_H
 #define __DEFLATE_ENCODER_H

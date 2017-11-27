@@ -1,0 +1,29 @@
+
+
+CPPFLAGS=-w -O2 -s -fPIC \
+    	-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE \
+	-DENV_UNIX -DNDEBUG -D_REENTRANT \
+	$(LOCAL_FLAGS) \
+	-I../../../ \
+	-I../../../include_windows \
+	-I../../../myWindows
+
+CXX=g++ $(CPPFLAGS)
+CC=gcc $(CPPFLAGS)
+
+MY_HOME=../../../myWindows
+
+LIBS=$(LOCAL_LIBS)
+RM=rm -f
+CFLAGS=-c
+
+all:$(PROG)
+
+$(PROG): $(OBJS) $(MY_WINDOWS)
+	$(CXX) $(LOCAL_SHARED) -o $(PROG) $(LDFLAGS) $(OBJS) $(MY_WINDOWS) $(LIBS)
+
+include makefile.list
+
+clean:
+	-@$(RM) $(PROG) $(PROG).exe $(OBJS) $(MY_WINDOWS) *~ 
+

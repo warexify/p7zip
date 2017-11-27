@@ -1,6 +1,6 @@
 // ZipRegistry.h
 
-#pragma once
+// #pragma once
 
 #ifndef __ZIPREGISTRY_H
 #define __ZIPREGISTRY_H

@@ -1,6 +1,6 @@
 // Branch/Coder.h
 
-#pragma once
+// #pragma once
 
 #ifndef __CallPowerPC_CODER_H
 #define __CallPowerPC_CODER_H

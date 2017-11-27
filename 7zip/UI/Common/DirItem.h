@@ -1,6 +1,6 @@
 // DirItem.h
 
-#pragma once
+// #pragma once
 
 #ifndef __DIR_ITEM_H
 #define __DIR_ITEM_H

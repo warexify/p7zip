@@ -1,6 +1,6 @@
 // ZipOut.h
 
-#pragma once
+// #pragma once
 
 #ifndef __ZIP_OUT_H
 #define __ZIP_OUT_H

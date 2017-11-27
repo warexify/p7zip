@@ -1,0 +1,22 @@
+DllExports.o : ./DllExports.cpp
+	$(CXX) $(CFLAGS) $<
+HuffmanEncoder.o : ../Huffman/HuffmanEncoder.cpp
+	$(CXX) $(CFLAGS) $<
+InBuffer.o : ../../Common/InBuffer.cpp
+	$(CXX) $(CFLAGS) $<
+LSBFDecoder.o : ../../Common/LSBFDecoder.cpp
+	$(CXX) $(CFLAGS) $<
+LSBFEncoder.o : ../../Common/LSBFEncoder.cpp
+	$(CXX) $(CFLAGS) $<
+OutBuffer.o : ../../Common/OutBuffer.cpp
+	$(CXX) $(CFLAGS) $<
+CRC.o : ../../../Common/CRC.cpp
+	$(CXX) $(CFLAGS) $<
+LZInWindow.o : ../LZ/LZInWindow.cpp
+	$(CXX) $(CFLAGS) $<
+LZOutWindow.o : ../LZ/LZOutWindow.cpp
+	$(CXX) $(CFLAGS) $<
+DeflateDecoder.o : ./DeflateDecoder.cpp
+	$(CXX) $(CFLAGS) $<
+DeflateEncoder.o : ./DeflateEncoder.cpp
+	$(CXX) $(CFLAGS) $<

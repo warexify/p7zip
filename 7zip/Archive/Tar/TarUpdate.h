@@ -1,6 +1,6 @@
 // Tar/Update.h
 
-#pragma once
+// #pragma once
 
 #ifndef __TAR_UPDATE_H
 #define __TAR_UPDATE_H

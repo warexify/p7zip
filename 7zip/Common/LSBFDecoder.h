@@ -1,6 +1,6 @@
 // Stream/LSBFDecoder.h
 
-#pragma once
+// #pragma once
 
 #ifndef __STREAM_LSBFDECODER_H
 #define __STREAM_LSBFDECODER_H

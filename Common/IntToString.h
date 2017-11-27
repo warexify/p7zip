@@ -1,6 +1,6 @@
 // Common/IntToString.h
 
-#pragma once
+// #pragma once
 
 #ifndef __COMMON_INTTOSTRING_H
 #define __COMMON_INTTOSTRING_H

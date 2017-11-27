@@ -1,0 +1,12 @@
+DllExports.o : ./DllExports.cpp
+	$(CXX) $(CFLAGS) $<
+PropVariant.o : ../../../Windows/PropVariant.cpp
+	$(CXX) $(CFLAGS) $<
+ProgressUtils.o : ../../Common/ProgressUtils.cpp
+	$(CXX) $(CFLAGS) $<
+CopyCoder.o : ../../Compress/Copy/CopyCoder.cpp
+	$(CXX) $(CFLAGS) $<
+RpmHandler.o : ./RpmHandler.cpp
+	$(CXX) $(CFLAGS) $<
+RpmIn.o : ./RpmIn.cpp
+	$(CXX) $(CFLAGS) $<

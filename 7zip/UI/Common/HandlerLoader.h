@@ -1,6 +1,6 @@
 // HandlerLoader.h
 
-#pragma once
+// #pragma once
 
 #ifndef __HANDLERLOADER_H
 #define __HANDLERLOADER_H

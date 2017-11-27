@@ -1,0 +1,280 @@
+ConsoleClose.o : ../../UI/Console/ConsoleClose.cpp
+	$(CXX) $(CFLAGS) ../../UI/Console/ConsoleClose.cpp
+Extract.o : ../../UI/Console/Extract.cpp
+	$(CXX) $(CFLAGS) ../../UI/Console/Extract.cpp
+ExtractCallback.o : ../../UI/Console/ExtractCallback.cpp
+	$(CXX) $(CFLAGS) ../../UI/Console/ExtractCallback.cpp
+List.o : ../../UI/Console/List.cpp
+	$(CXX) $(CFLAGS) ../../UI/Console/List.cpp
+Main.o : ../../UI/Console/Main.cpp
+	$(CXX) $(CFLAGS) ../../UI/Console/Main.cpp
+MainAr.o : ../../UI/Console/MainAr.cpp
+	$(CXX) $(CFLAGS) ../../UI/Console/MainAr.cpp
+OpenCallback.o : ../../UI/Console/OpenCallback.cpp
+	$(CXX) $(CFLAGS) ../../UI/Console/OpenCallback.cpp
+PercentPrinter.o : ../../UI/Console/PercentPrinter.cpp
+	$(CXX) $(CFLAGS) ../../UI/Console/PercentPrinter.cpp
+TempFiles.o : ../../UI/Console/TempFiles.cpp
+	$(CXX) $(CFLAGS) ../../UI/Console/TempFiles.cpp
+Update.o : ../../UI/Console/Update.cpp
+	$(CXX) $(CFLAGS) ../../UI/Console/Update.cpp
+UpdateCallback.o : ../../UI/Console/UpdateCallback.cpp
+	$(CXX) $(CFLAGS) ../../UI/Console/UpdateCallback.cpp
+UserInputUtils.o : ../../UI/Console/UserInputUtils.cpp
+	$(CXX) $(CFLAGS) ../../UI/Console/UserInputUtils.cpp
+AlignedBuffer.o : ../../../Common/AlignedBuffer.cpp
+	$(CXX) $(CFLAGS) ../../../Common/AlignedBuffer.cpp
+CommandLineParser.o : ../../../Common/CommandLineParser.cpp
+	$(CXX) $(CFLAGS) ../../../Common/CommandLineParser.cpp
+CRC.o : ../../../Common/CRC.cpp
+	$(CXX) $(CFLAGS) ../../../Common/CRC.cpp
+IntToString.o : ../../../Common/IntToString.cpp
+	$(CXX) $(CFLAGS) ../../../Common/IntToString.cpp
+ListFileUtils.o : ../../../Common/ListFileUtils.cpp
+	$(CXX) $(CFLAGS) ../../../Common/ListFileUtils.cpp
+Random.o : ../../../Common/Random.cpp
+	$(CXX) $(CFLAGS) ../../../Common/Random.cpp
+StdInStream.o : ../../../Common/StdInStream.cpp
+	$(CXX) $(CFLAGS) ../../../Common/StdInStream.cpp
+StdOutStream.o : ../../../Common/StdOutStream.cpp
+	$(CXX) $(CFLAGS) ../../../Common/StdOutStream.cpp
+String.o : ../../../Common/String.cpp
+	$(CXX) $(CFLAGS) ../../../Common/String.cpp
+StringConvert.o : ../../../Common/StringConvert.cpp
+	$(CXX) $(CFLAGS) ../../../Common/StringConvert.cpp
+StringToInt.o : ../../../Common/StringToInt.cpp
+	$(CXX) $(CFLAGS) ../../../Common/StringToInt.cpp
+UTFConvert.o : ../../../Common/UTFConvert.cpp
+	$(CXX) $(CFLAGS) ../../../Common/UTFConvert.cpp
+Vector.o : ../../../Common/Vector.cpp
+	$(CXX) $(CFLAGS) ../../../Common/Vector.cpp
+Wildcard.o : ../../../Common/Wildcard.cpp
+	$(CXX) $(CFLAGS) ../../../Common/Wildcard.cpp
+DLL.o : ../../../Windows/DLL.cpp
+	$(CXX) $(CFLAGS) ../../../Windows/DLL.cpp
+Error.o : ../../../Windows/Error.cpp
+	$(CXX) $(CFLAGS) ../../../Windows/Error.cpp
+FileDir.o : ../../../Windows/FileDir.cpp
+	$(CXX) $(CFLAGS) ../../../Windows/FileDir.cpp
+FileFind.o : ../../../Windows/FileFind.cpp
+	$(CXX) $(CFLAGS) ../../../Windows/FileFind.cpp
+FileIO.o : ../../../Windows/FileIO.cpp
+	$(CXX) $(CFLAGS) ../../../Windows/FileIO.cpp
+FileName.o : ../../../Windows/FileName.cpp
+	$(CXX) $(CFLAGS) ../../../Windows/FileName.cpp
+PropVariant.o : ../../../Windows/PropVariant.cpp
+	$(CXX) $(CFLAGS) ../../../Windows/PropVariant.cpp
+PropVariantConversions.o : ../../../Windows/PropVariantConversions.cpp
+	$(CXX) $(CFLAGS) ../../../Windows/PropVariantConversions.cpp
+Synchronization.o : ../../../Windows/Synchronization.cpp
+	$(CXX) $(CFLAGS) ../../../Windows/Synchronization.cpp
+System.o : ../../../Windows/System.cpp
+	$(CXX) $(CFLAGS) ../../../Windows/System.cpp
+CrossThreadProgress.o : ../../Archive/Common/CrossThreadProgress.cpp
+	$(CXX) $(CFLAGS) ../../Archive/Common/CrossThreadProgress.cpp
+FilePathAutoRename.o : ../../Common/FilePathAutoRename.cpp
+	$(CXX) $(CFLAGS) ../../Common/FilePathAutoRename.cpp
+FileStreams.o : ../../Common/FileStreams.cpp
+	$(CXX) $(CFLAGS) ../../Common/FileStreams.cpp
+InBuffer.o : ../../Common/InBuffer.cpp
+	$(CXX) $(CFLAGS) ../../Common/InBuffer.cpp
+InOutTempBuffer.o : ../../Common/InOutTempBuffer.cpp
+	$(CXX) $(CFLAGS) ../../Common/InOutTempBuffer.cpp
+LimitedStreams.o : ../../Common/LimitedStreams.cpp
+	$(CXX) $(CFLAGS) ../../Common/LimitedStreams.cpp
+LSBFDecoder.o : ../../Common/LSBFDecoder.cpp
+	$(CXX) $(CFLAGS) ../../Common/LSBFDecoder.cpp
+LSBFEncoder.o : ../../Common/LSBFEncoder.cpp
+	$(CXX) $(CFLAGS) ../../Common/LSBFEncoder.cpp
+MultiStream.o : ../../Common/MultiStream.cpp
+	$(CXX) $(CFLAGS) ../../Common/MultiStream.cpp
+OffsetStream.o : ../../Common/OffsetStream.cpp
+	$(CXX) $(CFLAGS) ../../Common/OffsetStream.cpp
+OutBuffer.o : ../../Common/OutBuffer.cpp
+	$(CXX) $(CFLAGS) ../../Common/OutBuffer.cpp
+ProgressUtils.o : ../../Common/ProgressUtils.cpp
+	$(CXX) $(CFLAGS) ../../Common/ProgressUtils.cpp
+StreamBinder.o : ../../Common/StreamBinder.cpp
+	$(CXX) $(CFLAGS) ../../Common/StreamBinder.cpp
+StreamObjects.o : ../../Common/StreamObjects.cpp
+	$(CXX) $(CFLAGS) ../../Common/StreamObjects.cpp
+x86.o : ../../Compress/Branch/x86.cpp
+	$(CXX) $(CFLAGS) ../../Compress/Branch/x86.cpp
+x86_2.o : ../../Compress/Branch/x86_2.cpp
+	$(CXX) $(CFLAGS) ../../Compress/Branch/x86_2.cpp
+blocksort.o : ../../Compress/BZip2/Original/blocksort.c
+	$(CC) $(CFLAGS) ../../Compress/BZip2/Original/blocksort.c
+bzlib.o : ../../Compress/BZip2/Original/bzlib.c
+	$(CC) $(CFLAGS) ../../Compress/BZip2/Original/bzlib.c
+compress.o : ../../Compress/BZip2/Original/compress.c
+	$(CC) $(CFLAGS) ../../Compress/BZip2/Original/compress.c
+crctable.o : ../../Compress/BZip2/Original/crctable.c
+	$(CC) $(CFLAGS) ../../Compress/BZip2/Original/crctable.c
+decompress.o : ../../Compress/BZip2/Original/decompress.c
+	$(CC) $(CFLAGS) ../../Compress/BZip2/Original/decompress.c
+huffman.o : ../../Compress/BZip2/Original/huffman.c
+	$(CC) $(CFLAGS) ../../Compress/BZip2/Original/huffman.c
+randtable.o : ../../Compress/BZip2/Original/randtable.c
+	$(CC) $(CFLAGS) ../../Compress/BZip2/Original/randtable.c
+BZip2Decoder.o : ../../Compress/BZip2/BZip2Decoder.cpp
+	$(CXX) $(CFLAGS) ../../Compress/BZip2/BZip2Decoder.cpp
+BZip2Encoder.o : ../../Compress/BZip2/BZip2Encoder.cpp
+	$(CXX) $(CFLAGS) ../../Compress/BZip2/BZip2Encoder.cpp
+BZip2Error.o : ../../Compress/BZip2/BZip2Error.cpp
+	$(CXX) $(CFLAGS) ../../Compress/BZip2/BZip2Error.cpp
+CopyCoder.o : ../../Compress/Copy/CopyCoder.cpp
+	$(CXX) $(CFLAGS) ../../Compress/Copy/CopyCoder.cpp
+DeflateDecoder.o : ../../Compress/Deflate/DeflateDecoder.cpp
+	$(CXX) $(CFLAGS) ../../Compress/Deflate/DeflateDecoder.cpp
+DeflateEncoder.o : ../../Compress/Deflate/DeflateEncoder.cpp
+	$(CXX) $(CFLAGS) ../../Compress/Deflate/DeflateEncoder.cpp
+HuffmanEncoder.o : ../../Compress/Huffman/HuffmanEncoder.cpp
+	$(CXX) $(CFLAGS) ../../Compress/Huffman/HuffmanEncoder.cpp
+ImplodeDecoder.o : ../../Compress/Implode/ImplodeDecoder.cpp
+	$(CXX) $(CFLAGS) ../../Compress/Implode/ImplodeDecoder.cpp
+ImplodeHuffmanDecoder.o : ../../Compress/Implode/ImplodeHuffmanDecoder.cpp
+	$(CXX) $(CFLAGS) ../../Compress/Implode/ImplodeHuffmanDecoder.cpp
+MT.o : ../../Compress/LZ/MT/MT.cpp
+	$(CXX) $(CFLAGS) ../../Compress/LZ/MT/MT.cpp
+LZInWindow.o : ../../Compress/LZ/LZInWindow.cpp
+	$(CXX) $(CFLAGS) ../../Compress/LZ/LZInWindow.cpp
+LZOutWindow.o : ../../Compress/LZ/LZOutWindow.cpp
+	$(CXX) $(CFLAGS) ../../Compress/LZ/LZOutWindow.cpp
+LZMADecoder.o : ../../Compress/LZMA/LZMADecoder.cpp
+	$(CXX) $(CFLAGS) ../../Compress/LZMA/LZMADecoder.cpp
+LZMAEncoder.o : ../../Compress/LZMA/LZMAEncoder.cpp
+	$(CXX) $(CFLAGS) ../../Compress/LZMA/LZMAEncoder.cpp
+LZMALen.o : ../../Compress/LZMA/LZMALen.cpp
+	$(CXX) $(CFLAGS) ../../Compress/LZMA/LZMALen.cpp
+LZMALiteral.o : ../../Compress/LZMA/LZMALiteral.cpp
+	$(CXX) $(CFLAGS) ../../Compress/LZMA/LZMALiteral.cpp
+PPMDDecoder.o : ../../Compress/PPMD/PPMDDecoder.cpp
+	$(CXX) $(CFLAGS) ../../Compress/PPMD/PPMDDecoder.cpp
+PPMDEncoder.o : ../../Compress/PPMD/PPMDEncoder.cpp
+	$(CXX) $(CFLAGS) ../../Compress/PPMD/PPMDEncoder.cpp
+RangeCoderBit.o : ../../Compress/RangeCoder/RangeCoderBit.cpp
+	$(CXX) $(CFLAGS) ../../Compress/RangeCoder/RangeCoderBit.cpp
+7zCompressionMode.o : ../../Archive/7z/7zCompressionMode.cpp
+	$(CXX) $(CFLAGS) ../../Archive/7z/7zCompressionMode.cpp
+7zDecode.o : ../../Archive/7z/7zDecode.cpp
+	$(CXX) $(CFLAGS) ../../Archive/7z/7zDecode.cpp
+7zEncode.o : ../../Archive/7z/7zEncode.cpp
+	$(CXX) $(CFLAGS) ../../Archive/7z/7zEncode.cpp
+7zExtract.o : ../../Archive/7z/7zExtract.cpp
+	$(CXX) $(CFLAGS) ../../Archive/7z/7zExtract.cpp
+7zFolderInStream.o : ../../Archive/7z/7zFolderInStream.cpp
+	$(CXX) $(CFLAGS) ../../Archive/7z/7zFolderInStream.cpp
+7zFolderOutStream.o : ../../Archive/7z/7zFolderOutStream.cpp
+	$(CXX) $(CFLAGS) ../../Archive/7z/7zFolderOutStream.cpp
+7zHandler.o : ../../Archive/7z/7zHandler.cpp
+	$(CXX) $(CFLAGS) ../../Archive/7z/7zHandler.cpp
+7zHandlerOut.o : ../../Archive/7z/7zHandlerOut.cpp
+	$(CXX) $(CFLAGS) ../../Archive/7z/7zHandlerOut.cpp
+7zHeader.o : ../../Archive/7z/7zHeader.cpp
+	$(CXX) $(CFLAGS) ../../Archive/7z/7zHeader.cpp
+7zIn.o : ../../Archive/7z/7zIn.cpp
+	$(CXX) $(CFLAGS) ../../Archive/7z/7zIn.cpp
+7zMethodID.o : ../../Archive/7z/7zMethodID.cpp
+	$(CXX) $(CFLAGS) ../../Archive/7z/7zMethodID.cpp
+7zOut.o : ../../Archive/7z/7zOut.cpp
+	$(CXX) $(CFLAGS) ../../Archive/7z/7zOut.cpp
+7zProperties.o : ../../Archive/7z/7zProperties.cpp
+	$(CXX) $(CFLAGS) ../../Archive/7z/7zProperties.cpp
+7zSpecStream.o : ../../Archive/7z/7zSpecStream.cpp
+	$(CXX) $(CFLAGS) ../../Archive/7z/7zSpecStream.cpp
+7zUpdate.o : ../../Archive/7z/7zUpdate.cpp
+	$(CXX) $(CFLAGS) ../../Archive/7z/7zUpdate.cpp
+BZip2Handler.o : ../../Archive/BZip2/BZip2Handler.cpp
+	$(CXX) $(CFLAGS) ../../Archive/BZip2/BZip2Handler.cpp
+BZip2HandlerOut.o : ../../Archive/BZip2/BZip2HandlerOut.cpp
+	$(CXX) $(CFLAGS) ../../Archive/BZip2/BZip2HandlerOut.cpp
+BZip2Update.o : ../../Archive/BZip2/BZip2Update.cpp
+	$(CXX) $(CFLAGS) ../../Archive/BZip2/BZip2Update.cpp
+GZipHandler.o : ../../Archive/GZip/GZipHandler.cpp
+	$(CXX) $(CFLAGS) ../../Archive/GZip/GZipHandler.cpp
+GZipHandlerOut.o : ../../Archive/GZip/GZipHandlerOut.cpp
+	$(CXX) $(CFLAGS) ../../Archive/GZip/GZipHandlerOut.cpp
+GZipHeader.o : ../../Archive/GZip/GZipHeader.cpp
+	$(CXX) $(CFLAGS) ../../Archive/GZip/GZipHeader.cpp
+GZipIn.o : ../../Archive/GZip/GZipIn.cpp
+	$(CXX) $(CFLAGS) ../../Archive/GZip/GZipIn.cpp
+GZipOut.o : ../../Archive/GZip/GZipOut.cpp
+	$(CXX) $(CFLAGS) ../../Archive/GZip/GZipOut.cpp
+GZipUpdate.o : ../../Archive/GZip/GZipUpdate.cpp
+	$(CXX) $(CFLAGS) ../../Archive/GZip/GZipUpdate.cpp
+TarHandler.o : ../../Archive/Tar/TarHandler.cpp
+	$(CXX) $(CFLAGS) ../../Archive/Tar/TarHandler.cpp
+TarHandlerOut.o : ../../Archive/Tar/TarHandlerOut.cpp
+	$(CXX) $(CFLAGS) ../../Archive/Tar/TarHandlerOut.cpp
+TarHeader.o : ../../Archive/Tar/TarHeader.cpp
+	$(CXX) $(CFLAGS) ../../Archive/Tar/TarHeader.cpp
+TarIn.o : ../../Archive/Tar/TarIn.cpp
+	$(CXX) $(CFLAGS) ../../Archive/Tar/TarIn.cpp
+TarOut.o : ../../Archive/Tar/TarOut.cpp
+	$(CXX) $(CFLAGS) ../../Archive/Tar/TarOut.cpp
+TarUpdate.o : ../../Archive/Tar/TarUpdate.cpp
+	$(CXX) $(CFLAGS) ../../Archive/Tar/TarUpdate.cpp
+ZipAddCommon.o : ../../Archive/Zip/ZipAddCommon.cpp
+	$(CXX) $(CFLAGS) ../../Archive/Zip/ZipAddCommon.cpp
+ZipHandler.o : ../../Archive/Zip/ZipHandler.cpp
+	$(CXX) $(CFLAGS) ../../Archive/Zip/ZipHandler.cpp
+ZipHandlerOut.o : ../../Archive/Zip/ZipHandlerOut.cpp
+	$(CXX) $(CFLAGS) ../../Archive/Zip/ZipHandlerOut.cpp
+ZipHeader.o : ../../Archive/Zip/ZipHeader.cpp
+	$(CXX) $(CFLAGS) ../../Archive/Zip/ZipHeader.cpp
+ZipIn.o : ../../Archive/Zip/ZipIn.cpp
+	$(CXX) $(CFLAGS) ../../Archive/Zip/ZipIn.cpp
+ZipItem.o : ../../Archive/Zip/ZipItem.cpp
+	$(CXX) $(CFLAGS) ../../Archive/Zip/ZipItem.cpp
+ZipOut.o : ../../Archive/Zip/ZipOut.cpp
+	$(CXX) $(CFLAGS) ../../Archive/Zip/ZipOut.cpp
+ZipUpdate.o : ../../Archive/Zip/ZipUpdate.cpp
+	$(CXX) $(CFLAGS) ../../Archive/Zip/ZipUpdate.cpp
+CoderMixer.o : ../../Archive/Common/CoderMixer.cpp
+	$(CXX) $(CFLAGS) ../../Archive/Common/CoderMixer.cpp
+CoderMixer2.o : ../../Archive/Common/CoderMixer2.cpp
+	$(CXX) $(CFLAGS) ../../Archive/Common/CoderMixer2.cpp
+DummyOutStream.o : ../../Archive/Common/DummyOutStream.cpp
+	$(CXX) $(CFLAGS) ../../Archive/Common/DummyOutStream.cpp
+InStreamWithCRC.o : ../../Archive/Common/InStreamWithCRC.cpp
+	$(CXX) $(CFLAGS) ../../Archive/Common/InStreamWithCRC.cpp
+ItemNameUtils.o : ../../Archive/Common/ItemNameUtils.cpp
+	$(CXX) $(CFLAGS) ../../Archive/Common/ItemNameUtils.cpp
+OutStreamWithCRC.o : ../../Archive/Common/OutStreamWithCRC.cpp
+	$(CXX) $(CFLAGS) ../../Archive/Common/OutStreamWithCRC.cpp
+ArchiverInfo.o : ../../UI/Common/ArchiverInfo.cpp
+	$(CXX) $(CFLAGS) ../../UI/Common/ArchiverInfo.cpp
+DefaultName.o : ../../UI/Common/DefaultName.cpp
+	$(CXX) $(CFLAGS) ../../UI/Common/DefaultName.cpp
+EnumDirItems.o : ../../UI/Common/EnumDirItems.cpp
+	$(CXX) $(CFLAGS) ../../UI/Common/EnumDirItems.cpp
+ExtractingFilePath.o : ../../UI/Common/ExtractingFilePath.cpp
+	$(CXX) $(CFLAGS) ../../UI/Common/ExtractingFilePath.cpp
+OpenArchive.o : ../../UI/Common/OpenArchive.cpp
+	$(CXX) $(CFLAGS) ../../UI/Common/OpenArchive.cpp
+PropIDUtils.o : ../../UI/Common/PropIDUtils.cpp
+	$(CXX) $(CFLAGS) ../../UI/Common/PropIDUtils.cpp
+SortUtils.o : ../../UI/Common/SortUtils.cpp
+	$(CXX) $(CFLAGS) ../../UI/Common/SortUtils.cpp
+UpdateAction.o : ../../UI/Common/UpdateAction.cpp
+	$(CXX) $(CFLAGS) ../../UI/Common/UpdateAction.cpp
+UpdatePair.o : ../../UI/Common/UpdatePair.cpp
+	$(CXX) $(CFLAGS) ../../UI/Common/UpdatePair.cpp
+UpdateProduce.o : ../../UI/Common/UpdateProduce.cpp
+	$(CXX) $(CFLAGS) ../../UI/Common/UpdateProduce.cpp
+ZipCipher.o : ../../Crypto/Zip/ZipCipher.cpp
+	$(CXX) $(CFLAGS) ../../Crypto/Zip/ZipCipher.cpp
+ZipCrypto.o : ../../Crypto/Zip/ZipCrypto.cpp
+	$(CXX) $(CFLAGS) ../../Crypto/Zip/ZipCrypto.cpp
+aescrypt.o : ../../Crypto/AES/aescrypt.c
+	$(CC) $(CFLAGS) ../../Crypto/AES/aescrypt.c
+aeskey.o : ../../Crypto/AES/aeskey.c
+	$(CC) $(CFLAGS) ../../Crypto/AES/aeskey.c
+aestab.o : ../../Crypto/AES/aestab.c
+	$(CC) $(CFLAGS) ../../Crypto/AES/aestab.c
+MyAES.o : ../../Crypto/AES/MyAES.cpp
+	$(CXX) $(CFLAGS) ../../Crypto/AES/MyAES.cpp
+7zAES.o : ../../Crypto/7zAES/7zAES.cpp
+	$(CXX) $(CFLAGS) ../../Crypto/7zAES/7zAES.cpp
+SHA256.o : ../../Crypto/7zAES/SHA256.cpp
+	$(CXX) $(CFLAGS) ../../Crypto/7zAES/SHA256.cpp

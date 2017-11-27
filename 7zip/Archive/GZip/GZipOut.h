@@ -1,6 +1,6 @@
 // Archive/GZipOut.h
 
-#pragma once
+// #pragma once
 
 #ifndef __ARCHIVE_GZIP_OUT_H
 #define __ARCHIVE_GZIP_OUT_H

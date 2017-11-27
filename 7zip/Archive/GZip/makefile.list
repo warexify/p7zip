@@ -1,0 +1,36 @@
+DllExports.o : ./DllExports.cpp
+	$(CXX) $(CFLAGS) $<
+CRC.o : ../../../Common/CRC.cpp
+	$(CXX) $(CFLAGS) $<
+String.o : ../../../Common/String.cpp
+	$(CXX) $(CFLAGS) $<
+StringConvert.o : ../../../Common/StringConvert.cpp
+	$(CXX) $(CFLAGS) $<
+StringToInt.o : ../../../Common/StringToInt.cpp
+	$(CXX) $(CFLAGS) $<
+DLL.o : ../../../Windows/DLL.cpp
+	$(CXX) $(CFLAGS) $<
+PropVariant.o : ../../../Windows/PropVariant.cpp
+	$(CXX) $(CFLAGS) $<
+CopyCoder.o : ../../Compress/Copy/CopyCoder.cpp
+	$(CXX) $(CFLAGS) $<
+GZipHandler.o : ./GZipHandler.cpp
+	$(CXX) $(CFLAGS) $<
+GZipHandlerOut.o : ./GZipHandlerOut.cpp
+	$(CXX) $(CFLAGS) $<
+GZipHeader.o : ./GZipHeader.cpp
+	$(CXX) $(CFLAGS) $<
+GZipIn.o : ./GZipIn.cpp
+	$(CXX) $(CFLAGS) $<
+GZipOut.o : ./GZipOut.cpp
+	$(CXX) $(CFLAGS) $<
+GZipUpdate.o : ./GZipUpdate.cpp
+	$(CXX) $(CFLAGS) $<
+ProgressUtils.o : ../../Common/ProgressUtils.cpp
+	$(CXX) $(CFLAGS) $<
+CodecsPath.o : ../Common/CodecsPath.cpp
+	$(CXX) $(CFLAGS) $<
+InStreamWithCRC.o : ../Common/InStreamWithCRC.cpp
+	$(CXX) $(CFLAGS) $<
+OutStreamWithCRC.o : ../Common/OutStreamWithCRC.cpp
+	$(CXX) $(CFLAGS) $<

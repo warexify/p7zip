@@ -1,6 +1,6 @@
 // CoderLoader.h
 
-#pragma once
+// #pragma once
 
 #ifndef __CODERLOADER_H
 #define __CODERLOADER_H

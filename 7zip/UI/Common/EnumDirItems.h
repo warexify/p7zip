@@ -1,6 +1,6 @@
 // EnumDirItems.h
 
-#pragma once
+// #pragma once
 
 #ifndef __ENUM_DIR_ITEMS_H
 #define __ENUM_DIR_ITEMS_H

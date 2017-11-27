@@ -1,6 +1,6 @@
 // HC3.h
 
-#pragma once
+// #pragma once
 
 #ifndef __HC3__H
 #define __HC3__H

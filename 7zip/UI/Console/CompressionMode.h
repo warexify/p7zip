@@ -1,6 +1,6 @@
 // CompressionMethodUtils.h
 
-#pragma once
+// #pragma once
 
 #ifndef __COMPRESSIONMETHODUTILS_H
 #define __COMPRESSIONMETHODUTILS_H

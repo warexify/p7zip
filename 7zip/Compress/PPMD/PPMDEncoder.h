@@ -1,6 +1,6 @@
 // Compress/PPMD/Encoder.h
 
-#pragma once
+// #pragma once
 
 #ifndef __COMPRESS_PPMD_ENCODER_H
 #define __COMPRESS_PPMD_ENCODER_H

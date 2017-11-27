@@ -149,6 +149,22 @@ BSTR WINAPI SysAllocString(LPCOLESTR in)
     if (!in) return 0;
 
     /* Delegate this to the SysAllocStringLen32 method. */
-    return SysAllocStringLen(in, lstrlenW(in));
+    /* return SysAllocStringLen(in, lstrlenW(in)); */
+    return SysAllocStringLen(in, wcslen(in));
 }
 
+UINT WINAPI SysStringLen(BSTR str)
+{
+    DWORD* bufferPointer;
+
+     if (!str) return 0;
+    /*
+     * The length of the string (in bytes) is contained in a DWORD placed
+     * just before the BSTR pointer
+     */
+    bufferPointer = (DWORD*)str;
+
+    bufferPointer--;
+
+    return (int)(*bufferPointer/sizeof(WCHAR));
+}

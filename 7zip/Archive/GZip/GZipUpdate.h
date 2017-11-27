@@ -1,6 +1,6 @@
 // GZip/Update.h
 
-#pragma once
+// #pragma once
 
 #ifndef __GZIP_UPDATE_H
 #define __GZIP_UPDATE_H

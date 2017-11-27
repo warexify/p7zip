@@ -1,6 +1,6 @@
 // MT_MF.h
 
-#pragma once
+// #pragma once
 
 #ifndef __MT_MF_H
 #define __MT_MF_H

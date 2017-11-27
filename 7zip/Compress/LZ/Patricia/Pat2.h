@@ -1,6 +1,6 @@
 // Pat2.h
 
-#pragma once
+// #pragma once
 
 #ifndef __PAT2__H
 #define __PAT2__H

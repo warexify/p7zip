@@ -10,7 +10,9 @@
 #include "Windows/FileFind.h"
 #include "Windows/FileName.h"
 #include "Windows/DLL.h"
+#ifdef WIN32 // FIXED
 #include "Windows/Registry.h"
+#endif
 #include "Windows/PropVariant.h"
 #include "../../Archive/IArchive.h"
 
@@ -18,6 +20,8 @@ using namespace NWindows;
 using namespace NFile;
 
 #endif
+
+extern HINSTANCE g_hInstance;
 
 #ifndef EXCLUDE_COM
 
@@ -49,6 +53,14 @@ static void SplitString(const UString &srcString, UStringVector &destStrings)
 typedef UINT32 (WINAPI * GetHandlerPropertyFunc)(
     PROPID propID, PROPVARIANT *value);
 
+static UString GetModuleFolderPrefix()
+{
+  UString path;
+  NDLL::MyGetModuleFileName(g_hInstance, path);
+  int pos = path.ReverseFind(L'\\');
+  return path.Left(pos + 1);
+}
+
 static wchar_t *kFormatFolderName = L"Formats";
 static LPCTSTR kRegistryPath = TEXT("Software\\7-zip");
 static LPCTSTR kProgramPathValue = TEXT("Path");
@@ -58,6 +70,7 @@ UString GetBaseFolderPrefix()
   UString moduleFolderPrefix = GetModuleFolderPrefix();
   NFind::CFileInfoW fileInfo;
   if (NFind::FindFile(moduleFolderPrefix + kFormatFolderName, fileInfo))
+#ifdef WIN32 // FIXED
     if (fileInfo.IsDirectory())
       return moduleFolderPrefix;
   CSysString pathSys;
@@ -81,6 +94,9 @@ UString GetBaseFolderPrefix()
         return path;
       }
   }
+/* #else
+printf("GetBaseFolderPrefix : '%ls'\n",&moduleFolderPrefix[0]); */
+#endif
   return moduleFolderPrefix;
 }
 

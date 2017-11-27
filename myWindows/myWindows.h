@@ -1,4 +1,8 @@
 
+
+extern "C" void mySetModuleFileNameA(const char * moduleFileName);
+void mySetModuleFileName_resolve_link(const char * moduleName);
+
 /************************* FILES *************************/
 
 #define FILE_HANDLE_INVALID 0

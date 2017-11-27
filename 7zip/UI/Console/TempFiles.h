@@ -1,6 +1,6 @@
 // FileCreationUtils.h
 
-#pragma once 
+// #pragma once 
 
 #ifndef __FILECREATIONUTILS_H
 #define __FILECREATIONUTILS_H

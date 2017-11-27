@@ -42,6 +42,7 @@ static void Load(const CSysString &folderPrefix)
     NDLL::CLibrary library;
     if (!library.Load(filePath))
       continue;
+
     GetMethodPropertyFunc getMethodProperty = (GetMethodPropertyFunc)
         library.GetProcAddress("GetMethodProperty");
     if (getMethodProperty == NULL)
@@ -124,7 +125,7 @@ static void Load(const CSysString &folderPrefix)
       else
         continue;
       propVariant.Clear();
-      
+
       g_Methods.Add(info);
     }
   }
@@ -141,17 +142,35 @@ void LoadMethodMap()
   Load(GetCodecsFolderPrefix());
 }
 
+/*
+static void dumpCMethodID(const CMethodID &a1)
+{
+	printf("methodID %d :",(int)a1.IDSize);
+    for (UINT32 i = 0; i < a1.IDSize; i++)
+    printf(" %x",a1.ID[i]);
+	printf("\n");
+}
+*/
+
 bool GetMethodInfo(const CMethodID &methodID, CMethodInfo &methodInfo)
 {
+  // printf("GetMethodInfo - 1\n");
   for(int i = 0; i < g_Methods.Size(); i++)
   {
     const CMethodInfo2 &method = g_Methods[i];
+
+	/*
+	dumpCMethodID(method.MethodID);
+	dumpCMethodID(methodID);
+  */
     if (method.MethodID == methodID)
     {
       methodInfo = (CMethodInfo)method;
+	  // printf("GetMethodInfo - return true\n");
       return true;
     }
   }
+  // printf("GetMethodInfo - return false\n");
   return false;
 }
 

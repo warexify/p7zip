@@ -1,6 +1,6 @@
 // StreamObjects.h
 
-#pragma once
+// #pragma once
 
 #ifndef __STREAMOBJECTS_H
 #define __STREAMOBJECTS_H

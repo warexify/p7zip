@@ -1,6 +1,6 @@
 // Tar/Handler.h
 
-#pragma once
+// #pragma once
 
 #ifndef __TAR_HANDLER_H
 #define __TAR_HANDLER_H

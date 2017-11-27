@@ -3,7 +3,7 @@
 #ifndef __IMPLODE_DECODER_H
 #define __IMPLODE_DECODER_H
 
-#pragma once
+// #pragma once
 
 #include "Common/MyCom.h"
 

@@ -1,6 +1,6 @@
 // List.h
 
-#pragma once
+// #pragma once
 
 #ifndef __LIST_H
 #define __LIST_H

@@ -122,21 +122,13 @@ typedef unsigned long PROPID;
 #define _REFGIID_DEFINED
 #define _REFCLSID_DEFINED
 #endif
-#ifndef GUID_SECTION
-#define GUID_SECTION ".text"
-#endif
-#ifdef __GNUC__
-#define GUID_SECT __attribute__ ((section (GUID_SECTION)))
-#else
-#define GUID_SECT
-#endif
 #if !defined(INITGUID) || (defined(INITGUID) && defined(__cplusplus))
 #define GUID_EXT EXTERN_C
 #else
 #define GUID_EXT
 #endif
 #ifdef INITGUID
-#define DEFINE_GUID(n,l,w1,w2,b1,b2,b3,b4,b5,b6,b7,b8) GUID_EXT const GUID n GUID_SECT = {l,w1,w2,{b1,b2,b3,b4,b5,b6,b7,b8}}
+#define DEFINE_GUID(n,l,w1,w2,b1,b2,b3,b4,b5,b6,b7,b8) GUID_EXT const GUID n = {l,w1,w2,{b1,b2,b3,b4,b5,b6,b7,b8}}
 #define DEFINE_OLEGUID(n,l,w1,w2) DEFINE_GUID(n,l,w1,w2,0xC0,0,0,0,0,0,0,0x46)
 #else
 #define DEFINE_GUID(n,l,w1,w2,b1,b2,b3,b4,b5,b6,b7,b8) GUID_EXT const GUID n

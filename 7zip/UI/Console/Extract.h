@@ -1,6 +1,6 @@
 // Extract.h
 
-#pragma once
+// #pragma once
 
 #ifndef __EXTRACT_H
 #define __EXTRACT_H

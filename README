@@ -1,17 +1,21 @@
-	p7zip 0.81
+	p7zip 0.90
 	==========
 
 Homepage : http://sourceforge.net/projects/p7zip/
 
-p7zip is a port of the Windows program 7za.exe.
+p7zip is a port of the Windows programs 7z.exe and 7za.exe provide by 7-zip.
 
-7za.exe is a file archiver with the highest compression ratio.
+7-zip is a file archiver with the highest compression ratio.
 Homepage : www.7-zip.org
 
+7z.exe uses plugins to handle archives.
+7za.exe is a stand-alone executable.
+7za.exe handles less archive formats than 7z.exe.
 
-INSTALL:
-	make clean
-	make
+BUILD :
+-------
+	make clean : to clean all directories
+	make       : to build bin/7za, bin/7z and its plugins.
 
   this procedure has been tested on :
 	Redhat 9.0 Standart (x86)
@@ -20,11 +24,24 @@ INSTALL:
 	Debian 3.0 Stable (x86)
 	CYGWIN_NT-5.1 1.5.9(0.112/4/2) 2004-03-18 23:05 i686 Cygwin
 
-	For Mandrake, you must change "-O2" to "-g2" in the makefile
-	(buggy compiler ?)
+INSTALL :
+---------
+
+  - 7za is a stand-alone program, you can put this program where you want.
+  example :  cp bin/7za /usr/local/bin/7za
+
+  - 7z needs its plugins. You must copy the file 7z and the two directories
+  Formats and Codecs in the same destination directory.
+  You can make link to 7z.
+  example :
+  mkdir -p /usr/local/share/7z  /usr/local/bin
+  cp -r bin/7z bin/Formats bin/Codecs /usr/local/share/7z/
+  ln -s /usr/local/share/7z/7z /usr/local/bin/7z
 
 
 USAGE:
+------
+  Remark : you can replace 7z with 7za.
 
   7z t archive.7z  : tests files in the archive archive.7z
   7z l archive.7z  : lists all files from archive archive.7z
@@ -56,28 +73,52 @@ USAGE:
 
   For more, see the documentation of 7za.exe in html directory
   (chapter "User's Guide for command line version").
+  7z a -t7z  -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -r archive.7z  dir1 :
+      adds all files from directory "dir1" to archive archive.7z
+      using "ultra settings".
+      -t7z     : 7z archive
+      -m0=lzma : lzma method
+      -mx=9    : level of compression = 9 (Ultra)
+      -mfb=64  : number of fast bytes for LZMA = 64
+      -md=32m  : dictionary size = 32 megabytes
+      -ms=on   : solid archive = on
+      -r       : enable recurse subdirectories
 
-LIMITATIONS:
+LIMITATIONS from 7-zip :
+------------------------
+  - works only on little-endian machine
 
-  - 7z can handle properly UNICODE filenames only if the environment is UTF-8.
+  - does not support uid/gid or Unix file access permissions
+  for the .tar format (so, use tar on Unix)
+
+  - the flag "-mt=on" is not understood.
+
+  - can't use absolute paths (wait for 7-zip 4.0)
+
+LIMITATIONS for Unix version only :
+-----------------------------------
+
+  - can handle properly UNICODE filenames only if the environment is UTF-8.
   Example : export LANG=en_US.UTF-8
   Remark  : see in the directory "/usr/lib/locale" the possible values
             for LANG
  
-  - 7z (and p7zip) does not support uid/gid or Unix file access permissions
-  for the .tar format (so, use tar on Unix)
-
-  - p7zip ignores Windows file access permissions (files are created with
+  - ignores Windows file access permissions (files are created with
     default permissions)
 
-  - p7zip archives the file/directory instead of the link.
+  - archives the file/directory instead of the link.
 
-  - p7zip can extract files from a SFX archive (Windows program that is
-  auto extractible), but cannot create SFX archives.
+  - can extract files from a SFX archive (Self Extracting Archive)
+  but cannot create SFX archives.
+
+  - cannot test or extract file from rar archives because the source code
+  that handles rar archives is not provide by 7-zip.
+  (but you can list rar archives)
 
   see also TODO file.
 
 DEVELOPPER CORNER:
+------------------
 
   - WaitForMultipleObject has no equivalence on Unix.
   - Events don't exist.
@@ -89,4 +130,3 @@ DEVELOPPER CORNER:
     changed to work in unix environment.
 
   see also TODO file.
-

@@ -1,6 +1,6 @@
 // IA64.h
 
-#pragma once
+// #pragma once
 
 #ifndef __IA64_H
 #define __IA64_H

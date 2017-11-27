@@ -1,6 +1,6 @@
 // ARMThumb.h
 
-#pragma once
+// #pragma once
 
 #ifndef __ARMTHUMB_H
 #define __ARMTHUMB_H

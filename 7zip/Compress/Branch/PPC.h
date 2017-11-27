@@ -1,6 +1,6 @@
 // PPC.h
 
-#pragma once
+// #pragma once
 
 #ifndef __PPC_H
 #define __PPC_H

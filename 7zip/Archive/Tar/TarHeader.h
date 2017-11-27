@@ -1,6 +1,6 @@
 // Archive/Tar/Header.h
 
-#pragma once
+// #pragma once
 
 #ifndef __ARCHIVE_TAR_HEADER_H
 #define __ARCHIVE_TAR_HEADER_H

@@ -1,6 +1,6 @@
 // ArchiverInfo.h
 
-#pragma once
+// #pragma once
 
 #ifndef __ARCHIVERINFO_H
 #define __ARCHIVERINFO_H

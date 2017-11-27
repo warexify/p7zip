@@ -1,7 +1,7 @@
 // Stream/MSBFEncoder.h
 // the Most Significant Bit of byte is First
 
-#pragma once
+// #pragma once
 
 #ifndef __STREAM_MSBFENCODER_H
 #define __STREAM_MSBFENCODER_H

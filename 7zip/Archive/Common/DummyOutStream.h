@@ -1,6 +1,6 @@
 // DummyOutStream.h
 
-#pragma once
+// #pragma once
 
 #ifndef __DUMMYOUTSTREAM_H
 #define __DUMMYOUTSTREAM_H

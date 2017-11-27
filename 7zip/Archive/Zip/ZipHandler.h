@@ -1,6 +1,6 @@
 // Zip/Handler.h
 
-#pragma once
+// #pragma once
 
 #ifndef __ZIP_HANDLER_H
 #define __ZIP_HANDLER_H

@@ -1,6 +1,6 @@
 // Common/Wildcard.h
 
-#pragma once
+// #pragma once
 
 #ifndef __COMMON_WILDCARD_H
 #define __COMMON_WILDCARD_H

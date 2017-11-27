@@ -1,6 +1,6 @@
 // Common/StdInStream.h
 
-#pragma once 
+// #pragma once 
 
 #ifndef __COMMON_STDINSTREAM_H
 #define __COMMON_STDINSTREAM_H

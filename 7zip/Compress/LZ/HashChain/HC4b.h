@@ -1,6 +1,6 @@
 // HC4b.h
 
-#pragma once
+// #pragma once
 
 #ifndef __HC4B__H
 #define __HC4B__H

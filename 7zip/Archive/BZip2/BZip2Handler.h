@@ -1,6 +1,6 @@
 // BZip2/Handler.h
 
-#pragma once
+// #pragma once
 
 #ifndef __BZIP2_HANDLER_H
 #define __BZIP2_HANDLER_H

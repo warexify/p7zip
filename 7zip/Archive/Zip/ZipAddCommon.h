@@ -1,6 +1,6 @@
 // Zip/AddCommon.h
 
-#pragma once
+// #pragma once
 
 #ifndef __ZIP_ADDCOMMON_H
 #define __ZIP_ADDCOMMON_H

@@ -1,7 +1,7 @@
 // PPMDEncode.h
 // This code is based on Dmitry Shkarin's PPMdH code
 
-#pragma once
+// #pragma once
 
 #ifndef __COMPRESS_PPM_PPMD_ENCODE_H
 #define __COMPRESS_PPM_PPMD_ENCODE_H

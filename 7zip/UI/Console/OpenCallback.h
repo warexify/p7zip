@@ -1,6 +1,6 @@
 // OpenCallback.h
 
-#pragma once
+// #pragma once
 
 #ifndef __OPENCALLBACK_H
 #define __OPENCALLBACK_H

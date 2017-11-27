@@ -1,6 +1,6 @@
 // BZip2Update.h
 
-#pragma once
+// #pragma once
 
 #ifndef __BZIP2_UPDATE_H
 #define __BZIP2_UPDATE_H

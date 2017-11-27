@@ -1,6 +1,6 @@
 // HC2.h
 
-#pragma once
+// #pragma once
 
 #ifndef __HC2__H
 #define __HC2__H

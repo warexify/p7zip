@@ -1,6 +1,6 @@
 // UpdateAction.h
 
-#pragma once
+// #pragma once
 
 #ifndef __UPDATE_ACTION_H
 #define __UPDATE_ACTION_H

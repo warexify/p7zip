@@ -1,6 +1,6 @@
 // Alpha.h
 
-#pragma once
+// #pragma once
 
 #ifndef __ALPHA_H
 #define __ALPHA_H

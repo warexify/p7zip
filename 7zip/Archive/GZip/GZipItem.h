@@ -1,6 +1,6 @@
 // Archive/GZipItem.h
 
-#pragma once
+// #pragma once
 
 #ifndef __ARCHIVE_GZIP_ITEM_H
 #define __ARCHIVE_GZIP_ITEM_H

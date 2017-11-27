@@ -1,6 +1,6 @@
 // Common/NewHandler.h
 
-#pragma once 
+// #pragma once 
 
 #ifndef __COMMON_NEWHANDLER_H
 #define __COMMON_NEWHANDLER_H

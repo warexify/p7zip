@@ -18,6 +18,29 @@ extern BOOLEAN WINAPI RtlTimeToSecondsSince1970( const LARGE_INTEGER *Time, LPDW
 // #define TRACEN(u) u;
 #define TRACEN(u)  /* */
 
+
+static void local_nameWindowToUnixA(LPCSTR lpFileName,char name[MAX_PATHNAME_LEN]) {
+  char temp[MAX_PATHNAME_LEN];
+  strcpy(temp,lpFileName);
+
+  if (strncmp("c:\\",temp,3) == 0) {
+    strcpy(name,temp+2);
+  } else {
+    strcpy(name,temp);
+  }
+
+  /* transform separators */
+  char *ptr = name;
+  while (*ptr) {
+    if (*ptr == '\\')
+      *ptr = '/';
+    ptr++;
+  }
+  TRACEN((printf("local_nameWindowToUnixA: '%s' => '%s'\n",temp,name)))
+}
+
+
+
 #define IDENT_FILE 0x1234ABEF
 
 class CFileHandlerInternal
@@ -66,7 +89,7 @@ t_file_handle WINAPI myCreateFileA(
   DWORD dwCreationDisposition,
   DWORD dwFlagsAndAttributes) {
   char name[1024];
-  nameWindowToUnixA(filename,name);
+  local_nameWindowToUnixA(filename,name);
 
   CFileHandlerInternal * file = new CFileHandlerInternal;
 

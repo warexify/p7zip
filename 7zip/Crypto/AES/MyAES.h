@@ -1,6 +1,6 @@
 // Cipher/AES/MyAES.h
 
-#pragma once
+// #pragma once
 
 #ifndef __CIPHER_MYAES_H
 #define __CIPHER_MYAES_H

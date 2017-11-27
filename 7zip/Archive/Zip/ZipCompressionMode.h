@@ -1,6 +1,6 @@
 // CompressionMode.h
 
-#pragma once
+// #pragma once
 
 #ifndef __ZIP_COMPRESSIONMETHOD_H
 #define __ZIP_COMPRESSIONMETHOD_H

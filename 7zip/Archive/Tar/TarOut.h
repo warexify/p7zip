@@ -1,6 +1,6 @@
 // Archive/TarOut.h
 
-#pragma once
+// #pragma once
 
 #ifndef __ARCHIVE_TAR_OUT_H
 #define __ARCHIVE_TAR_OUT_H

@@ -1,6 +1,6 @@
 // M68.h
 
-#pragma once
+// #pragma once
 
 #ifndef __M68_H
 #define __M68_H

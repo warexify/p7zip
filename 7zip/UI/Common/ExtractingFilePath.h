@@ -1,6 +1,6 @@
 // ExtractingFilePath.h
 
-#pragma once
+// #pragma once
 
 #ifndef __EXTRACTINGFILEPATH_H
 #define __EXTRACTINGFILEPATH_H

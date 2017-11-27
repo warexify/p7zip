@@ -1,6 +1,6 @@
 // Common/StdOutStream.h
 
-#pragma once 
+// #pragma once 
 
 #ifndef __COMMON_STDOUTSTREAM_H
 #define __COMMON_STDOUTSTREAM_H

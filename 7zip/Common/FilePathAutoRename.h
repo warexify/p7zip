@@ -1,6 +1,6 @@
 // Util/FilePathAutoRename.h
 
-#pragma once
+// #pragma once
 
 #ifndef __FILEPATHAUTORENAME_H
 #define __FILEPATHAUTORENAME_H

@@ -1,6 +1,6 @@
 // UpdateCallback.h
 
-#pragma once
+// #pragma once
 
 #ifndef __UPDATECALLBACK_H
 #define __UPDATECALLBACK_H

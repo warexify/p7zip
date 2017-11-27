@@ -1,6 +1,6 @@
 // Archive/ZipItemEx.h
 
-#pragma once
+// #pragma once
 
 #ifndef __ARCHIVE_ZIP_ITEMEX_H
 #define __ARCHIVE_ZIP_ITEMEX_H

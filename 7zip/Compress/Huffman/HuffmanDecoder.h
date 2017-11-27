@@ -1,6 +1,6 @@
 // Compress/HuffmanDecoder.h
 
-#pragma once
+// #pragma once
 
 #ifndef __COMPRESS_HUFFMANDECODER_H
 #define __COMPRESS_HUFFMANDECODER_H

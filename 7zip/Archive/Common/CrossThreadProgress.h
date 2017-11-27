@@ -1,6 +1,6 @@
 // CrossThreadProgress.h
 
-#pragma once
+// #pragma once
 
 #ifndef __CROSSTHREADPROGRESS_H
 #define __CROSSTHREADPROGRESS_H

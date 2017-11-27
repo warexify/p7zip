@@ -3,6 +3,7 @@
 #include "StdAfx.h"
 
 #include <initguid.h>
+#include <initguid.h>
 
 #include "7zHandler.h"
 #include "../../ICoder.h"

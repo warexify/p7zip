@@ -1,6 +1,6 @@
 // DeflateConst.h
 
-#pragma once
+// #pragma once
 
 #ifndef __DEFLATE_CONST_H
 #define __DEFLATE_CONST_H

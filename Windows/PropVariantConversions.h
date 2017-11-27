@@ -1,6 +1,6 @@
 // Windows/PropVariantConversions.h
 
-#pragma once
+// #pragma once
 
 #ifndef __PROPVARIANTCONVERSIONS_H
 #define __PROPVARIANTCONVERSIONS_H

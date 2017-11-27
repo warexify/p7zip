@@ -1,6 +1,6 @@
 // 7zProperties.h
 
-#pragma once
+// #pragma once
 
 #ifndef __7Z_PROPERTIES_H
 #define __7Z_PROPERTIES_H

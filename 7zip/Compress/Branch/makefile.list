@@ -1,0 +1,22 @@
+DllExports.o : ./DllExports.cpp
+	$(CXX) $(CFLAGS) $<
+Alpha.o : ./Alpha.cpp
+	$(CXX) $(CFLAGS) $<
+ARM.o : ./ARM.cpp
+	$(CXX) $(CFLAGS) $<
+ARMThumb.o : ./ARMThumb.cpp
+	$(CXX) $(CFLAGS) $<
+IA64.o : ./IA64.cpp
+	$(CXX) $(CFLAGS) $<
+M68.o : ./M68.cpp
+	$(CXX) $(CFLAGS) $<
+PPC.o : ./PPC.cpp
+	$(CXX) $(CFLAGS) $<
+x86.o : ./x86.cpp
+	$(CXX) $(CFLAGS) $<
+x86_2.o : ./x86_2.cpp
+	$(CXX) $(CFLAGS) $<
+InBuffer.o : ../../Common/InBuffer.cpp
+	$(CXX) $(CFLAGS) $<
+OutBuffer.o : ../../Common/OutBuffer.cpp
+	$(CXX) $(CFLAGS) $<

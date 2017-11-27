@@ -1,6 +1,6 @@
 // OffsetStream.h
 
-#pragma once
+// #pragma once
 
 #ifndef __OFFSETSTREAM_H
 #define __OFFSETSTREAM_H

@@ -1,18 +1,31 @@
 
+Version 0.90
+============
+  - build of 7z.exe and its DLL.
+  7z.exe support more archive formats than 7za.exe
+  thanks to DLL in Formats and Codecs directories
+  - "#pragma once" is now in comments
+  - mainly For OpenBSD :
+    - add #include <wchar.h> in include_windows/winnt.h
+    - remove stuff for GUID_SECTION and GUID_SECT in include_windows/basetyps.h
+      and include_windows/initguid.h
+    - some changes in 7zip/Crypto/aesopt.h because of endian.h
+
 Version 0.81
 ============
   - add a copy of the help of 7-zip (see html directory)
   - "7z a -r tmp.7z directory" works as expected.
-    no more command like : 7z a -r tmp.7z "directory/*"
+    no more need for commands like : 7z a -r tmp.7z "directory/*"
   - 7z restores the date of each files (but not directories)
   - 7z supports UNICODE filenames (version 0.80 supports only ASCII/Latin1 filenames)
   - support of gcc 2.95
   - support of gcc 3.4
   - 7z needs no more libgen.h (dirname() and basename())
-  - no more "Internal Error #7" during arguments parsing
+  - less "Internal Error #7" during arguments parsing
   - minor change in class CThread
 
 Version 0.80
+============
   - First public release
   - support of gcc 3.2 and 3.3
 

@@ -1,6 +1,6 @@
 // PropIDUtils.h
 
-#pragma once
+// #pragma once
 
 #ifndef __PROPIDUTILS_H
 #define __PROPIDUTILS_H

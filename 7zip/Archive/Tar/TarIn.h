@@ -1,6 +1,6 @@
 // Archive/TarIn.h
 
-#pragma once
+// #pragma once
 
 #ifndef __ARCHIVE_TAR_IN_H
 #define __ARCHIVE_TAR_IN_H

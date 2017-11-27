@@ -1,0 +1,88 @@
+DllExports.o : ./DllExports.cpp
+	$(CXX) $(CFLAGS) $<
+StdAfx.o : ./StdAfx.cpp
+	$(CXX) $(CFLAGS) $<
+7zCompressionMode.o : ./7zCompressionMode.cpp
+	$(CXX) $(CFLAGS) $<
+7zDecode.o : ./7zDecode.cpp
+	$(CXX) $(CFLAGS) $<
+7zEncode.o : ./7zEncode.cpp
+	$(CXX) $(CFLAGS) $<
+7zExtract.o : ./7zExtract.cpp
+	$(CXX) $(CFLAGS) $<
+7zFolderInStream.o : ./7zFolderInStream.cpp
+	$(CXX) $(CFLAGS) $<
+7zFolderOutStream.o : ./7zFolderOutStream.cpp
+	$(CXX) $(CFLAGS) $<
+7zHandler.o : ./7zHandler.cpp
+	$(CXX) $(CFLAGS) $<
+7zHandlerOut.o : ./7zHandlerOut.cpp
+	$(CXX) $(CFLAGS) $<
+7zHeader.o : ./7zHeader.cpp
+	$(CXX) $(CFLAGS) $<
+7zIn.o : ./7zIn.cpp
+	$(CXX) $(CFLAGS) $<
+7zMethodID.o : ./7zMethodID.cpp
+	$(CXX) $(CFLAGS) $<
+7zMethods.o : ./7zMethods.cpp
+	$(CXX) $(CFLAGS) $<
+7zOut.o : ./7zOut.cpp
+	$(CXX) $(CFLAGS) $<
+7zProperties.o : ./7zProperties.cpp
+	$(CXX) $(CFLAGS) $<
+7zSpecStream.o : ./7zSpecStream.cpp
+	$(CXX) $(CFLAGS) $<
+7zUpdate.o : ./7zUpdate.cpp
+	$(CXX) $(CFLAGS) $<
+CRC.o : ../../../Common/CRC.cpp
+	$(CXX) $(CFLAGS) $<
+IntToString.o : ../../../Common/IntToString.cpp
+	$(CXX) $(CFLAGS) $<
+String.o : ../../../Common/String.cpp
+	$(CXX) $(CFLAGS) $<
+StringConvert.o : ../../../Common/StringConvert.cpp
+	$(CXX) $(CFLAGS) $<
+StringToInt.o : ../../../Common/StringToInt.cpp
+	$(CXX) $(CFLAGS) $<
+Vector.o : ../../../Common/Vector.cpp
+	$(CXX) $(CFLAGS) $<
+CodecsPath.o : ../Common/CodecsPath.cpp
+	$(CXX) $(CFLAGS) $<
+CoderMixer2.o : ../Common/CoderMixer2.cpp
+	$(CXX) $(CFLAGS) $<
+CrossThreadProgress.o : ../Common/CrossThreadProgress.cpp
+	$(CXX) $(CFLAGS) $<
+InStreamWithCRC.o : ../Common/InStreamWithCRC.cpp
+	$(CXX) $(CFLAGS) $<
+ItemNameUtils.o : ../Common/ItemNameUtils.cpp
+	$(CXX) $(CFLAGS) $<
+OutStreamWithCRC.o : ../Common/OutStreamWithCRC.cpp
+	$(CXX) $(CFLAGS) $<
+InOutTempBuffer.o : ../../Common/InOutTempBuffer.cpp
+	$(CXX) $(CFLAGS) $<
+LimitedStreams.o : ../../Common/LimitedStreams.cpp
+	$(CXX) $(CFLAGS) $<
+MultiStream.o : ../../Common/MultiStream.cpp
+	$(CXX) $(CFLAGS) $<
+OutBuffer.o : ../../Common/OutBuffer.cpp
+	$(CXX) $(CFLAGS) $<
+ProgressUtils.o : ../../Common/ProgressUtils.cpp
+	$(CXX) $(CFLAGS) $<
+StreamBinder.o : ../../Common/StreamBinder.cpp
+	$(CXX) $(CFLAGS) $<
+StreamObjects.o : ../../Common/StreamObjects.cpp
+	$(CXX) $(CFLAGS) $<
+DLL.o : ../../../Windows/DLL.cpp
+	$(CXX) $(CFLAGS) $<
+FileDir.o : ../../../Windows/FileDir.cpp
+	$(CXX) $(CFLAGS) $<
+FileFind.o : ../../../Windows/FileFind.cpp
+	$(CXX) $(CFLAGS) $<
+FileIO.o : ../../../Windows/FileIO.cpp
+	$(CXX) $(CFLAGS) $<
+PropVariant.o : ../../../Windows/PropVariant.cpp
+	$(CXX) $(CFLAGS) $<
+Synchronization.o : ../../../Windows/Synchronization.cpp
+	$(CXX) $(CFLAGS) $<
+CopyCoder.o : ../../Compress/Copy/CopyCoder.cpp
+	$(CXX) $(CFLAGS) $<

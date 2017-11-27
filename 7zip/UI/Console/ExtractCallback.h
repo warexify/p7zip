@@ -1,6 +1,6 @@
 // ExtractCallback.h
 
-#pragma once
+// #pragma once
 
 #ifndef __EXTRACTCALLBACK_H
 #define __EXTRACTCALLBACK_H
