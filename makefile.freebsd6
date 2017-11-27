@@ -1,5 +1,5 @@
 #
-# makefile for FreeBSD (x86, PPC, alpha ...)
+# makefile for FreeBSD 6 (x86, PPC, alpha ...)
 #
 
 OPTFLAGS=-O
@@ -13,7 +13,7 @@ CXX=g++ $(ALLFLAGS)
 CC=gcc $(ALLFLAGS)
 LINK_SHARED=-shared
 
-LOCAL_LIBS=-lc_r
+LOCAL_LIBS=-lpthread
 LOCAL_LIBS_DLL=$(LOCAL_LIBS)
 
 OBJ_CRC32=$(OBJ_CRC32_C)
