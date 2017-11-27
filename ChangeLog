@@ -1,4 +1,22 @@
 
+Version 4.18
+============
+
+  - From Windows version of 7-zip 4.18 and 4.17 :
+    - minor fixes
+
+  - p7zip can now store and restore :
+    - symbolic links,
+    - file permission bits
+      Remark : for directory, restored_perm = stored_perm | 0700 .
+
+  - fix in install.sh
+
+  - On MacOSX, p7zip now restore times of a file.
+
+  - more detailed errors during scanning stage.
+
+
 Version 4.16
 ============
 

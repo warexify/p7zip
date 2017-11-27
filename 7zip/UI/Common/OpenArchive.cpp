@@ -120,7 +120,7 @@ const UInt64 kMaxCheckStartPosition =
 
 HRESULT ReOpenArchive(IInArchive *archive, const UString &fileName)
 {
-  CInFileStream *inStreamSpec = new CInFileStream;
+  CInFileStream *inStreamSpec = new CInFileStream(true);
   CMyComPtr<IInStream> inStream(inStreamSpec);
   inStreamSpec->Open(fileName);
   return archive->Open(inStream, &kMaxCheckStartPosition, NULL);
@@ -300,7 +300,7 @@ HRESULT OpenArchive(const UString &filePath,
     UString &defaultItemName,
     IArchiveOpenCallback *openArchiveCallback)
 {
-  CInFileStream *inStreamSpec = new CInFileStream;
+  CInFileStream *inStreamSpec = new CInFileStream(true);
   CMyComPtr<IInStream> inStream(inStreamSpec);
   if (!inStreamSpec->Open(filePath))
     return GetLastError();

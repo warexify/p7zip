@@ -89,19 +89,31 @@ static int fillin_CFileInfo(CFileInfo &fileInfo,const char *dir,const char *name
   filename[dir_len] = CHAR_PATH_SEPARATOR;
   memcpy(filename+(dir_len+1),name,name_len+1); // copy also final '\0'
 
-  int ret = stat(filename,&stat_info); // do not use lstat !
+#ifdef HAVE_LSTAT
+  int ret = lstat(filename,&stat_info);
+#else
+  int ret = stat(filename,&stat_info);
+#endif
   if (ret != 0) {
-    TRACEN((printf("fillin_CFileInfo : %s\n",filename)))
-    return ret;
+	AString err_msg = "stat error for ";
+        err_msg += filename;
+        err_msg += " (";
+        err_msg += strerror(errno);
+        err_msg += ")";
+        throw err_msg;
   }
 
   /* FIXME : FILE_ATTRIBUTE_HIDDEN ? */
-  if (S_ISDIR(stat_info.st_mode))
+  if (S_ISDIR(stat_info.st_mode)) {
     fileInfo.Attributes = FILE_ATTRIBUTE_DIRECTORY;
-  else
+  } else {
     fileInfo.Attributes = FILE_ATTRIBUTE_ARCHIVE;
+  }
+
   if (!(stat_info.st_mode & S_IWUSR))
     fileInfo.Attributes |= FILE_ATTRIBUTE_READONLY;
+
+  fileInfo.Attributes |= FILE_ATTRIBUTE_UNIX_EXTENSION + ((stat_info.st_mode & 0xFFFF) << 16);
 
   RtlSecondsSince1970ToFileTime( stat_info.st_ctime, &fileInfo.CreationTime );
   RtlSecondsSince1970ToFileTime( stat_info.st_mtime, &fileInfo.LastWriteTime );
@@ -109,8 +121,8 @@ static int fillin_CFileInfo(CFileInfo &fileInfo,const char *dir,const char *name
 
   if (S_ISDIR(stat_info.st_mode)) {
     fileInfo.Size = 0;
-  } else {
-    fileInfo.Size = stat_info.st_size;
+  } else { // file or symbolic link
+    fileInfo.Size = stat_info.st_size; // for a symbolic link, size = size of filename
   }
   fileInfo.Name = name;
   return 0;

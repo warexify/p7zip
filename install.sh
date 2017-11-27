@@ -3,7 +3,7 @@
 # global install
 DEST_HOME=/usr/local
 # for testing 
-DEST_HOME=${HOME}/INSTALL/usr/local
+#DEST_HOME=${HOME}/INSTALL/usr/local
 DEST_BIN=${DEST_HOME}/bin
 DEST_SHARE=${DEST_HOME}/lib/p7zip
 DEST_MAN=${DEST_HOME}/man

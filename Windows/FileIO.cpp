@@ -8,10 +8,10 @@
 #include "../Common/StringConvert.h"
 #endif
 
-#include <unistd.h>
 #include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include <fcntl.h>
 
 #define NEED_NAME_WINDOWS_TO_UNIX
@@ -19,6 +19,8 @@
 
 #include <sys/types.h>
 #include <utime.h>
+
+#define FD_LINK (-2)
 
 extern BOOLEAN WINAPI RtlTimeToSecondsSince1970( const LARGE_INTEGER *Time, DWORD *Seconds );
 
@@ -32,7 +34,7 @@ CFileBase::~CFileBase()
 }
 
 bool CFileBase::Create(LPCTSTR filename, DWORD dwDesiredAccess,
-    DWORD dwShareMode, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes)
+    DWORD dwShareMode, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes,bool ignoreSymbolicLink)
 {
   Close();
   
@@ -71,11 +73,30 @@ bool CFileBase::Create(LPCTSTR filename, DWORD dwDesiredAccess,
        mode = 0777;
     }
   }
-  
-  _fd = open(name,flags, mode);
+
+  _fd = -1;
+#ifdef HAVE_LSTAT
+   if (ignoreSymbolicLink == false)
+   {
+     _size = readlink(name, _buffer, sizeof(_buffer)-1);
+     if (_size > 0) {
+       if (dwDesiredAccess & GENERIC_READ) {
+         _fd = FD_LINK;
+         _offset = 0;
+         _buffer[_size]=0;
+       } else if (dwDesiredAccess & GENERIC_WRITE) {
+         // does not overwrite the file pointed by symbolic link
+         if (!unlink(name)) return false;
+       }
+     }
+  }
+#endif
+  if (_fd == -1) {
+    _fd = open(name,flags, mode);
+  }
 
   if (_fd == -1) {
-    /* an invalid symbolic link => errno == ENOENT */
+    /* !HAVE_LSTAT : an invalid symbolic link => errno == ENOENT */
     return false;
   } else {
     _unix_filename = name;
@@ -86,21 +107,49 @@ bool CFileBase::Create(LPCTSTR filename, DWORD dwDesiredAccess,
 
 #ifndef _UNICODE
 bool CFileBase::Create(LPCWSTR fileName, DWORD desiredAccess,
-    DWORD shareMode, DWORD creationDisposition, DWORD flagsAndAttributes)
+    DWORD shareMode, DWORD creationDisposition, DWORD flagsAndAttributes,bool ignoreSymbolicLink)
 {
   Close();
     return Create(UnicodeStringToMultiByte(fileName, CP_ACP), 
-      desiredAccess, shareMode, creationDisposition, flagsAndAttributes);
+      desiredAccess, shareMode, creationDisposition, flagsAndAttributes,ignoreSymbolicLink);
 }
 #endif
 
 bool CFileBase::Close()
 {
+  struct utimbuf buf;
+
+  buf.actime  = _lastAccessTime;
+  buf.modtime = _lastWriteTime;
+
+  _lastAccessTime = _lastWriteTime = (time_t)-1;
+
   if(_fd == -1)
     return true;
+
+  if(_fd == FD_LINK) {
+    _fd = -1;
+    return true;
+  }
+
   int ret = ::close(_fd);
   if (ret == 0) {
     _fd = -1;
+
+    /* On some OS (mingwin, MacOSX ...), you must close the file before updating times */
+    if ((buf.actime != (time_t)-1) || (buf.modtime != (time_t)-1)) {
+      struct stat    oldbuf;
+      int ret = stat((const char*)(_unix_filename),&oldbuf);
+      if (ret == 0) {
+        if (buf.actime  == (time_t)-1) buf.actime  = oldbuf.st_atime;
+        if (buf.modtime == (time_t)-1) buf.modtime = oldbuf.st_mtime;
+      } else {
+        time_t current_time = time(0);
+        if (buf.actime  == (time_t)-1) buf.actime  = current_time;
+        if (buf.modtime == (time_t)-1) buf.modtime = current_time;
+      }
+      /* ret = */ utime((const char *)(_unix_filename), &buf);
+    }
     return true;
   }
   return false;
@@ -113,6 +162,13 @@ bool CFileBase::GetLength(UINT64 &length) const
      SetLastError( ERROR_INVALID_HANDLE );
      return false;
   }
+
+#ifdef HAVE_LSTAT  
+  if (_fd == FD_LINK) {
+    length = _size;
+    return true;
+  }
+#endif
 
   off_t pos_cur = ::lseek(_fd, 0, SEEK_CUR);
   if (pos_cur == (off_t)-1)
@@ -131,13 +187,32 @@ bool CFileBase::GetLength(UINT64 &length) const
   return true;
 }
 
-bool CFileBase::Seek(INT64 distanceToMove, DWORD moveMethod, UINT64 &newPosition) const
+bool CFileBase::Seek(INT64 distanceToMove, DWORD moveMethod, UINT64 &newPosition)
 {
   if (_fd == -1)
   {
      SetLastError( ERROR_INVALID_HANDLE );
      return false;
   }
+
+#ifdef HAVE_LSTAT
+  if (_fd == FD_LINK) {
+    INT64 offset;
+    switch (moveMethod) {
+    case STREAM_SEEK_SET : offset = distanceToMove; break;
+    case STREAM_SEEK_CUR : offset = _offset + distanceToMove; break;
+    case STREAM_SEEK_END : offset = _size + distanceToMove; break;
+    default :  offset = -1;
+    }
+    if (offset < 0) {
+      SetLastError( EINVAL );
+      return false;
+    }
+    if (offset > _size) offset = _size;
+    newPosition = _offset = offset;
+    return true;
+  }
+#endif
 
   bool ret = true;
 
@@ -169,9 +244,11 @@ bool CInFile::Open(LPCTSTR fileName, DWORD shareMode,
       creationDisposition, flagsAndAttributes);
 }
 
-bool CInFile::Open(LPCTSTR fileName)
+bool CInFile::Open(LPCTSTR fileName,bool ignoreSymbolicLink)
 {
-  return Open(fileName, FILE_SHARE_READ, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL);
+  // return Open(fileName, FILE_SHARE_READ, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL,ignoreSymbolicLink);
+  return Create(fileName, GENERIC_READ , FILE_SHARE_READ, OPEN_EXISTING, 
+     FILE_ATTRIBUTE_NORMAL,ignoreSymbolicLink);
 }
 
 #ifndef _UNICODE
@@ -182,9 +259,10 @@ bool CInFile::Open(LPCWSTR fileName, DWORD shareMode,
       creationDisposition, flagsAndAttributes);
 }
 
-bool CInFile::Open(LPCWSTR fileName)
+bool CInFile::Open(LPCWSTR fileName,bool ignoreSymbolicLink)
 {
-  return Open(fileName, FILE_SHARE_READ, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL);
+  // return Open(fileName, FILE_SHARE_READ, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL,ignoreSymbolicLink);
+  return Create(fileName, GENERIC_READ , FILE_SHARE_READ, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL,ignoreSymbolicLink);
 }
 #endif
 
@@ -200,6 +278,22 @@ bool CInFile::Read(void *buffer, UINT32 bytesToRead, UINT32 &bytesRead)
     bytesRead =0;
     return TRUE;
   }
+
+#ifdef HAVE_LSTAT
+  if (_fd == FD_LINK) {
+    if (_offset >= _size) {
+      bytesRead = 0;
+      return TRUE;
+    }
+    int len = (_size - _offset);
+    if (len > bytesToRead) len = bytesToRead;
+    memcpy(buffer,_buffer+_offset,len);
+    bytesRead = len;
+    _offset += len;
+    return TRUE;
+  }
+#endif
+
   ssize_t  ret;
   do {
     ret = read(_fd,buffer,bytesToRead);
@@ -263,39 +357,28 @@ bool COutFile::SetTime(const FILETIME *lpCreationTime,
   const FILETIME *lpLastAccessTime, const FILETIME *lpLastWriteTime)
 {
   LARGE_INTEGER  ltime;
-  struct stat    oldbuf;
-  struct utimbuf buf;
   DWORD dw;
-  bool ret;
+
   if (_fd == -1) {
      SetLastError( ERROR_INVALID_HANDLE );
      return false;
   }
 
-  ret = stat((const char*)(_unix_filename),&oldbuf);
-  if (ret == 0) {
-    buf.actime  = oldbuf.st_atime;
-    buf.modtime = oldbuf.st_mtime;
-  } else {
-    buf.actime  = buf.modtime = time(0);
-  }
-  
+  /* On some OS (cygwin, MacOSX ...), you must close the file before updating times */
   if (lpLastAccessTime) {
      ltime.QuadPart = lpLastAccessTime->dwHighDateTime;
      ltime.QuadPart = (ltime.QuadPart << 32) | lpLastAccessTime->dwLowDateTime;
      RtlTimeToSecondsSince1970( &ltime, &dw );
-     buf.actime = dw;
+     _lastAccessTime = dw;
   }
   if (lpLastWriteTime) {
      ltime.QuadPart = lpLastWriteTime->dwHighDateTime;
      ltime.QuadPart = (ltime.QuadPart << 32) | lpLastWriteTime->dwLowDateTime;
      RtlTimeToSecondsSince1970( &ltime, &dw );
-     buf.modtime = dw;
+     _lastWriteTime = dw;
   }
 
-  ret = utime((const char *)(_unix_filename), &buf);
-  if (ret == 0) return true;
-  return false;
+  return true;
 }
 
 bool COutFile::SetLastWriteTime(const FILETIME *lastWriteTime)

@@ -244,6 +244,7 @@ bool ParseArchiveCommand(const UString &commandString, CArchiveCommand &command)
 // ------------------------------------------------------------------
 // filenames functions
 
+/*
 static bool TestIsPathLegal(const UString &name)
 {
   if (name.Length() == 0)
@@ -256,6 +257,7 @@ static bool TestIsPathLegal(const UString &name)
     return false;
   return true;
 }
+*/
 
 static bool AddNameToCensor(NWildcard::CCensor &wildcardCensor, 
     const UString &name, bool include, NRecursedType::EEnum type)
@@ -807,11 +809,19 @@ int ParseCommandLine(UStringVector commandStrings,
       AddSwitchWildCardsToCensor(archiveWildcardCensor, 
       parser[NKey::kArExclude].PostStrings, false, NRecursedType::kNonRecursed);
 
-    if (thereIsArchiveName)
-      AddCommandLineWildCardToCensr(archiveWildcardCensor, options.ArchiveName, true, NRecursedType::kNonRecursed);
+    bool directlyAddArchiveName = false;
+    if (thereIsArchiveName) {
+      if ((options.ArchiveName.Find(L"*") == -1) && (options.ArchiveName.Find(L"?") == -1)) {
+        // no wildcard => no need to scan
+        directlyAddArchiveName = true;
+      } else {
+        AddCommandLineWildCardToCensr(archiveWildcardCensor, options.ArchiveName, true, NRecursedType::kNonRecursed);
+      }
+    }
 
     CObjectVector<CDirItem> dirItems;
-    EnumerateItems(archiveWildcardCensor, dirItems, NULL);
+    UString path_error; // FIXME
+    EnumerateItems(archiveWildcardCensor, dirItems, NULL,path_error);
     UStringVector archivePaths;
     /*
     int pos = options.ArchiveName.ReverseFind('\\');
@@ -828,8 +838,14 @@ int ParseCommandLine(UStringVector commandStrings,
     }
     */
     int i;
-    for (i = 0; i < dirItems.Size(); i++)
+    for (i = 0; i < dirItems.Size(); i++) {
       archivePaths.Add(dirItems[i].FullPath);
+    }
+
+    // Because the pathname of archive can be a symbolic link
+    // do not use "AddCommandLineWildCardToCensr(archiveWildcardCensor, options.ArchiveName"
+    if (directlyAddArchiveName)
+      archivePaths.Add(options.ArchiveName);
 
     if (archivePaths.Size() == 0)
       throw "there is no such archive";

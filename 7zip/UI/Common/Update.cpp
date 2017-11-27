@@ -694,7 +694,14 @@ HRESULT UpdateArchive(const NWildcard::CCensor &censor,
       CEnumDirItemUpdateCallback enumCallback;
       enumCallback.Callback = callback;
       RINOK(callback->StartScanning());
-      RINOK(EnumerateItems(censor, dirItems, &enumCallback));
+      // FIXED RINOK(EnumerateItems(censor, dirItems, &enumCallback));
+      UString path_error;
+      HRESULT res = EnumerateItems(censor, dirItems, &enumCallback,path_error);
+      if(res != S_OK) {
+        errorInfo.Message = L"Scanning error in";
+        errorInfo.FileName = path_error;
+        return res;
+      }
       RINOK(callback->FinishScanning());
     }
   }

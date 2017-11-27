@@ -17,6 +17,9 @@
 
   #endif /* !ENV_MACOSX && !ENV_BEOS */
 
+  /*  */
+  #define HAVE_LSTAT
+
   /* <locale.h> */
   #define HAVE_LOCALE
 
@@ -31,9 +34,11 @@
   #define HAVE_TIMEGM
   #endif
 
-#endif /* __DJGPP__ */
+#endif /* !__DJGPP__ */
 
 #ifndef ENV_BEOS
 #define HAVE_PTHREAD
 #endif
+
+#define MAX_PATHNAME_LEN   1024
 

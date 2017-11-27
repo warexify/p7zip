@@ -1,5 +1,4 @@
 
-#define MAX_PATHNAME_LEN   1024
 void WINAPI RtlSecondsSince1970ToFileTime( DWORD Seconds, LPFILETIME ft );
 
 #ifdef NEED_NAME_WINDOWS_TO_UNIX

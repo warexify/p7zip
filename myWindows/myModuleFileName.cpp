@@ -127,6 +127,10 @@ static DWORD mySearchPathA( LPCSTR path, LPCSTR name, LPCSTR ext,
 
 DWORD SearchPathA( LPCSTR path, LPCSTR name, LPCSTR ext,
                    DWORD buflen, LPSTR buffer, LPSTR *lastpart ) {
+  if (buffer == 0) {
+    printf("NOT EXPECTED : SearchPathA : buffer == NULL\n");
+    exit(EXIT_FAILURE);
+  }
   *buffer=0;
   DWORD ret = mySearchPathA(path,name,ext,buflen,buffer,lastpart);
 

@@ -8,8 +8,6 @@
 
 - no chmod/chown(uid,gid) for TAR
 
-- no real support for linked files (the file or directory behind the link is archived ...)
-
 - Use a more portable "String.h"
 
 - UTF16 : try to test with Complex Unicode filenames

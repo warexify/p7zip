@@ -21,14 +21,14 @@ static inline HRESULT ConvertBoolToHRESULT(bool result)
 
 bool CInFileStream::Open(LPCTSTR fileName)
 {
-  return File.Open(fileName);
+  return File.Open(fileName,_ignoreSymbolicLink);
 }
 
 #if defined(_WIN32) || defined(ENV_UNIX)
 #ifndef _UNICODE
 bool CInFileStream::Open(LPCWSTR fileName)
 {
-  return File.Open(fileName);
+  return File.Open(fileName,_ignoreSymbolicLink);
 }
 #endif
 #endif

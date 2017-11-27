@@ -17,13 +17,14 @@ class CInFileStream:
   public IStreamGetSize,
   public CMyUnknownImp
 {
+  bool _ignoreSymbolicLink;
 public:
   #if defined(_WIN32) || defined(ENV_UNIX)
   NWindows::NFile::NIO::CInFile File;
   #else
   NC::NFile::NIO::CInFile File;
   #endif
-  CInFileStream() {}
+  CInFileStream(bool b=false) { _ignoreSymbolicLink = b; }
   virtual ~CInFileStream() {}
 
   bool Open(LPCTSTR fileName);

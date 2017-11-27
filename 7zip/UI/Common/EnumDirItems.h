@@ -28,6 +28,6 @@ struct IEnumDirItemCallback
 
 
 HRESULT EnumerateItems(const NWildcard::CCensor &censor, 
-    CObjectVector<CDirItem> &dirItems, IEnumDirItemCallback *callback);
+    CObjectVector<CDirItem> &dirItems, IEnumDirItemCallback *callback,UString &path_error);
 
 #endif

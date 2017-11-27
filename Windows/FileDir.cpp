@@ -236,39 +236,76 @@ bool MyMoveFile(LPCWSTR existFileName, LPCWSTR newFileName)
 #endif
 
 
+static int convert_to_symlink(const char * name) {
+  FILE *file = fopen(name,"rb");
+  if (file) {
+    char buf[MAX_PATHNAME_LEN+1];
+    char * ret = fgets(buf,sizeof(buf)-1,file);
+    fclose(file);
+    if (ret) {
+      int ir = unlink(name);
+      if (ir == 0) {
+        ir = symlink(buf,name);
+      }
+      return ir;    
+    }
+  }
+  return -1;
+}
+
 bool MySetFileAttributes(LPCTSTR fileName, DWORD fileAttributes)
 {
   if (!fileName) {
     SetLastError(ERROR_PATH_NOT_FOUND);
-    TRACEN((printf("MySetFileAttributes(%s,%d) : false-1\n",name,attributes)))
+    TRACEN((printf("MySetFileAttributes(NULL,%d) : false-1\n",fileAttributes)))
     return false;
   }
-  
   const char * name = nameWindowToUnix(fileName);
-  struct stat buf;
-
-  if(stat(name,&buf)!=0) {
-    TRACEN((printf("MySetFileAttributes(%s,%d) : false-2\n",name,attributes)))
+  struct stat stat_info;
+#ifdef HAVE_LSTAT
+  if(lstat(name,&stat_info)!=0) {
+#else
+  if(stat(name,&stat_info)!=0) {
+#endif
+    TRACEN((printf("MySetFileAttributes(%s,%d) : false-2\n",name,fileAttributes)))
     return false;
   }
 
-  if (fileAttributes & FILE_ATTRIBUTE_READONLY) {
-    if(!S_ISDIR(buf.st_mode)) {
-      /* FILE_ATTRIBUTE_READONLY ignored for directory. */
-      buf.st_mode &= ~0222; /* octal!, clear write permission bits */
-    }
-    fileAttributes &= ~FILE_ATTRIBUTE_READONLY;
+  if (fileAttributes & FILE_ATTRIBUTE_UNIX_EXTENSION) {
+     stat_info.st_mode = fileAttributes >> 16;
+     if (S_ISLNK(stat_info.st_mode)) {
+        if ( convert_to_symlink(name) != 0) {
+          TRACEN((printf("MySetFileAttributes(%s,%d) : false-3\n",name,fileAttributes)))
+          return false;
+        }
+     } else if (S_ISREG(stat_info.st_mode)) {
+       chmod(name,stat_info.st_mode);
+     } else if (S_ISDIR(stat_info.st_mode)) {
+       // user/7za must be able to create files in this directory
+       stat_info.st_mode |= (S_IRUSR | S_IWUSR | S_IXUSR);
+       chmod(name,stat_info.st_mode);
+     }
+#ifdef HAVE_LSTAT
+  } else if (!S_ISLNK(stat_info.st_mode)) {
+#else
   } else {
-    /* add write permission */
-    buf.st_mode |= (0600 | ((buf.st_mode & 044) >> 1)) ;
-  }
-  chmod(name,buf.st_mode);
+#endif
+    if (fileAttributes & FILE_ATTRIBUTE_READONLY) {
+      if(!S_ISDIR(stat_info.st_mode)) {
+        /* FILE_ATTRIBUTE_READONLY ignored for directory. */
+        stat_info.st_mode &= ~0222; /* octal!, clear write permission bits */
+      }
+    } else {
+      /* add write permission */
+      stat_info.st_mode |= (0600 | ((stat_info.st_mode & 044) >> 1)) ;
+    }
 
-  TRACEN((printf("MySetFileAttributes(%s,%d) : true\n",name,attributes)))
+    chmod(name,stat_info.st_mode);
+  }
+  TRACEN((printf("MySetFileAttributes(%s,%d) : true\n",name,fileAttributes)))
 
   return true;
 }
-
 
 bool MyCreateDirectory(LPCTSTR pathName)
 {  
@@ -393,7 +430,7 @@ bool DeleteFileAlways(LPCTSTR name)
    const char * unixname = nameWindowToUnix(name);
    bool bret = false;
    if (remove(unixname) == 0) bret = true;
-   TRACEN((printf("DeleteFileAlways(%s)=%d\n",unixname,(intb)ret)))
+   TRACEN((printf("DeleteFileAlways(%s)=%d\n",unixname,(int)bret)))
    return bret;
 }
 

@@ -89,8 +89,6 @@ Assume Yes on all queries
 .PP
 .SH Backup and limitations
 DO NOT USE the 7-zip format for backup purpose on Linux/Unix because :
- - 7-zip does not handle symbolic links (7-zip follows the link and stores the files instead of the links),
- - 7-zip does not store the Unix file permissions (ex : executable bit),
  - 7-zip does not store the owner/group of the file.
 
 .LP
@@ -98,8 +96,8 @@ On Linux/Unix, in order to backup directories you must use tar :
  - to backup a directory  : tar cf - directory | 7za a -si directory.tar.7z
  - to restore your backup : 7za x -so directory.tar.7z | tar xf -
 
-If you want to send files and directories (not link, not the file permissions,
-not the owner of file) to others Unix/MacOS/Windows users, you can use the 7-zip format.
+If you want to send files and directories (not the owner of file)
+to others Unix/MacOS/Windows users, you can use the 7-zip format.
 
   example : 7za a directory.7z  directory
 
