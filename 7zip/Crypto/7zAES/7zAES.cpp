@@ -4,6 +4,9 @@
 
 #include "Windows/Defs.h"
 #include "Windows/Synchronization.h"
+#ifndef _WIN32
+#include "Windows/FileDir.h"
+#endif
 #include "../../Common/StreamObjects.h"
 
 #include "7zAES.h"
@@ -244,7 +247,7 @@ bool GetAESLibPath(TCHAR *path)
   if (needLength == 0 || needLength >= MAX_PATH)
     return false;
 #ifdef ENV_UNIX // FIXED
-  lstrcpy(fileNamePointer, TEXT("../Codecs/AES.dll"));
+  lstrcpy(fileNamePointer, TEXT("../Codecs/AES.so"));
 #else
   lstrcpy(fileNamePointer, TEXT("AES.dll"));
 #endif

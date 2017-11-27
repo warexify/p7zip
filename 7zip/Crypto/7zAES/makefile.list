@@ -16,3 +16,8 @@ Synchronization.o : ../../../Windows/Synchronization.cpp
 	$(CXX) $(CFLAGS) ./7zAES.cpp
 SHA256.o : ./SHA256.cpp
 	$(CXX) $(CFLAGS) ./SHA256.cpp
+FileDir.o : ../../../Windows/FileDir.cpp
+	$(CXX) $(CFLAGS) ../../../Windows/FileDir.cpp
+FileFind.o : ../../../Windows/FileFind.cpp
+	$(CXX) $(CFLAGS) ../../../Windows/FileFind.cpp
+

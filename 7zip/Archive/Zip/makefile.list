@@ -64,6 +64,8 @@ ZipUpdate.o : ./ZipUpdate.cpp
 	$(CXX) $(CFLAGS) ./ZipUpdate.cpp
 CopyCoder.o : ../../Compress/Copy/CopyCoder.cpp
 	$(CXX) $(CFLAGS) ../../Compress/Copy/CopyCoder.cpp
+ShrinkDecoder.o : ../../Compress/Shrink/ShrinkDecoder.cpp
+	$(CXX) $(CFLAGS) ../../Compress/Shrink/ShrinkDecoder.cpp
 ZipCipher.o : ../../Crypto/Zip/ZipCipher.cpp
 	$(CXX) $(CFLAGS) ../../Crypto/Zip/ZipCipher.cpp
 ZipCrypto.o : ../../Crypto/Zip/ZipCrypto.cpp
@@ -72,3 +74,15 @@ ZipCrypto.o : ../../Crypto/Zip/ZipCrypto.cpp
 	$(CXX) $(CFLAGS) ../7z/7zMethodID.cpp
 7zMethods.o : ../7z/7zMethods.cpp
 	$(CXX) $(CFLAGS) ../7z/7zMethods.cpp
+InBuffer.o : ../../Common/InBuffer.cpp
+	$(CXX) $(CFLAGS) ../../Common/InBuffer.cpp
+OutBuffer.o : ../../Common/OutBuffer.cpp
+	$(CXX) $(CFLAGS) ../../Common/OutBuffer.cpp
+ImplodeDecoder.o : ../../Compress/Implode/ImplodeDecoder.cpp
+	$(CXX) $(CFLAGS) ../../Compress/Implode/ImplodeDecoder.cpp
+ImplodeHuffmanDecoder.o : ../../Compress/Implode/ImplodeHuffmanDecoder.cpp
+	$(CXX) $(CFLAGS) ../../Compress/Implode/ImplodeHuffmanDecoder.cpp
+LZOutWindow.o : ../../Compress/LZ/LZOutWindow.cpp
+	$(CXX) $(CFLAGS) ../../Compress/LZ/LZOutWindow.cpp
+LSBFDecoder.o : ../../Common/LSBFDecoder.cpp
+	$(CXX) $(CFLAGS) ../../Common/LSBFDecoder.cpp

@@ -91,7 +91,11 @@ HRESULT CDecoder::CreateFilter()
     return S_OK;
   TCHAR aesLibPath[MAX_PATH + 64];
   GetCryptoFolderPrefix(aesLibPath);
+#ifdef ENV_UNIX // FIXED
+  lstrcat(aesLibPath, TEXT("AES.so"));
+#else
   lstrcat(aesLibPath, TEXT("AES.dll"));
+#endif
   return _aesLib.LoadAndCreateFilter(aesLibPath, CLSID_CCrypto_AES128_Decoder, &_aesFilter);
 }
 

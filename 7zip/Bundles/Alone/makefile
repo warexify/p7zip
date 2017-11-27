@@ -1,10 +1,11 @@
 
 PROG=../../../bin/7za
+PROGS=lib7za.a testlib testlib.exe
 
 LOCAL_FLAGS= \
 -DEXCLUDE_COM -DNO_REGISTRY -DFORMAT_7Z -DFORMAT_BZIP2 -DFORMAT_ZIP \
 -DFORMAT_TAR -DFORMAT_GZIP -DCOMPRESS_LZMA -DCOMPRESS_BCJ_X86 \
--DFORMAT_SPLIT \
+-DFORMAT_SPLIT -DFORMAT_Z \
 -DCOMPRESS_BCJ2 -DCOMPRESS_COPY -DCOMPRESS_MF_MT -DCOMPRESS_PPMD \
 -DCOMPRESS_DEFLATE -DCOMPRESS_DEFLATE64 -DCOMPRESS_IMPLODE -DCOMPRESS_BZIP2 \
 -DCRYPTO_ZIP -DCRYPTO_7ZAES -DCRYPTO_AES
@@ -14,19 +15,13 @@ include ../../../makefile.machine
 LIBS=$(LOCAL_LIBS)
 
 MY_WINDOWS= \
-	$(MY_HOME)/myEvents.o \
-	$(MY_HOME)/myDirectoryAndPath.o \
 	$(MY_HOME)/myGetTickCount.o \
-	$(MY_HOME)/myLastError.o \
-	$(MY_HOME)/wine_strings.o \
 	$(MY_HOME)/wine_date_and_time.o \
-	$(MY_HOME)/myFindFile.o \
-	$(MY_HOME)/myFiles.o \
 	$(MY_HOME)/myModuleFileName.o \
 	$(MY_HOME)/mySplitCommandLine.o
 
 OBJS=\
-../../../BUILD/Common/MyWindows.o \
+../../../Common/MyWindows.o \
 7zAES.o \
 7zCompressionMode.o \
 7zDecode.o \
@@ -43,21 +38,21 @@ OBJS=\
 7zProperties.o \
 7zSpecStream.o \
 7zUpdate.o \
-../../../BUILD/Common/AlignedBuffer.o \
-../../../BUILD/Common/Alloc.o \
-../../../BUILD/Common/CommandLineParser.o \
-../../../BUILD/Common/ListFileUtils.o \
-../../../BUILD/Common/StdInStream.o \
-../../../BUILD/Common/StdOutStream.o \
-../../../BUILD/Common/Wildcard.o \
-../../../BUILD/Common/UTFConvert.o \
-../../../BUILD/Common/Vector.o \
-../../../BUILD/Common/StringConvert.o \
-../../../BUILD/Common/String.o \
-../../../BUILD/Common/CRC.o \
-../../../BUILD/Common/IntToString.o \
-../../../BUILD/Common/StringToInt.o \
-../../../BUILD/Common/Random.o \
+../../../Common/AlignedBuffer.o \
+../../../Common/Alloc.o \
+../../../Common/CommandLineParser.o \
+../../../Common/ListFileUtils.o \
+../../../Common/StdInStream.o \
+../../../Common/StdOutStream.o \
+../../../Common/Wildcard.o \
+../../../Common/UTFConvert.o \
+../../../Common/Vector.o \
+../../../Common/StringConvert.o \
+../../../Common/String.o \
+../../../Common/CRC.o \
+../../../Common/IntToString.o \
+../../../Common/StringToInt.o \
+../../../Common/Random.o \
 BZip2Decoder.o \
 BZip2Encoder.o \
 BZip2Error.o \
@@ -100,8 +95,8 @@ LimitedStreams.o \
 List.o \
 LockedStream.o \
 MT.o \
-Main.o \
 MainAr.o \
+Main.o \
 MultiStream.o \
 MyAES.o \
 OffsetStream.o \
@@ -171,7 +166,115 @@ ArchiveExtractCallback.o \
 UpdateCallback.o \
 Update.o \
 ZipHandler.o \
-FileIO.o
+FileIO.o \
+ShrinkDecoder.o \
+ZDecoder.o \
+ZHandler.o
 
 include ../../../makefile.glb
+
+OBJ7ZA= \
+../../../Common/AlignedBuffer.o \
+../../../Common/Alloc.o \
+../../../Common/Vector.o \
+../../../Common/StringConvert.o \
+../../../Common/String.o \
+../../../Common/Wildcard.o \
+../../../Common/StringToInt.o \
+../../../Common/CRC.o \
+../../../Common/IntToString.o \
+DllExports.o \
+7zDecode.o \
+7zEncode.o \
+7zExtract.o \
+7zFolderInStream.o \
+7zFolderOutStream.o \
+7zHandler.o \
+7zHandlerOut.o \
+7zHeader.o \
+7zIn.o \
+7zMethodID.o \
+7zOut.o \
+7zProperties.o \
+7zSpecStream.o \
+7zUpdate.o \
+DllExports.o\
+HuffmanEncoder.o\
+InBuffer.o\
+LSBFDecoder.o\
+LSBFEncoder.o\
+OutBuffer.o\
+LZInWindow.o\
+LZOutWindow.o\
+DeflateDecoder.o\
+DeflateEncoder.o\
+BZip2Decoder.o\
+BZip2Encoder.o\
+BZip2Error.o\
+blocksort.o\
+bzlib.o\
+compress.o\
+crctable.o\
+decompress.o\
+huffman.o\
+randtable.o \
+CoderMixer2.o \
+CoderMixer2MT.o \
+CrossThreadProgress.o \
+FilterCoder.o \
+InStreamWithCRC.o \
+ItemNameUtils.o \
+OutStreamWithCRC.o \
+InBuffer.o \
+InOutTempBuffer.o \
+LimitedStreams.o \
+LockedStream.o \
+OutBuffer.o \
+ProgressUtils.o \
+StreamBinder.o \
+StreamObjects.o \
+BranchCoder.o \
+x86_2.o \
+x86.o \
+CopyCoder.o \
+LZInWindow.o \
+LZOutWindow.o \
+LZMADecoder.o \
+LZMAEncoder.o \
+MT.o \
+PPMDDecoder.o \
+PPMDEncoder.o \
+RangeCoderBit.o \
+ZDecoder.o \
+ZHandler.o \
+7zAES.o \
+SHA256.o \
+aescrypt.o \
+aeskey.o \
+aestab.o \
+MyAES.o \
+FileDir.o \
+FileFind.o \
+FileIO.o \
+PropVariant.o \
+Synchronization.o \
+../../../Common/MyWindows.o \
+	$(MY_HOME)/myGetTickCount.o \
+	$(MY_HOME)/wine_date_and_time.o \
+	$(MY_HOME)/myModuleFileName.o \
+	$(MY_HOME)/mySplitCommandLine.o
+
+lib7za.a: $(OBJ7ZA)
+	rm -f lib7za.a
+	ar cr lib7za.a $(OBJ7ZA)
+
+
+testlib : testlib.o ./lib7za.a
+	$(CXX) $(LOCAL_SHARED) $(LDFLAGS) testlib.o lib7za.a -o testlib $(LIBS)
+
+testlib.o : testlib.cpp
+	$(CXX) $(CFLAGS) testlib.cpp
+
+DllExports.o : ../../Archive/7z/DllExports.cpp
+	$(CXX) $(CFLAGS) ../../Archive/7z/DllExports.cpp
 

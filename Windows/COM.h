@@ -15,6 +15,7 @@ public:
   ~CComInitializer() { CoUninitialize(); };
 };
 
+#ifdef _WIN32
 class CStgMedium
 {
   STGMEDIUM _object;
@@ -32,6 +33,7 @@ public:
   STGMEDIUM* operator->() { return &_object;}
   STGMEDIUM* operator&() { return &_object; }
 };
+#endif
 
 //////////////////////////////////
 // GUID <--> String Conversions

@@ -23,25 +23,8 @@ extern "C" {
 
 #define WINAPI 
 
-#define LOWORD(l)	((WORD)((DWORD)(l)))
-#define HIWORD(l)	((WORD)(((DWORD)(l)>>16)&0xFFFF))
-
-#ifndef NOMINMAX
-#ifndef max
-#define max(a,b) ((a)>(b)?(a):(b))
-#endif
-#ifndef min
-#define min(a,b) ((a)<(b)?(a):(b))
-#endif
-#endif
-
-typedef int WINBOOL,*PWINBOOL,*LPWINBOOL;
+typedef int WINBOOL;
 typedef WINBOOL BOOL;
-typedef BOOL *PBOOL,*LPBOOL;
-typedef DWORD *PDWORD,*LPDWORD;
-typedef WORD *PWORD,*LPWORD;
-typedef unsigned int *PUINT,*LPUINT;
-typedef CONST void *PCVOID,*LPCVOID;
 
 #include <winnt.h>
 

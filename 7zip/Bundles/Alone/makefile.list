@@ -294,3 +294,9 @@ aeskey.o : ../../Crypto/AES/aeskey.c
 	$(CC) $(CFLAGS) ../../Crypto/AES/aeskey.c
 aestab.o : ../../Crypto/AES/aestab.c
 	$(CC) $(CFLAGS) ../../Crypto/AES/aestab.c
+ShrinkDecoder.o : ../../Compress/Shrink/ShrinkDecoder.cpp
+	$(CXX) $(CFLAGS) ../../Compress/Shrink/ShrinkDecoder.cpp
+ZHandler.o : ../../Archive/Z/ZHandler.cpp
+	$(CXX) $(CFLAGS) ../../Archive/Z/ZHandler.cpp
+ZDecoder.o : ../../Compress/Z/ZDecoder.cpp
+	$(CXX) $(CFLAGS) ../../Compress/Z/ZDecoder.cpp

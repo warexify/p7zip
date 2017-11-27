@@ -6,14 +6,14 @@ include ../makefile.machine
 
 LIBS=$(LOCAL_LIBS)
 
-OBJS=myEvents.o myFiles.o myGetTickCount.o myFindFile.o myDirectoryAndPath.o \
-	myLastError.o myModuleFileName.o \
-	wine_date_and_time.o wine_strings.o \
+OBJS=myGetTickCount.o \
+	myModuleFileName.o \
+	wine_date_and_time.o \
 	mySplitCommandLine.o \
 	test_emul.o \
-	../BUILD/Common/Vector.o \
-	../BUILD/Common/String.o \
-	../BUILD/Common/MyWindows.o
+	../Common/Vector.o \
+	../Common/String.o \
+	../Common/MyWindows.o
 
 include ../makefile.glb
 

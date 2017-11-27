@@ -4,6 +4,9 @@
 
 #ifdef __APPLE_CC__
 #include <mach-o/dyld.h>
+#elif ENV_BEOS
+#include <kernel/image.h>
+#include <Path.h>
 #else
 #include <dlfcn.h>  // dlopen ...
 #endif
@@ -14,6 +17,7 @@
 #include "../Common/StringConvert.h"
 #endif
 
+#define NEED_NAME_WINDOWS_TO_UNIX
 #include "myPrivate.h"
 
 //#define TRACEN(u) u;
@@ -35,6 +39,8 @@ TRACEN((printf("CLibrary::Free(%p)\n",(void *)_module)))
 
 #ifdef __APPLE_CC__
   int ret = NSUnLinkModule (_module, 0);
+#elif ENV_BEOS
+  int ret = unload_add_on((image_id)_module);
 #else
   int ret = dlclose(_module);
 #endif
@@ -50,7 +56,7 @@ static FARPROC local_GetProcAddress(HMODULE module,LPCSTR lpProcName)
   TRACEN((printf("local_GetProcAddress(%p,%s)\n",(void *)module,lpProcName)))
   if (module) {
 #ifdef __APPLE_CC__
-    char name[1024];
+    char name[MAX_PATHNAME_LEN];
     sprintf(name,"_%s",lpProcName);
     TRACEN((printf("NSLookupSymbolInModule(%p,%s)\n",(void *)module,name)))
     NSSymbol sym;
@@ -60,6 +66,9 @@ static FARPROC local_GetProcAddress(HMODULE module,LPCSTR lpProcName)
     } else {
       ptr = 0;
     }
+#elif ENV_BEOS
+    if (get_image_symbol((image_id)module, lpProcName, B_SYMBOL_TYPE_TEXT, &ptr) != B_OK)
+      ptr = 0;
 #else
     ptr = dlsym (module, lpProcName);
 #endif
@@ -97,8 +106,7 @@ bool CLibrary::Load(LPCTSTR lpLibFileName)
 {
   // HMODULE handler = ::LoadLibrary(fileName);
   void *handler = 0;
-  char name[1024];
-  nameWindowToUnixA(lpLibFileName,name);
+  const char * name = nameWindowToUnix(lpLibFileName);
 
 #ifdef __APPLE_CC__
   NSObjectFileImage image;
@@ -111,6 +119,15 @@ bool CLibrary::Load(LPCTSTR lpLibFileName)
            | NSLINKMODULE_OPTION_PRIVATE | NSLINKMODULE_OPTION_BINDNOW);
   } else {
      TRACEN((printf("NSCreateObjectFileImageFromFile(%s) : ERROR\n",name)))
+  }
+#elif ENV_BEOS
+  // normalize path (remove things like "./", "..", etc..), otherwise it won't work
+  BPath p(name, NULL, true);
+  status_t err = B_OK;
+  handler = (HMODULE)load_add_on(p.Path());
+  if (handler < 0) {
+    err = (image_id)handler;
+    handler = 0;
   }
 #else
 #ifdef RTLD_GROUP
@@ -138,6 +155,8 @@ bool CLibrary::Load(LPCTSTR lpLibFileName)
     const char *file,*err;
     NSLinkEditError(&c,&num_err,&file,&err);
     printf("Can't load '%s' (%s)\n", lpLibFileName,err);
+#elif ENV_BEOS
+    printf("Can't load '%s' (%s)\n", lpLibFileName,strerror(err));
 #else
     printf("Can't load '%s' (%s)\n", lpLibFileName,dlerror());
 #endif
@@ -147,33 +166,15 @@ bool CLibrary::Load(LPCTSTR lpLibFileName)
 }
 
 #ifndef _UNICODE
-static inline UINT GetCurrentCodePage() 
-  { return ::AreFileApisANSI() ? CP_ACP : CP_OEMCP; } 
- 
- 
 bool CLibrary::LoadEx(LPCWSTR fileName, DWORD flags)
 {
-#ifdef WIN32
-  HMODULE module = ::LoadLibraryExW(fileName, NULL, flags);
-  if (module != 0)
-    return LoadOperations(module);
-  if (::GetLastError() != ERROR_CALL_NOT_IMPLEMENTED)
-    return false;
-#endif
-  return LoadEx(UnicodeStringToMultiByte(fileName, GetCurrentCodePage()), flags);
+  return LoadEx(UnicodeStringToMultiByte(fileName, CP_ACP), flags);
 }
 
 
 bool CLibrary::Load(LPCWSTR fileName)
 {
-#ifdef WIN32
-  HMODULE module = ::LoadLibraryW(fileName);
-  if (module != 0)
-    return LoadOperations(module);
-  if (::GetLastError() != ERROR_CALL_NOT_IMPLEMENTED)
-    return false;
-#endif
-  return Load(UnicodeStringToMultiByte(fileName, GetCurrentCodePage()));
+  return Load(UnicodeStringToMultiByte(fileName, CP_ACP));
 }
 #endif
 
@@ -195,22 +196,10 @@ bool MyGetModuleFileName(HMODULE hModule, CSysString &result)
 #ifndef _UNICODE
 bool MyGetModuleFileName(HMODULE hModule, UString &result)
 {
-#ifdef WIN32
-  result.Empty();
-  wchar_t fullPath[MAX_PATH + 2];
-  DWORD size = ::GetModuleFileNameW(hModule, fullPath, MAX_PATH + 1);
-  if (size <= MAX_PATH && size != 0)
-  {
-    result = fullPath;
-    return true;
-  }
-  if (::GetLastError() != ERROR_CALL_NOT_IMPLEMENTED)
-    return false;
-#endif
   CSysString resultSys;
   if (!MyGetModuleFileName(hModule, resultSys))
     return false;
-  result = MultiByteToUnicodeString(resultSys, GetCurrentCodePage());
+  result = MultiByteToUnicodeString(resultSys, CP_ACP);
   return true;
 }
 #endif

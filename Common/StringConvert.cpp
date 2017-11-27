@@ -1,67 +1,15 @@
 // Common/StringConvert.cpp
 
 #include "StdAfx.h"
+#include <stdlib.h>
 
 #include "StringConvert.h"
-
-#ifndef _WIN32
-#include <stdlib.h>
-#endif
-
-#ifdef _WIN32
-UString MultiByteToUnicodeString(const AString &srcString, UINT codePage)
-{
-  UString resultString;
-  if(!srcString.IsEmpty())
-  {
-    int numChars = MultiByteToWideChar(codePage, 0, srcString, 
-      srcString.Length(), resultString.GetBuffer(srcString.Length()), 
-      srcString.Length() + 1);
-    #ifndef _WIN32_WCE
-    if(numChars == 0)
-      throw 282228;
-    #endif
-    resultString.ReleaseBuffer(numChars);
-  }
-  return resultString;
-}
-
-AString UnicodeStringToMultiByte(const UString &srcString, UINT codePage)
-{
-  AString resultString;
-  if(!srcString.IsEmpty())
-  {
-    int numRequiredBytes = srcString.Length() * 2;
-    int numChars = WideCharToMultiByte(codePage, 0, srcString, 
-      srcString.Length(), resultString.GetBuffer(numRequiredBytes), 
-      numRequiredBytes + 1, NULL, NULL);
-    #ifndef _WIN32_WCE
-    if(numChars == 0)
-      throw 282229;
-    #endif
-    resultString.ReleaseBuffer(numChars);
-  }
-  return resultString;
-}
-
-#ifndef _WIN32_WCE
-AString SystemStringToOemString(const CSysString &srcString)
-{
-  AString result;
-  CharToOem(srcString, result.GetBuffer(srcString.Length() * 2));
-  result.ReleaseBuffer();
-  return result;
-}
-#endif
-
-#else
-
-#ifdef ENV_UNIX // FIXED
 
 int global_use_utf16_conversion = 0;
 
 UString MultiByteToUnicodeString(const AString &srcString, UINT codePage)
 {
+#ifdef HAVE_MBSTOWCS
   if ((global_use_utf16_conversion) && (!srcString.IsEmpty()))
   {
     UString resultString;
@@ -71,6 +19,7 @@ UString MultiByteToUnicodeString(const AString &srcString, UINT codePage)
       return resultString;
     }
   }
+#endif
 
   UString resultString;
   for (int i = 0; i < srcString.Length(); i++)
@@ -81,6 +30,7 @@ UString MultiByteToUnicodeString(const AString &srcString, UINT codePage)
 
 AString UnicodeStringToMultiByte(const UString &srcString, UINT codePage)
 {
+#ifdef HAVE_WCSTOMBS
   if ((global_use_utf16_conversion) && (!srcString.IsEmpty()))
   {
     AString resultString;
@@ -91,6 +41,7 @@ AString UnicodeStringToMultiByte(const UString &srcString, UINT codePage)
       return resultString;
     }
   }
+#endif
 
   AString resultString;
   for (int i = 0; i < srcString.Length(); i++)
@@ -100,23 +51,4 @@ AString UnicodeStringToMultiByte(const UString &srcString, UINT codePage)
   }
   return resultString;
 }
-#else /* ENV_UNIX */
-UString MultiByteToUnicodeString(const AString &srcString, UINT codePage)
-{
-  UString resultString;
-  for (int i = 0; i < srcString.Length(); i++)
-    resultString += wchar_t(srcString[i]);
-  return resultString;
-}
-
-AString UnicodeStringToMultiByte(const UString &srcString, UINT codePage)
-{
-  AString resultString;
-  for (int i = 0; i < srcString.Length(); i++)
-    resultString += char(srcString[i]);
-  return resultString;
-}
-#endif /* ENV_UNIX */
-
-#endif
 

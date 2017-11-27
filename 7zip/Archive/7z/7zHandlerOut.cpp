@@ -660,11 +660,6 @@ HRESULT ParseDictionaryValues(const UString &srcStringSpec, UInt32 &dicSize)
   return S_OK;
 }
 
-static inline UINT GetCurrentFileCodePage()
-{
-  return AreFileApisANSI() ? CP_ACP : CP_OEMCP;
-}
-
 static HRESULT SetBoolProperty(bool &dest, const PROPVARIANT &value)
 {
   switch(value.vt)
@@ -928,7 +923,7 @@ HRESULT CHandler::SetSolidSettings(const PROPVARIANT &value)
 
 STDMETHODIMP CHandler::SetProperties(const wchar_t **names, const PROPVARIANT *values, Int32 numProperties)
 {
-  UINT codePage = GetCurrentFileCodePage();
+  UINT codePage = CP_ACP;
   COM_TRY_BEGIN
   _methods.Clear();
   _binds.Clear();

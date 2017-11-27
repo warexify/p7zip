@@ -26,7 +26,11 @@ HINSTANCE g_hInstance;
 #include "../Common/CodecsPath.h"
 CSysString GetBZip2CodecPath()
 {
+#ifdef ENV_UNIX // FIXED
+  return GetCodecsFolderPrefix() + TEXT("BZip2.so");
+#else
   return GetCodecsFolderPrefix() + TEXT("BZip2.dll");
+#endif
 }
 #endif
 

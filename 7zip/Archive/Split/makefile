@@ -1,10 +1,8 @@
-PROG=../../../bin/Formats/split.dll
+PROG=../../../bin/Formats/split.so
 
 LOCAL_FLAGS=
 
-MY_WINDOWS= \
-	$(MY_HOME)/wine_strings.o \
-	$(MY_HOME)/myLastError.o
+MY_WINDOWS=
 
 include ../../../makefile.machine
 
@@ -12,11 +10,11 @@ LOCAL_SHARED=$(LINK_SHARED)
 LIBS=$(LOCAL_LIBS)
 
 OBJS = \
-../../../BUILD/Common/Alloc.o \
-../../../BUILD/Common/MyWindows.o \
-../../../BUILD/Common/Vector.o \
-../../../BUILD/Common/StringConvert.o \
-../../../BUILD/Common/String.o \
+../../../Common/Alloc.o \
+../../../Common/MyWindows.o \
+../../../Common/Vector.o \
+../../../Common/StringConvert.o \
+../../../Common/String.o \
 DllExports.o \
 PropVariant.o \
 CopyCoder.o \

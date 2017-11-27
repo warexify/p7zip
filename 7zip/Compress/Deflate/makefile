@@ -1,4 +1,4 @@
-PROG=../../../bin/Codecs/Deflate.dll
+PROG=../../../bin/Codecs/Deflate.so
 
 LOCAL_FLAGS=
 
@@ -10,9 +10,9 @@ LOCAL_SHARED=$(LINK_SHARED)
 LIBS=$(LOCAL_LIBS)
 
 OBJS = \
-../../../BUILD/Common/MyWindows.o \
-../../../BUILD/Common/Alloc.o\
-../../../BUILD/Common/CRC.o\
+../../../Common/MyWindows.o \
+../../../Common/Alloc.o\
+../../../Common/CRC.o\
 DllExports.o\
 HuffmanEncoder.o\
 InBuffer.o\

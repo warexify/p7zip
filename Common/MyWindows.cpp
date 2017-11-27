@@ -27,8 +27,9 @@ BSTR SysAllocStringByteLen(LPCSTR psz, UINT len)
   if (p == 0)
     return 0;
   *(UINT *)p = len;
+  // "void *" instead of "BSTR" to avoid unaligned copy of "wchar_t" because of optimizer on Solaris
   void * bstr = (void *)((UINT *)p + 1);
-  memmove(bstr, psz, len);
+  memmove(bstr, psz, len); // psz does not always have "wchar_t" alignment.
   void *pb = (void *)(((Byte *)bstr) + len);
   memset(pb,0,sizeof(wchar_t) + LEN_ADDON);
   return (BSTR)bstr;
@@ -45,7 +46,7 @@ BSTR SysAllocString(const OLECHAR *sz)
     return 0;
   *(UINT *)p = strLen * sizeof(OLECHAR); // FIXED
   void * bstr = (void *)((UINT *)p + 1);
-  memmove(bstr, sz, len);
+  memmove(bstr, sz, len); // sz does not always have "wchar_t" alignment.
   return (BSTR)bstr;
 }
 
@@ -106,12 +107,5 @@ LONG CompareFileTime(const FILETIME* ft1, const FILETIME* ft2)
     return 1;
   return 0;
 }
-
-/* FIXED
-DWORD GetLastError()
-{
-  return 0;
-}
-*/
 
 #endif

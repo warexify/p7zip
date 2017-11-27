@@ -1,8 +1,8 @@
-PROG=../../../bin/Codecs/LZMA.dll
+PROG=../../../bin/Codecs/LZMA.so
 
 LOCAL_FLAGS=-DCOMPRESS_MF_BT -DCOMPRESS_MF_PAT -DCOMPRESS_MF_HC -DCOMPRESS_MF_MT
 
-MY_WINDOWS= $(MY_HOME)/myEvents.o
+MY_WINDOWS=
 
 include ../../../makefile.machine
 
@@ -10,10 +10,10 @@ LOCAL_SHARED=$(LINK_SHARED)
 LIBS=$(LOCAL_LIBS)
 
 OBJS = \
-../../../BUILD/Common/MyWindows.o \
-../../../BUILD/Common/Alloc.o\
-../../../BUILD/Common/CRC.o\
-../../../BUILD/Common/AlignedBuffer.o\
+../../../Common/MyWindows.o \
+../../../Common/Alloc.o\
+../../../Common/CRC.o\
+../../../Common/AlignedBuffer.o\
 DllExports.o\
 InBuffer.o\
 OutBuffer.o\

@@ -245,7 +245,21 @@ void ReadArchiverInfoList(CObjectVector<CArchiverInfo> &archivers)
     archivers.Add(item);
   }
   #endif
-  
+
+  #ifdef FORMAT_Z
+  {
+    CArchiverInfo item;
+    item.UpdateEnabled = false;
+    item.Name = L"Z";
+    item.Extensions.Add(CArchiverExtInfo(L"Z"));
+    #ifndef _SFX
+    const unsigned char sig[] = { 0x1F, 0x9D };
+    SetBuffer(item.StartSignature, sig, 2);
+    #endif
+    archivers.Add(item);
+  }
+  #endif
+
   #else
 
   UString folderPath = GetBaseFolderPrefixFromRegistry() + 

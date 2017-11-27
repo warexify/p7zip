@@ -1,6 +1,7 @@
 
 DEST_BIN=/usr/local/bin
 DEST_SHARE=/usr/local/lib/p7zip
+DEST_MAN=/usr/local/man
 
 .PHONY: all 7za sfx 7z common clean tar_src tar_bin
 
@@ -10,7 +11,7 @@ all2: 7za sfx 7z
 
 common:
 	mkdir -p  bin
-	cd BUILD/Common ; $(MAKE) all
+	cd Common       ; $(MAKE) all
 	cd myWindows    ; $(MAKE) all
 
 7za: common
@@ -29,6 +30,7 @@ sfx: common
 	cd 7zip/Archive/GZip      ; $(MAKE) all
 	cd 7zip/Archive/Split     ; $(MAKE) all
 	cd 7zip/Archive/Tar       ; $(MAKE) all
+	cd 7zip/Archive/Z         ; $(MAKE) all
 	cd 7zip/Archive/Zip       ; $(MAKE) all
 	cd 7zip/Compress/Branch   ; $(MAKE) all
 	cd 7zip/Compress/BZip2    ; $(MAKE) all
@@ -47,7 +49,7 @@ sfx: common
 	cd 7zip/Compress/ByteSwap ; $(MAKE) all
 
 clean:
-	cd BUILD/Common           ; $(MAKE) clean
+	cd Common                 ; $(MAKE) clean
 	cd myWindows              ; $(MAKE) clean
 	cd 7zip/Bundles/Alone     ; $(MAKE) clean
 	cd 7zip/Bundles/SFXCon    ; $(MAKE) clean
@@ -58,6 +60,7 @@ clean:
 	cd 7zip/Archive/GZip      ; $(MAKE) clean
 	cd 7zip/Archive/Split     ; $(MAKE) clean
 	cd 7zip/Archive/Tar       ; $(MAKE) clean
+	cd 7zip/Archive/Z         ; $(MAKE) clean
 	cd 7zip/Archive/Zip       ; $(MAKE) clean
 	cd 7zip/Compress/Branch   ; $(MAKE) clean
 	cd 7zip/Compress/BZip2    ; $(MAKE) clean
@@ -78,7 +81,7 @@ clean:
 	rm -fr bin
 
 install:
-	./install.sh $(DEST_BIN) $(DEST_SHARE)
+	./install.sh $(DEST_BIN) $(DEST_SHARE) $(DEST_MAN)
 
 REP=$(shell pwd)
 ARCHIVE=$(shell basename $(REP))

@@ -1,10 +1,8 @@
-PROG=../../../bin/Formats/Tar.dll
+PROG=../../../bin/Formats/Tar.so
 
 LOCAL_FLAGS=
 
-MY_WINDOWS= \
-	$(MY_HOME)/wine_strings.o \
-	$(MY_HOME)/myLastError.o
+MY_WINDOWS=
 
 include ../../../makefile.machine
 
@@ -12,12 +10,12 @@ LOCAL_SHARED=$(LINK_SHARED)
 LIBS=$(LOCAL_LIBS)
 
 OBJS = \
-../../../BUILD/Common/MyWindows.o \
-../../../BUILD/Common/Alloc.o\
-../../../BUILD/Common/Vector.o\
-../../../BUILD/Common/StringConvert.o\
-../../../BUILD/Common/String.o\
-../../../BUILD/Common/IntToString.o\
+../../../Common/MyWindows.o \
+../../../Common/Alloc.o\
+../../../Common/Vector.o\
+../../../Common/StringConvert.o\
+../../../Common/String.o\
+../../../Common/IntToString.o\
 DllExports.o\
 PropVariant.o\
 CopyCoder.o\

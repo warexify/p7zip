@@ -1,14 +1,15 @@
 #! /bin/sh
 
-# for testing 
-#DEST_BIN=${HOME}/INSTALL/usr/local/bin
-#DEST_SHARE=${HOME}/INSTALL/usr/local/lib/p7zip
-
 # global install
-DEST_BIN=/usr/local/bin
-DEST_SHARE=/usr/local/lib/p7zip
+DEST_HOME=/usr/local
+# for testing 
+DEST_HOME=${HOME}/INSTALL/usr/local
+DEST_BIN=${DEST_HOME}/bin
+DEST_SHARE=${DEST_HOME}/lib/p7zip
+DEST_MAN=${DEST_HOME}/man
 [ "$1" ] && DEST_BIN=$1
 [ "$2" ] && DEST_SHARE=$2
+[ "$3" ] && DEST_MAN=$3
 
 use_share="n"
 
@@ -43,7 +44,7 @@ then
     strip     ${DEST_SHARE}/7za
     chmod 555 ${DEST_SHARE}/7za
     echo "#! /bin/sh" > ${DEST_BIN}/7za
-    echo "${DEST_SHARE}/7za \$*" >> ${DEST_BIN}/7za
+    echo "${DEST_SHARE}/7za \"\$@\"" >> ${DEST_BIN}/7za
     chmod 555 ${DEST_BIN}/7za
   fi
 
@@ -66,7 +67,7 @@ then
     cp -r bin/Codecs bin/Formats ${DEST_SHARE}/
     chmod 555 ${DEST_SHARE}/*/*
     echo "#! /bin/sh" > ${DEST_BIN}/7z
-    echo "${DEST_SHARE}/7z \$*" >> ${DEST_BIN}/7z
+    echo "${DEST_SHARE}/7z \"\$@\"" >> ${DEST_BIN}/7z
     chmod 555 ${DEST_BIN}/7z
   fi
 
@@ -79,4 +80,10 @@ else
     chmod 555 ${DEST_BIN}/7za
   fi
 fi
+
+mkdir -p ${DEST_MAN}/man1
+echo "- installing ${DEST_MAN}/man1/7z.1"
+cp man1/7z.1 ${DEST_MAN}/man1/
+echo "- installing ${DEST_MAN}/man1/7za.1"
+cp man1/7za.1 ${DEST_MAN}/man1/
 

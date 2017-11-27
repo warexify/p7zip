@@ -1,4 +1,4 @@
-PROG=../../../bin/Formats/Rar.dll
+PROG=../../../bin/Formats/Rar.so
 
 LOCAL_FLAGS=
 
@@ -7,21 +7,18 @@ include ../../../makefile.machine
 LOCAL_SHARED=$(LINK_SHARED)
 LIBS=$(LOCAL_LIBS_DLL)
 
-MY_WINDOWS=$(MY_HOME)/myEvents.o \
-	$(MY_HOME)/myFindFile.o \
+MY_WINDOWS= \
 	$(MY_HOME)/myModuleFileName.o \
-	$(MY_HOME)/myLastError.o \
-	$(MY_HOME)/wine_date_and_time.o \
-	$(MY_HOME)/wine_strings.o
+	$(MY_HOME)/wine_date_and_time.o
 
 OBJS = \
-../../../BUILD/Common/MyWindows.o \
-../../../BUILD/Common/Alloc.o\
-../../../BUILD/Common/Vector.o\
-../../../BUILD/Common/StringConvert.o\
-../../../BUILD/Common/String.o\
-../../../BUILD/Common/CRC.o\
-../../../BUILD/Common/IntToString.o\
+../../../Common/MyWindows.o \
+../../../Common/Alloc.o\
+../../../Common/Vector.o\
+../../../Common/StringConvert.o\
+../../../Common/String.o\
+../../../Common/CRC.o\
+../../../Common/IntToString.o\
 DllExports.o\
 CodecsPath.o\
 FilterCoder.o\

@@ -6,13 +6,13 @@
 
 #include "PropVariantConversions.h"
 
-#include "Windows/NationalTime.h"
+// #include "Windows/NationalTime.h"
 #include "Windows/Defs.h"
 
 #include "Common/StringConvert.h"
 #include "Common/IntToString.h"
 
-using namespace NWindows;
+// using namespace NWindows;
 
 static UString ConvertUInt64ToString(UInt64 value)
 {

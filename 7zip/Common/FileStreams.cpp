@@ -79,7 +79,10 @@ STDMETHODIMP CStdInFileStream::Read(void *data, UInt32 size, UInt32 *processedSi
 
   if(processedSize != NULL)
     *processedSize = 0;
-  ssize_t res = read(0, data, (size_t)size);
+  ssize_t res;
+  do {
+   res  = read(0, data, (size_t)size);
+  } while (res < 0 && (errno == EINTR)); // FIXED
   if (res == -1)
     return E_FAIL;
   if(processedSize != NULL)
@@ -243,7 +246,10 @@ STDMETHODIMP CStdOutFileStream::Write(const void *data, UInt32 size, UInt32 *pro
 
   #else
   
-  ssize_t res = write(1, data, (size_t)size);
+  ssize_t res;
+  do {
+    res = write(1, data, (size_t)size);
+  } while (res < 0 && (errno == EINTR)); // FIXED
   if (res == -1)
     return E_FAIL;
   if(processedSize != NULL)

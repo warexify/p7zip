@@ -177,6 +177,8 @@
 #define PLATFORM_BYTE_ORDER AES_BIG_ENDIAN
 #elif defined(LITTLE_ENDIAN)
 #define PLATFORM_BYTE_ORDER AES_LITTLE_ENDIAN
+#elif defined(__DJGPP__)
+#define PLATFORM_BYTE_ORDER AES_LITTLE_ENDIAN
 #else
 #include <sys/endian.h>
 #endif

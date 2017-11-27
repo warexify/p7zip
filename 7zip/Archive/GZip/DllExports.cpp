@@ -26,7 +26,11 @@ HINSTANCE g_hInstance;
 #include "../Common/CodecsPath.h"
 CSysString GetDeflateCodecPath()
 {
+#ifdef ENV_UNIX // FIXED
+  return GetCodecsFolderPrefix() + TEXT("Deflate.so");
+#else
   return GetCodecsFolderPrefix() + TEXT("Deflate.dll");
+#endif
 }
 #endif
 

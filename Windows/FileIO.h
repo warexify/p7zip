@@ -3,6 +3,8 @@
 #ifndef __WINDOWS_FILEIO_H
 #define __WINDOWS_FILEIO_H
 
+#include <Common/String.h>
+
 namespace NWindows {
 namespace NFile {
 namespace NIO {
@@ -10,8 +12,9 @@ namespace NIO {
 class CFileBase
 {
 protected:
-  bool _fileIsOpen;
-  t_file_handle  _handle;
+  int     _fd;
+  AString _unix_filename;
+
   bool Create(LPCTSTR fileName, DWORD desiredAccess,
       DWORD shareMode, DWORD creationDisposition,  DWORD flagsAndAttributes);
   #ifndef _UNICODE
@@ -21,7 +24,7 @@ protected:
 
 public:
   CFileBase():
-    _fileIsOpen(false){};
+    _fd(-1){};
   virtual ~CFileBase();
 
   virtual bool Close();
@@ -48,9 +51,7 @@ public:
 
 class COutFile: public CFileBase
 {
-  // DWORD m_CreationDisposition;
 public:
-  // COutFile(): m_CreationDisposition(CREATE_NEW){};
   bool Open(LPCTSTR fileName, DWORD shareMode, 
       DWORD creationDisposition, DWORD flagsAndAttributes);
   bool Open(LPCTSTR fileName, DWORD creationDisposition);
@@ -62,13 +63,6 @@ public:
   bool Open(LPCWSTR fileName, DWORD creationDisposition);
   bool Create(LPCWSTR fileName, bool createAlways);
   #endif
-
-  /*
-  void SetOpenCreationDisposition(DWORD creationDisposition)
-    { m_CreationDisposition = creationDisposition; }
-  void SetOpenCreationDispositionCreateAlways()
-    { m_CreationDisposition = CREATE_ALWAYS; }
-  */
 
   bool SetTime(const FILETIME *creationTime,
       const FILETIME *lastAccessTime, const FILETIME *lastWriteTime);

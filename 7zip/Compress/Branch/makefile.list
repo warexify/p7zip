@@ -10,6 +10,8 @@ IA64.o : ./IA64.cpp
 	$(CXX) $(CFLAGS) ./IA64.cpp
 PPC.o : ./PPC.cpp
 	$(CXX) $(CFLAGS) ./PPC.cpp
+SPARC.o : ./SPARC.cpp
+	$(CXX) $(CFLAGS) ./SPARC.cpp
 x86.o : ./x86.cpp
 	$(CXX) $(CFLAGS) ./x86.cpp
 x86_2.o : ./x86_2.cpp

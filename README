@@ -1,5 +1,5 @@
-	p7zip 4.14.01
-	=============
+	p7zip 4.16
+	==========
 
 Homepage : http://p7zip.sourceforge.net/
 
@@ -11,6 +11,30 @@ Homepage : www.7-zip.org
 7z uses plugins to handle archives.
 7za is a stand-alone executable.
 7za handles less archive formats than 7z.exe.
+
+
+CAUTION :
+---------
+
+- FIRST : DO NOT USE the 7-zip format for backup purpose on Linux/Unix because :
+  - 7-zip does not handle links (7-zip follows the link and stores the files instead of the links)
+  - 7-zip does not store the Unix file permission (ex : executable bit)
+  - 7-zip does not store the owner/group of the file
+
+  On Linux/Unix, in order to backup directories you must use tar !
+  to backup a directory  : tar cf - directory | 7za a -si directory.tar.7z
+  to restore your backup : 7za x -so directory.tar.7z | tar xf -
+
+- if you want to send files and directories (not link, not the file permissions,
+  not the owner of file) to others Unix/MacOS/Windows users, you can use
+  the 7-zip format.
+
+  example : 7za a directory.7z  directory
+
+  do not use "-r" because this flag does not do what you think
+  do not use directory/* because of ".*" files
+   (example : "directory/*" does not match "directory/.profile")
+
 
 BUILD :
 -------
@@ -128,7 +152,7 @@ LIMITATIONS from 7-zip :
 
   - SFX archive MUST end with ".exe"
 
-LIMITATIONS for Unix/MacOSX version only :
+LIMITATIONS for Unix/MacOS X version only :
 ------------------------------------------
 
   - can handle properly UNICODE filenames only if the environment is UTF-8.
@@ -164,6 +188,6 @@ DEVELOPPER CORNER:
     to better handle all cases.
 
   - "FIXED" in source code indicates that the original code has been
-    changed to work in unix environment.
+    changed to work in Unix environment.
 
   see also TODO file.

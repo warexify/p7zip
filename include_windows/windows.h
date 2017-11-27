@@ -27,70 +27,85 @@
 /* END #include <wincon.h> */
 
 
-#include <winbase.h>
+/* BEGIN #include <winbase.h> */
+#define INVALID_HANDLE_VALUE (HANDLE)(-1)
 
-/* BEGIN #include <winuser.h> */
-  #ifdef __cplusplus
-  extern "C" {
-  #endif
-  LPSTR WINAPI CharNextA(LPCSTR);
-  LPSTR WINAPI CharPrevA(LPCSTR,LPCSTR);
-  LPSTR WINAPI CharLowerA(LPSTR);
-  LPSTR WINAPI CharUpperA(LPSTR);
-  LPWSTR WINAPI CharUpperW(LPWSTR);
-  LPWSTR WINAPI CharLowerW(LPWSTR);
-  /* FIXED DWORD WINAPI GetLastError(void); */
-  void WINAPI SetLastError( DWORD err );
-  int WINAPI wsprintfA(LPSTR,LPCSTR,...);
-  int WINAPI wsprintfW(LPWSTR,LPCWSTR,...);
-  #ifdef UNICODE
-  #define wsprintf wsprintfW
-  #else
-  /* #define wsprintf wsprintfA */
-  #define wsprintf sprintf
-  #define wsprintfA sprintf
-  #endif
-  #ifdef __cplusplus
-  }
-  #endif
-/* END #include <winuser.h> */
+#define FILE_BEGIN	SEEK_SET
+#define FILE_CURRENT	SEEK_CUR
+#define FILE_END	SEEK_END
+#define INVALID_SET_FILE_POINTER	((DWORD)-1)
 
+#define INVALID_FILE_SIZE 0xFFFFFFFF
 
+#define WAIT_OBJECT_0 0
+#define INFINITE	0xFFFFFFFF
 
-/* BEGIN #include <winnls.h> */
-#define NORM_IGNORECASE	1
+typedef FILETIME *LPFILETIME;
 
-#define CSTR_LESS_THAN 1
-#define CSTR_EQUAL 2
-#define CSTR_GREATER_THAN 3
-
-#define CP_ACP 0
-#define CP_OEMCP 1
-#define CP_INSTALLED 1
-#define CP_UTF8 65001
-
-#define MB_USEGLYPHCHARS 4
-
-#define LOCALE_USER_DEFAULT	0x400
-#define SORT_STRINGSORT	4096
+typedef struct _SYSTEMTIME {
+	WORD wYear;
+	WORD wMonth;
+	WORD wDayOfWeek;
+	WORD wDay;
+	WORD wHour;
+	WORD wMinute;
+	WORD wSecond;
+	WORD wMilliseconds;
+} SYSTEMTIME,*LPSYSTEMTIME;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-int WINAPI CompareStringA(LCID,DWORD,LPCSTR,int,LPCSTR,int);
-int WINAPI CompareStringW(LCID,DWORD,LPCWSTR,int,LPCWSTR,int);
-int WINAPI WideCharToMultiByte(UINT,DWORD,LPCWSTR,int,LPSTR,int,LPCSTR,LPBOOL);
-int WINAPI MultiByteToWideChar(UINT,DWORD,LPCSTR,int,LPWSTR,int);
-/* END #include <winnls.h> */
 
-/* #include <unknwn.h> */
-#include <basetyps.h>
-struct IEnumSTATPROPSTG;
+BOOL WINAPI DosDateTimeToFileTime(WORD,WORD,FILETIME *);
+BOOL WINAPI FileTimeToDosDateTime(CONST FILETIME *,WORD *, WORD *);
+BOOL WINAPI FileTimeToLocalFileTime(CONST FILETIME *,FILETIME *);
+BOOL WINAPI FileTimeToSystemTime(CONST FILETIME *,LPSYSTEMTIME);
+BOOL WINAPI LocalFileTimeToFileTime(CONST FILETIME *,FILETIME *);
+VOID WINAPI GetSystemTime(LPSYSTEMTIME);
+BOOL WINAPI SystemTimeToFileTime(const SYSTEMTIME*,LPFILETIME);
+
+BOOL WINAPI SetFileAttributesA(LPCSTR,DWORD);
+BOOL WINAPI SetFileAttributesW(LPCWSTR,DWORD);
+
+DWORD WINAPI SearchPathA(LPCSTR,LPCSTR,LPCSTR,DWORD,LPSTR,LPSTR*);
+DWORD WINAPI SearchPathW(LPCWSTR,LPCWSTR,LPCWSTR,DWORD,LPWSTR,LPWSTR*);
+
+#define lstrcatA strcat /* OK for MBS */
+
+#define MoveMemory memmove
+
+DWORD WINAPI GetTickCount(VOID);
+
+
+#ifdef UNICODE
+#define SearchPath SearchPathW
+#define SetFileAttributes SetFileAttributesW
+#else
+#define SearchPath SearchPathA
+#define SetFileAttributes SetFileAttributesA
+#define lstrlen strlen  /* OK for MBS */
+#define lstrlenA strlen  /* OK for MBS */
+#endif
 
 #ifdef __cplusplus
 }
 #endif
+/* END #include <winbase.h> */
 
+/* BEGIN #include <winnls.h> */
+#define NORM_IGNORECASE	1
+
+#define CP_ACP 0
+#define CP_OEMCP 1
+#define CP_UTF8 65001
+
+#define LOCALE_USER_DEFAULT	0x400
+#define SORT_STRINGSORT	4096
+
+/* #include <unknwn.h> */
+#include <basetyps.h>
+struct IEnumSTATPROPSTG;
 
 typedef WCHAR OLECHAR;
 typedef LPWSTR LPOLESTR;
@@ -128,9 +143,6 @@ DECLARE_INTERFACE_(ISequentialStream,IUnknown)
 };
 
 
-  #ifdef __cplusplus
-  // }
-  #endif
 /* END #include <ole2.h> */
 
 #include <stddef.h>

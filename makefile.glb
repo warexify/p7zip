@@ -15,5 +15,5 @@ $(PROG): $(OBJS) $(MY_WINDOWS)
 include makefile.list
 
 clean:
-	-@$(RM) $(PROG) $(PROG).exe *.o *~ 
+	-@$(RM) $(PROG) $(PROG).exe *.o *~ $(PROGS)
 

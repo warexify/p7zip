@@ -1,12 +1,34 @@
 #ifndef _WINNT_H
 #define _WINNT_H
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <winerror.h>
+/* BEGIN <winerror.h> */
+#define NO_ERROR                    0L
+#define ERROR_ALREADY_EXISTS        EEXIST
+#define ERROR_FILE_EXISTS           EEXIST
+#define ERROR_INVALID_HANDLE        EBADF
+#define ERROR_PATH_NOT_FOUND        ENOENT
+#define ERROR_FILENAME_EXCED_RANGE  ENAMETOOLONG
+#define ERROR_NO_MORE_FILES         0x100123 // FIXME
+
+/* see Common/WyWindows.h
+#define S_OK ((HRESULT)0x00000000L)
+#define S_FALSE ((HRESULT)0x00000001L)
+#define E_INVALIDARG ((HRESULT)0x80070057L)
+#define E_NOTIMPL ((HRESULT)0x80004001L)
+#define E_NOINTERFACE ((HRESULT)0x80004002L)
+#define E_ABORT ((HRESULT)0x80004004L)
+#define E_FAIL ((HRESULT)0x80004005L)
+#define E_OUTOFMEMORY ((HRESULT)0x8007000EL)
+#define STG_E_INVALIDFUNCTION ((HRESULT)0x80030001L)
+#define SUCCEEDED(Status) ((HRESULT)(Status) >= 0)
+#define FAILED(Status) ((HRESULT)(Status)<0)
+*/
+
+/* END   <winerror.h> */
 
 #include <string.h>
 #include <stddef.h>
@@ -42,41 +64,17 @@ typedef TCHAR *LPTCH,*PTSTR,*LPTSTR,*LP,*PTCHAR;
  * passed to C runtime functions are defined in mingw/tchar.h
  */
 #define TEXT(q) __TEXT(q)    
-typedef SHORT *PSHORT;
-typedef LONG *PLONG;
 typedef void *HANDLE;
-typedef HANDLE *PHANDLE,*LPHANDLE;
 
-typedef DWORD LCID;
-
-#define _HAVE_INT64
-typedef ULONGLONG DWORDLONG;
-
-#ifdef _HAVE_INT64
-#define Int32x32To64(a,b) ((LONGLONG)(a)*(LONGLONG)(b))
-#define UInt32x32To64(a,b) ((DWORDLONG)(a)*(DWORDLONG)(b))
-#define Int64ShllMod32(a,b) ((DWORDLONG)(a)<<(b))
-#define Int64ShraMod32(a,b) ((LONGLONG)(a)>>(b))
-#define Int64ShrlMod32(a,b) ((DWORDLONG)(a)>>(b))
-#endif
-
-#define ANSI_NULL '\0'
-#define UNICODE_NULL L'\0'
-typedef BYTE BOOLEAN,*PBOOLEAN;
-
-typedef BYTE FCHAR;
-typedef WORD FSHORT;
-typedef DWORD FLONG;
+typedef BYTE BOOLEAN;
 
 /* BEGIN #include <basetsd.h> */
 #ifndef __int64
 #define __int64 long long
 #endif
-typedef unsigned __int64 UINT64,  *PUINT64;
-typedef __int64 INT64,  *PINT64;
-typedef  unsigned int UINT_PTR, *PUINT_PTR;
+typedef unsigned __int64 UINT64;
+typedef __int64 INT64;
 /* END #include <basetsd.h> */
-
 
 #define FILE_ATTRIBUTE_READONLY   1
 #define FILE_ATTRIBUTE_HIDDEN	2
@@ -90,10 +88,8 @@ typedef  unsigned int UINT_PTR, *PUINT_PTR;
 #define FILE_ATTRIBUTE_REPARSE_POINT	1024
 #define FILE_ATTRIBUTE_COMPRESSED	2048
 #define FILE_ATTRIBUTE_OFFLINE	0x1000
-#define FILE_ATTRIBUTE_NOT_CONTENT_INDEXED	0x2000
 #define FILE_ATTRIBUTE_ENCRYPTED	0x4000
 #define INVALID_FILE_ATTRIBUTES	((DWORD)-1)
 
-typedef LARGE_INTEGER *PLARGE_INTEGER;
 #endif
 

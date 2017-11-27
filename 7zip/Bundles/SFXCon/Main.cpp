@@ -2,7 +2,7 @@
 
 #include "StdAfx.h"
 
-#include <initguid.h>
+#include "Common/MyInitGuid.h"
 
 #include "Common/CommandLineParser.h"
 #include "Common/StdOutStream.h"
@@ -19,15 +19,10 @@
 #include "../../ICoder.h"
 
 #include "../../UI/Common/OpenArchive.h"
-#ifdef _WIN32
-#include "../../UI/Common/ZipRegistry.h"
-#endif
 #include "../../UI/Common/DefaultName.h"
 #include "../../UI/Common/ExitCode.h"
 #include "../../UI/Common/Extract.h"
 
-// #include "../../UI/Console/Extract.h"
-// #include "../../UI/Console/ArError.h"
 #include "../../UI/Console/List.h"
 #include "../../UI/Console/OpenCallbackConsole.h"
 #include "../../UI/Console/ExtractCallbackConsole.h"
@@ -37,8 +32,8 @@ using namespace NFile;
 using namespace NCommandLineParser;
 
 static const char *kCopyrightString = 
-"\n7-Zip SFX 4.14 beta  Copyright (c) 1999-2005 Igor Pavlov  2005-01-11\n"
-"p7zip Version 4.14.01";
+"\n7-Zip SFX 4.16 beta  Copyright (c) 1999-2005 Igor Pavlov  2005-03-29\n"
+"p7zip Version 4.16";
 
 static const int kNumSwitches = 6;
 

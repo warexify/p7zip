@@ -7,6 +7,9 @@
 #include "FileName.h"
 #include "Defs.h"
 
+#include <sys/types.h> /* for DIR */
+#include <dirent.h>
+
 namespace NWindows {
 namespace NFile {
 namespace NFind {
@@ -32,26 +35,7 @@ public:
   FILETIME LastWriteTime;
   UINT64 Size;
   
-  #ifndef _WIN32_WCE
-  UINT32 ReparseTag;
-  #else
-  DWORD ObjectID; 
-  #endif
-
-
-  bool IsArchived() const { return MatchesMask(FILE_ATTRIBUTE_ARCHIVE); }
-  bool IsCompressed() const { return MatchesMask(FILE_ATTRIBUTE_COMPRESSED); }
   bool IsDirectory() const { return MatchesMask(FILE_ATTRIBUTE_DIRECTORY); }
-  bool IsEncrypted() const { return MatchesMask(FILE_ATTRIBUTE_ENCRYPTED); }
-  bool IsHidden() const { return MatchesMask(FILE_ATTRIBUTE_HIDDEN); }
-  bool IsNormal() const { return MatchesMask(FILE_ATTRIBUTE_NORMAL); }
-  bool IsOffline() const { return MatchesMask(FILE_ATTRIBUTE_OFFLINE); }
-  bool IsReadOnly() const { return MatchesMask(FILE_ATTRIBUTE_READONLY); }
-  bool HasReparsePoint() const { return MatchesMask(FILE_ATTRIBUTE_REPARSE_POINT); }
-  bool IsSparse() const { return MatchesMask(FILE_ATTRIBUTE_SPARSE_FILE); }
-  bool IsSystem() const { return MatchesMask(FILE_ATTRIBUTE_SYSTEM); }
-  bool IsTemporary() const { return MatchesMask(FILE_ATTRIBUTE_TEMPORARY); }
-
 };
 
 class CFileInfo: public CFileInfoBase
@@ -76,10 +60,12 @@ class CFindFile
 {
   friend class CEnumerator;
   HANDLE _handle;
-  bool _handleAllocated;
+  DIR *_dirp;
+  AString _pattern;
+  AString _directory;  
 public:
-  bool IsHandleAllocated() const { return _handleAllocated; }
-  CFindFile(): _handleAllocated(false) {}
+  bool IsHandleAllocated() const { return (_dirp != 0); }
+  CFindFile(): _dirp(0) {}
   ~CFindFile() {  Close(); }
   bool FindFirst(LPCTSTR wildcard, CFileInfo &fileInfo);
   bool FindNext(CFileInfo &fileInfo);
@@ -107,6 +93,7 @@ public:
   CEnumerator(): _wildcard(NName::kAnyStringWildcard) {}
   CEnumerator(const CSysString &wildcard): _wildcard(wildcard) {}
   bool Next(CFileInfo &fileInfo);
+  bool Next(CFileInfo &fileInfo, bool &found);
 };
 
 #ifdef _UNICODE
@@ -121,50 +108,9 @@ public:
   CEnumeratorW(): _wildcard(NName::kAnyStringWildcard) {}
   CEnumeratorW(const UString &wildcard): _wildcard(wildcard) {}
   bool Next(CFileInfoW &fileInfo);
+  bool Next(CFileInfoW &fileInfo, bool &found);
 };
 #endif
-
-class CFindChangeNotification
-{
-  HANDLE _handle;
-public:
-  operator HANDLE () { return _handle; }
-  CFindChangeNotification(): _handle(INVALID_HANDLE_VALUE) {}
-  ~CFindChangeNotification() {  Close(); }
-  bool Close();
-  HANDLE FindFirst(LPCTSTR pathName, bool watchSubtree, DWORD notifyFilter);
-  #ifndef _UNICODE
-  HANDLE FindFirst(LPCWSTR pathName, bool watchSubtree, DWORD notifyFilter);
-  #endif
-  bool FindNext()
-    { return BOOLToBool(::FindNextChangeNotification(_handle)); }
-};
-
-#ifndef _WIN32_WCE
-bool MyGetLogicalDriveStrings(CSysStringVector &driveStrings);
-#endif
-
-inline bool MyGetCompressedFileSize(LPCTSTR fileName, UINT64 &size)
-{
-  DWORD highPart;
-  DWORD lowPart = ::GetCompressedFileSize(fileName, &highPart);
-  if (lowPart == INVALID_FILE_SIZE)
-    if (::GetLastError() != NO_ERROR)
-      return false;
-  size = (UINT64(highPart) << 32) | lowPart;
-  return true;
-}
-
-inline bool MyGetCompressedFileSizeW(LPCWSTR fileName, UINT64 &size)
-{
-  DWORD highPart;
-  DWORD lowPart = ::GetCompressedFileSizeW(fileName, &highPart);
-  if (lowPart == INVALID_FILE_SIZE)
-    if (::GetLastError() != NO_ERROR)
-      return false;
-  size = (UINT64(highPart) << 32) | lowPart;
-  return true;
-}
 
 }}}
 

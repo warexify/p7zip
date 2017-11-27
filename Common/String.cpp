@@ -2,144 +2,66 @@
 
 #include "StdAfx.h"
 
-#ifdef WIN32
-#include "StringConvert.h"
-#else
 #include <ctype.h>
-#ifndef ENV_MACOSX
+#ifdef HAVE_WCTYPE_H
 #include <wctype.h>
 #endif
 #include "StringConvert.h" // FIXED
+
+#include "Common/String.h" // FIXED to avoid confusion with <string.h> on some filesystems
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#ifdef HAVE_WCHAR_H
+#include <wchar.h>
 #endif
 
-#include "String.h"
-
-
-#ifdef WIN32
-
-#ifndef _UNICODE
-
-wchar_t MyCharUpper(wchar_t c)
-{
-  if (c == 0)
-    return 0;
-  wchar_t *res = CharUpperW((LPWSTR)(unsigned int)c);
-  if (res != 0 || ::GetLastError() != ERROR_CALL_NOT_IMPLEMENTED)
-    return (wchar_t)(unsigned int)res;
-  const int kBufferSize = 4;
-  char s[kBufferSize];
-  int numChars = ::WideCharToMultiByte(CP_ACP, 0, &c, 1, s, kBufferSize, 0, 0);
-  ::CharUpperA(s);
-  ::MultiByteToWideChar(CP_ACP, 0, s, numChars, &c, 1);
-  return c;
-}
-
-wchar_t MyCharLower(wchar_t c)
-{
-  if (c == 0)
-    return 0;
-  wchar_t *res = CharLowerW((LPWSTR)(unsigned int)c);
-  if (res != 0 || ::GetLastError() != ERROR_CALL_NOT_IMPLEMENTED)
-    return (wchar_t)(unsigned int)res;
-  const int kBufferSize = 4;
-  char s[kBufferSize];
-  int numChars = ::WideCharToMultiByte(CP_ACP, 0, &c, 1, s, kBufferSize, 0, 0);
-  ::CharLowerA(s);
-  ::MultiByteToWideChar(CP_ACP, 0, s, numChars, &c, 1);
-  return c;
-}
-
-wchar_t * MyStringUpper(wchar_t *s)
-{
-  if (s == 0)
-    return 0;
-  wchar_t *res = CharUpperW(s);
-  if (res != 0 || ::GetLastError() != ERROR_CALL_NOT_IMPLEMENTED)
-    return res;
-  AString a = UnicodeStringToMultiByte(s);
-  a.MakeUpper();
-  return MyStringCopy(s, (const wchar_t *)MultiByteToUnicodeString(a));
-}
-
-wchar_t * MyStringLower(wchar_t *s)
-{ 
-  if (s == 0)
-    return 0;
-  wchar_t *res = CharLowerW(s);
-  if (res != 0 || ::GetLastError() != ERROR_CALL_NOT_IMPLEMENTED)
-    return res;
-  AString a = UnicodeStringToMultiByte(s);
-  a.MakeLower();
-  return MyStringCopy(s, (const wchar_t *)MultiByteToUnicodeString(a));
-}
-
+#include <limits.h>
+#ifndef MB_LEN_MAX
+#define MB_LEN_MAX 1024
 #endif
 
-inline int ConvertCompareResult(int r) { return r - 2; }
+extern int global_use_utf16_conversion;
 
-int MyStringCollate(const wchar_t *s1, const wchar_t *s2)
-{ 
-  int res = CompareStringW(
-        LOCALE_USER_DEFAULT, SORT_STRINGSORT, s1, -1, s2, -1); 
-  #ifdef _UNICODE
-  return ConvertCompareResult(res);
-  #else
-  if (res != 0 || ::GetLastError() != ERROR_CALL_NOT_IMPLEMENTED)
-    return ConvertCompareResult(res);
-  return MyStringCollate(UnicodeStringToMultiByte(s1), 
-        UnicodeStringToMultiByte(s2));
-  #endif
+LPSTR WINAPI CharPrevA( LPCSTR start, LPCSTR ptr ) { // OK for MBS
+  while (*start && (start < ptr)) {
+    LPCSTR next = CharNextA( start );
+    if (next >= ptr)
+      break;
+    start = next;
+  }
+  return (LPSTR)start;
 }
 
-#ifndef _WIN32_WCE
-int MyStringCollate(const char *s1, const char *s2)
-{ 
-  return ConvertCompareResult(CompareStringA(
-    LOCALE_USER_DEFAULT, SORT_STRINGSORT, s1, -1, s2, -1)); 
-}
-
-int MyStringCollateNoCase(const char *s1, const char *s2)
-{ 
-  return ConvertCompareResult(CompareStringA(
-    LOCALE_USER_DEFAULT, NORM_IGNORECASE | SORT_STRINGSORT, s1, -1, s2, -1)); 
-}
-#endif
-
-int MyStringCollateNoCase(const wchar_t *s1, const wchar_t *s2)
-{ 
-  int res = CompareStringW(
-        LOCALE_USER_DEFAULT, NORM_IGNORECASE | SORT_STRINGSORT, s1, -1, s2, -1); 
-  #ifdef _UNICODE
-  return ConvertCompareResult(res);
-  #else
-  if (res != 0 || ::GetLastError() != ERROR_CALL_NOT_IMPLEMENTED)
-    return ConvertCompareResult(res);
-  return MyStringCollateNoCase(UnicodeStringToMultiByte(s1), 
-      UnicodeStringToMultiByte(s2));
-  #endif
-}
-
+LPSTR WINAPI CharNextA( LPCSTR ptr ) {
+  if (!*ptr)
+    return (LPSTR)ptr;
+#ifdef HAVE_MBRTOWC
+  if (global_use_utf16_conversion)
+  {
+    wchar_t wc;
+    size_t len  = mbrtowc(&wc,ptr,MB_LEN_MAX,0); 
+    if (len >= 1) return (LPSTR)(ptr + len);
+    printf("INTERNAL ERROR - CharNextA\n");
+    exit(EXIT_FAILURE);
+  } else {
+    return (LPSTR)(ptr + 1);
+  }
 #else
-
-inline int NormalizeCompareResult(int res)
-{
-  if (res < 0) return -1;
-  if (res > 0) return 1;
-  return 0;
+  return (LPSTR)(ptr + 1); // FIXME
+#endif
 }
 
-/*
-inline wchar_t MyCharUpper(wchar_t c)
-  { return towupper(c); }
-*/
+
 wchar_t MyCharUpper(wchar_t c)
 {
-#ifdef ENV_MACOSX
+#ifdef HAVE_TOWUPPER
+   return towupper(c);
+#else
    int ret = c;
    if ((ret >= 1) && (ret <256)) ret = toupper(ret);
    return (wchar_t)ret;
-#else
-   return towupper(c);
 #endif
 }
 
@@ -179,8 +101,6 @@ int MyStringCollateNoCase(const char *s1, const char *s2)
   return MyStringCollateNoCase(us1,us2);
 }
 
-#endif
-
 int MyStringCompare(const char *s1, const char *s2)
 { 
   while (true)
@@ -204,3 +124,4 @@ int MyStringCompare(const wchar_t *s1, const wchar_t *s2)
     if (c1 == 0) return 0;
   }
 }
+

@@ -1,11 +1,8 @@
-PROG=../../../bin/Formats/gz.dll
+PROG=../../../bin/Formats/gz.so
 
 LOCAL_FLAGS=
 
-MY_WINDOWS= \
-	$(MY_HOME)/wine_strings.o \
-	$(MY_HOME)/myLastError.o \
-	$(MY_HOME)/myModuleFileName.o
+MY_WINDOWS=$(MY_HOME)/myModuleFileName.o
 
 include ../../../makefile.machine
 
@@ -13,12 +10,12 @@ LOCAL_SHARED=$(LINK_SHARED)
 LIBS=$(LOCAL_LIBS_DLL)
 
 OBJS = \
-../../../BUILD/Common/MyWindows.o \
-../../../BUILD/Common/StringConvert.o\
-../../../BUILD/Common/Alloc.o\
-../../../BUILD/Common/String.o\
-../../../BUILD/Common/CRC.o\
-../../../BUILD/Common/StringToInt.o\
+../../../Common/MyWindows.o \
+../../../Common/StringConvert.o\
+../../../Common/Alloc.o\
+../../../Common/String.o\
+../../../Common/CRC.o\
+../../../Common/StringToInt.o\
 DllExports.o\
 DLL.o\
 PropVariant.o\

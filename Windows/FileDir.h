@@ -6,29 +6,24 @@
 #include "../Common/String.h"
 #include "Defs.h"
 
+/* GetFullPathName for 7zAES.cpp */
+DWORD WINAPI GetFullPathName( LPCSTR name, DWORD len, LPSTR buffer, LPSTR *lastpart );
+
 namespace NWindows {
 namespace NFile {
 namespace NDirectory {
 
-bool MyGetWindowsDirectory(CSysString &path);
-#ifndef _UNICODE
-bool MyGetWindowsDirectory(UString &path);
-#endif
-
-inline bool MySetFileAttributes(LPCTSTR fileName, DWORD fileAttributes)
-  { return BOOLToBool(::SetFileAttributes(fileName, fileAttributes)); }
+bool MySetFileAttributes(LPCTSTR fileName, DWORD fileAttributes);
 #ifndef _UNICODE
 bool MySetFileAttributes(LPCWSTR fileName, DWORD fileAttributes);
 #endif
 
-inline bool MyMoveFile(LPCTSTR existFileName, LPCTSTR newFileName)
-  { return BOOLToBool(::MoveFile(existFileName, newFileName)); }
+bool MyMoveFile(LPCTSTR existFileName, LPCTSTR newFileName);
 #ifndef _UNICODE
 bool MyMoveFile(LPCWSTR existFileName, LPCWSTR newFileName);
 #endif
 
-inline bool MyRemoveDirectory(LPCTSTR pathName)
-  { return BOOLToBool(::RemoveDirectory(pathName)); }
+bool MyRemoveDirectory(LPCTSTR pathName);
 #ifndef _UNICODE
 bool MyRemoveDirectory(LPCWSTR pathName);
 #endif
@@ -51,7 +46,6 @@ bool RemoveDirectoryWithSubItems(const UString &path);
 #endif
 
 #ifndef _WIN32_WCE
-
 bool MyGetFullPathName(LPCTSTR fileName, CSysString &resultPath, 
     int &fileNamePartStartIndex);
 bool MyGetFullPathName(LPCTSTR fileName, CSysString &resultPath);
@@ -65,10 +59,6 @@ bool GetOnlyName(LPCWSTR fileName, UString &resultName);
 bool GetOnlyDirPrefix(LPCWSTR fileName, UString &resultName);
 #endif
 
-bool MyGetCurrentDirectory(CSysString &resultPath);
-#ifndef _UNICODE
-bool MyGetCurrentDirectory(UString &resultPath);
-#endif
 #endif
 
 bool MySearchPath(LPCTSTR path, LPCTSTR fileName, LPCTSTR extension, 

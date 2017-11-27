@@ -61,7 +61,6 @@
  */
 #ifndef _TCHAR_DEFINED
 typedef	wchar_t	TCHAR;
-typedef wchar_t _TCHAR;
 #define _TCHAR_DEFINED
 #endif
 
@@ -90,7 +89,6 @@ FILE *_wfopen( const wchar_t *filename, const wchar_t *mode );
  */
 #ifndef _TCHAR_DEFINED
 typedef char	TCHAR;
-typedef char	_TCHAR;
 #define _TCHAR_DEFINED
 #endif
 

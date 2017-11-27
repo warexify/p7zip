@@ -226,14 +226,25 @@ GZip uses the same parameters as Zip, excepting that GZip doesn't support store 
     <P>Supported methods:</P>
     <TABLE>
       <TR> <TH width="60">MethodID</TH> <TH>Description</TH> </TR>
-      <TR> <TD><A class="parameter" href="#LZMA">LZMA</A></TD> <TD>Algorithm based on LZ algorithm.</TD> </TR>
-      <TR> <TD><A class="parameter" href="#PPMd">PPMd</A></TD> <TD>Dmitry Shkarin's PPMdH with small changes.</TD> </TR>
-      <TR> <TD>BZip2</TD> <TD>BWT algorithm.</TD> </TR>
-      <TR> <TD>Deflate</TD> <TD>LZ+Huffman.</TD> </TR>
-      <TR> <TD>BCJ</TD> <TD>(CALL, JUMP) converter for 32-bit x86 executables.</TD> </TR>
-      <TR> <TD><A class="parameter" href="#BCJ2">BCJ2</A></TD> <TD>(CALL, JUMP, JCC) converter for 32-bit x86 executables (version 2).</TD> </TR>
-      <TR> <TD>Copy</TD> <TD>No compression.</TD> </TR>
+      <TR> <TD><A class="parameter" href="#LZMA">LZMA</A></TD> <TD>Algorithm based on LZ algorithm</TD> </TR>
+      <TR> <TD><A class="parameter" href="#PPMd">PPMd</A></TD> <TD>Dmitry Shkarin's PPMdH with small changes</TD> </TR>
+      <TR> <TD>BZip2</TD> <TD>BWT algorithm</TD> </TR>
+      <TR> <TD>Deflate</TD> <TD>LZ+Huffman</TD> </TR>
+      <TR> <TD>Copy</TD> <TD>No compression</TD> </TR>
     </TABLE>
+
+    <P>Supported filters:</P>
+    <TABLE>
+      <TR> <TH width="60">MethodID</TH> <TH>Description</TH> </TR>
+      <TR> <TD>BCJ</TD> <TD>converter for x86 executables</TD> </TR>
+      <TR> <TD><A class="parameter" href="#BCJ2">BCJ2</A></TD> <TD>converter for x86 executables (version 2)</TD> </TR>
+      <TR> <TD>BC_ARM</TD> <TD>converter for ARM (little endian) executables</TD> </TR>
+      <TR> <TD>BC_ARMThumb</TD> <TD>converter for ARM Thumb (little endian) executables</TD> </TR>
+      <TR> <TD>BC_IA64</TD> <TD>converter for IA-64 executables</TD> </TR>
+      <TR> <TD>BC_PPC_B</TD> <TD>converter for PowerPC (big endian) executables</TD> </TR>
+    </TABLE>
+    <P>Filters allow to increase compression ratio for some types of files. Filters 
+       must be used with one of the compression method (for example, BCJ + LZMA).</P>
   </DD>
 
  <H4><A name="LZMA"></A>LZMA</H4>

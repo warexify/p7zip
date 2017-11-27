@@ -1,4 +1,4 @@
-PROG=../../../bin/Codecs/Copy.dll
+PROG=../../../bin/Codecs/Copy.so
 
 LOCAL_FLAGS=
 
@@ -10,9 +10,9 @@ LOCAL_SHARED=$(LINK_SHARED)
 LIBS=$(LOCAL_LIBS)
 
 OBJS = \
-../../../BUILD/Common/MyWindows.o \
+../../../Common/MyWindows.o \
 DllExports.o \
-../../../BUILD/Common/Alloc.o\
+../../../Common/Alloc.o\
 CopyCoder.o
 
 include ../../../makefile.glb

@@ -10,6 +10,9 @@
 
 static const char *kTrimDefaultCharSet  = " \n\t";
 
+LPSTR WINAPI CharNextA( LPCSTR ptr );
+LPSTR WINAPI CharPrevA( LPCSTR start, LPCSTR ptr );
+
 template <class T>
 inline size_t MyStringLen(const T *s)
 { 
@@ -35,53 +38,7 @@ inline wchar_t* MyStringGetPrevCharPointer(const wchar_t *base, wchar_t *p)
 inline const wchar_t* MyStringGetPrevCharPointer(const wchar_t *base, const wchar_t *p)
   { return (p - 1); }
 
-#if defined(WIN32) // || defined(ENV_UNIX) // FIXED
-
-inline char* MyStringGetNextCharPointer(char *p)
-  { return CharNextA(p); }
-inline const char* MyStringGetNextCharPointer(const char *p)
-  { return CharNextA(p); }
-
-inline char* MyStringGetPrevCharPointer(char *base, char *p)
-  { return CharPrevA(base, p); }
-inline const char* MyStringGetPrevCharPointer(const char *base, const char *p)
-  { return CharPrevA(base, p); }
-
-inline char MyCharUpper(char c)
-  { return (char)(unsigned int)CharUpperA((LPSTR)(unsigned int)(unsigned char)c); }
-#ifdef _UNICODE
-inline wchar_t MyCharUpper(wchar_t c)
-  { return (wchar_t)CharUpperW((LPWSTR)c); }
-#else
 wchar_t MyCharUpper(wchar_t c);
-#endif
-
-inline char MyCharLower(char c)
-  { return (char)(unsigned int)CharLowerA((LPSTR)(unsigned int)(unsigned char)c); }
-#ifdef _UNICODE
-inline wchar_t MyCharLower(wchar_t c)
-  { return (wchar_t)CharLowerW((LPWSTR)c); }
-#else
-wchar_t MyCharLower(wchar_t c);
-#endif
-
-inline char * MyStringUpper(char *s) { return CharUpperA(s); }
-#ifdef _UNICODE
-inline wchar_t * MyStringUpper(wchar_t *s) { return CharUpperW(s); }
-#else
-wchar_t * MyStringUpper(wchar_t *s);
-#endif
-
-inline char * MyStringLower(char *s) { return CharLowerA(s); }
-#ifdef _UNICODE
-inline wchar_t * MyStringLower(wchar_t *s) { return CharLowerW(s); }
-#else
-wchar_t * MyStringLower(wchar_t *s);
-#endif
-
-#else // Standard-C
-wchar_t MyCharUpper(wchar_t c);
-  // FIXED
 inline char * MyStringUpper(char *s);
 #ifdef _UNICODE
 inline wchar_t * MyStringUpper(wchar_t *s);
@@ -96,7 +53,6 @@ inline char* MyStringGetNextCharPointer(char *p)
   { return CharNextA(p); }
 inline const char* MyStringGetNextCharPointer(const char *p)
   { return CharNextA(p); }
-#endif
 
 //////////////////////////////////////
 // Compare

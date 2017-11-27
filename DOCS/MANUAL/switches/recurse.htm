@@ -20,28 +20,16 @@
 
 
 <TABLE>
-  <TR> <TH width="80">Switch</TH> <TH>Description</TH> </TR>
-  <TR> <TD>-r</TD> <TD>Enable recurse subdirectories. This option is
-       default for these commands:
-       <A href="../commands/extract.htm">e (Extract)</A>,
-       <A href="../commands/list.htm">l (List)</A>,
-       <A href="../commands/test.htm">t (Test)</A>,
-       <A href="../commands/extract_full.htm">x (Extract with full paths)</A>.
-     </TD> </TR>
-  <TR> <TD>-r-</TD> <TD>Disable recurse subdirectories. This option is
-         default for all commands that can scan files on disk:
-       <A href="../commands/add.htm">a (Add)</A>,
-       <A href="../commands/delete.htm">d (Delete)</A>,
-       <A href="../commands/update.htm">u (Update)</A>.
-     </TD> </TR>
-  <TR> <TD>-r0</TD> <TD>Enable recurse subdirectories only for wildcard names.
-     </TD> </TR>
+  <TR><TH width="80">Switch</TH> <TH>Description</TH></TR>
+  <TR><TD>-r</TD> <TD>Enable recurse subdirectories.</TD></TR>
+  <TR><TD>-r-</TD> <TD>Disable recurse subdirectories. This option is default for all commands.</TD></TR>
+  <TR><TD>-r0</TD> <TD>Enable recurse subdirectories only for wildcard names.</TD></TR>
 </TABLE>
 
 <H4>Examples</H4>
 
 <PRE class="example">
-7z l archive.zip -r- *.doc
+7z l archive.zip *.doc -r-
 </PRE>
 
 <P>lists all <SPAN class="filename">*.doc</SPAN> files

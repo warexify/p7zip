@@ -1,4 +1,4 @@
-PROG=../../../bin/Codecs/AES.dll
+PROG=../../../bin/Codecs/AES.so
 
 LOCAL_FLAGS=
 
@@ -10,7 +10,7 @@ LOCAL_SHARED=$(LINK_SHARED)
 LIBS=$(LOCAL_LIBS)
 
 OBJS = \
-../../../BUILD/Common/MyWindows.o \
+../../../Common/MyWindows.o \
 DllExports.o\
 MyAES.o\
 aescrypt.o\

@@ -1,15 +1,11 @@
-PROG=../../../bin/Formats/Zip.dll
+PROG=../../../bin/Formats/Zip.so
 
 LOCAL_FLAGS=-DCRYPTO_ZIP
 
 MY_WINDOWS= \
 	$(MY_HOME)/wine_date_and_time.o \
 	$(MY_HOME)/myModuleFileName.o \
-	$(MY_HOME)/myLastError.o \
-	$(MY_HOME)/myEvents.o \
-	$(MY_HOME)/myFindFile.o \
-	$(MY_HOME)/myGetTickCount.o \
-	$(MY_HOME)/wine_strings.o
+	$(MY_HOME)/myGetTickCount.o
 
 include ../../../makefile.machine
 
@@ -17,14 +13,14 @@ LOCAL_SHARED=$(LINK_SHARED)
 LIBS=$(LOCAL_LIBS_DLL)
 
 OBJS = \
-../../../BUILD/Common/MyWindows.o \
-../../../BUILD/Common/Vector.o\
-../../../BUILD/Common/Alloc.o\
-../../../BUILD/Common/StringConvert.o\
-../../../BUILD/Common/String.o\
-../../../BUILD/Common/CRC.o\
-../../../BUILD/Common/StringToInt.o\
-../../../BUILD/Common/Random.o\
+../../../Common/MyWindows.o \
+../../../Common/Vector.o\
+../../../Common/Alloc.o\
+../../../Common/StringConvert.o\
+../../../Common/String.o\
+../../../Common/CRC.o\
+../../../Common/StringToInt.o\
+../../../Common/Random.o\
 DllExports.o\
 DLL.o\
 FileFind.o\
@@ -54,7 +50,14 @@ CopyCoder.o\
 ZipCipher.o\
 ZipCrypto.o\
 7zMethodID.o\
-7zMethods.o
+7zMethods.o\
+InBuffer.o\
+OutBuffer.o\
+ShrinkDecoder.o\
+ImplodeDecoder.o\
+ImplodeHuffmanDecoder.o\
+LZOutWindow.o\
+LSBFDecoder.o
 
 include ../../../makefile.glb
 

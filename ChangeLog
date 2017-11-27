@@ -1,4 +1,38 @@
 
+Version 4.16
+============
+
+  - From Windows version of 7-zip 4.16 :
+    - Speed optimization (5%) for 7z / LZMA 
+    - 7za now supports .Z archives
+    - -r- switch in command line now is default for all commands 
+    - Some bugs were fixed
+
+  - From Windows version of 7-zip 4.15 :
+    - Z format supporting (extracting only)
+    - 7-Zip now can extract ZIP archives compressed with "Shrink" method
+    - 7-Zip now doesn't interrupt the compressing when it can not open file.
+      7-Zip just skips that file and shows warning.
+    - Some bugs were fixed
+
+  - man pages added (thanks to Mohammed Adnene Trojette)
+  - bug #1112167 fixed (Temporary directory must be on same partition as target)
+    p7zip failed moving the temporary file at the end of
+    compressing to target file if the directories don't reside
+    on the same partition (or network path).
+  - bug #1164659 fixed (Invalid file date for "big endian" machine)
+  - p7zip now uses ".so" instead of ".dll"
+  - p7zip now handles "ctrl-c" and "kill" to cleanup temporary files before exiting
+  - p7zip now runs on BeOS.
+  - better support of filenames with spaces.
+  - some code cleanup
+    - "myWindows/myFiles.cpp" is now in "Windows/FileIO.cpp"
+    - "myWindows/myFindFile.cpp" is now in "Windows/FileFind.cpp"
+    - "myWindows/myDirectoryAndPath.cpp" is now in "Windows/FileDir.cpp"
+    - "myWindows/myEvents.cpp" is now in "Windows/Synchronization.cpp"
+    - "myWindows/wine_strings.cpp" is now in "Windows/String.cpp"
+  
+
 Version 4.14.01
 ===============
   - huge speed up for multi CPUs machines (Thanks to loderunner - http://sourceforge.net/users/loderunner/).

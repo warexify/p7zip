@@ -6,43 +6,40 @@
 #define __WINDOWS_SYNCHRONIZATION_H
 
 #include "Defs.h"
-#include "Handle.h"
+
+#ifdef ENV_BEOS
+#include <Locker.h>
+#include <kernel/OS.h>
+#include <list>
+#endif
 
 namespace NWindows {
 namespace NSynchronization {
 
 class CBaseEvent
 {
-	HANDLE _handle;
-
 public:
-	CBaseEvent() : _handle(0) {} 
-	 ~CBaseEvent() { Close(); }
+  bool _manual_reset;
+  bool _state;
 
- operator HANDLE() { return _handle; }
+  CBaseEvent() {} 
+  ~CBaseEvent() { Close(); }
+
+  operator HANDLE() { return (HANDLE)this; }
 
   bool Create(bool manualReset, bool initiallyOwn)
   {
-    _handle = ::myCreateEvent(BoolToBOOL(manualReset),BoolToBOOL(initiallyOwn));
-    return (_handle != 0);
-  }
-
-  bool Set() { return BOOLToBool(::mySetEvent(_handle)); }
-  bool Reset() { return BOOLToBool(::myResetEvent(_handle)); }
-
-  bool Lock()
-    { return (::myInfiniteWaitForSingleEvent(_handle) == WAIT_OBJECT_0); }
-  
-  bool Close()
-  {
-    if (_handle == NULL)
-      return true;
-    if (!::myCloseEvent(_handle))
-      return false;
-    _handle = NULL;
+    _manual_reset = manualReset;
+    _state        = initiallyOwn;
     return true;
   }
 
+  bool Set();
+  bool Reset();
+
+  bool Lock();
+  
+  bool Close() { return true; }
 };
 
 class CEvent: public CBaseEvent
@@ -66,6 +63,32 @@ public:
     CEvent(false, initiallyOwn) {};
 };
 
+#ifdef ENV_BEOS
+class CCriticalSection : BLocker
+{
+  std::list<thread_id> _waiting;
+public:
+  CCriticalSection() {}
+  ~CCriticalSection() {}
+  void Enter() { Lock(); }
+  void Leave() { Unlock(); }
+  void WaitCond() { 
+    _waiting.push_back(find_thread(NULL));
+    thread_id sender;
+    Unlock();
+    int msg = receive_data(&sender, NULL, 0);
+    Lock();
+  }
+  void SignalCond() {
+    Lock();
+    for (std::list<thread_id>::iterator index = _waiting.begin(); index != _waiting.end(); index++) {
+      send_data(*index, '7zCN', NULL, 0);
+    }
+   _waiting.clear();
+    Unlock();
+  }
+};
+#else
 class CCriticalSection
 {
   pthread_mutex_t _object;
@@ -84,6 +107,7 @@ public:
   void WaitCond() { ::pthread_cond_wait(&_cond, &_object); }
   void SignalCond() { ::pthread_cond_broadcast(&_cond); }
 };
+#endif
 
 class CCriticalSectionLock
 {

@@ -1,4 +1,4 @@
-PROG=../../../bin/Codecs/Implode.dll
+PROG=../../../bin/Codecs/Implode.so
 
 LOCAL_FLAGS=
 
@@ -10,8 +10,8 @@ LOCAL_SHARED=$(LINK_SHARED)
 LIBS=$(LOCAL_LIBS)
 
 OBJS = \
-../../../BUILD/Common/MyWindows.o \
-../../../BUILD/Common/Alloc.o\
+../../../Common/MyWindows.o \
+../../../Common/Alloc.o\
 DllExports.o\
 InBuffer.o\
 LSBFDecoder.o\

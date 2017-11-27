@@ -1,11 +1,8 @@
-PROG=../../../bin/Formats/bz2.dll
+PROG=../../../bin/Formats/bz2.so
 
 LOCAL_FLAGS=
 
-MY_WINDOWS= \
-	$(MY_HOME)/wine_strings.o \
-	$(MY_HOME)/myLastError.o \
-	$(MY_HOME)/myModuleFileName.o
+MY_WINDOWS=$(MY_HOME)/myModuleFileName.o
 
 include ../../../makefile.machine
 
@@ -13,9 +10,10 @@ LOCAL_SHARED=$(LINK_SHARED)
 LIBS=$(LOCAL_LIBS_DLL)
 
 OBJS = \
-../../../BUILD/Common/MyWindows.o \
-../../../BUILD/Common/Alloc.o\
-../../../BUILD/Common/StringConvert.o\
+../../../Common/MyWindows.o \
+../../../Common/Alloc.o\
+../../../Common/String.o\
+../../../Common/StringConvert.o\
 DllExports.o\
 DLL.o\
 PropVariant.o\

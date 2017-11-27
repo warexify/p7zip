@@ -132,12 +132,9 @@ HRESULT CUpdateCallbackConsole::GetStream(const wchar_t *name, bool isAnti)
 
 HRESULT CUpdateCallbackConsole::OpenFileError(const wchar_t *name, DWORD systemError)
 {
+  FailedCodes.Add(systemError);
   FailedFiles.Add(name);
-#if ENV_UNIX
-  if ((systemError == ERROR_SHARING_VIOLATION) || (systemError == ERROR_ACCESS_DENIED))
-#else
-  if (systemError == ERROR_SHARING_VIOLATION)
-#endif
+  // if (systemError == ERROR_SHARING_VIOLATION)
   {
     m_PercentPrinter.ClosePrint();
     m_PercentPrinter.PrintNewLine();

@@ -1,4 +1,4 @@
-PROG=../../../bin/Formats/7z.dll
+PROG=../../../bin/Formats/7z.so
 
 LOCAL_FLAGS=
 
@@ -8,26 +8,20 @@ LOCAL_SHARED=$(LINK_SHARED)
 LIBS=$(LOCAL_LIBS_DLL)
 
 MY_WINDOWS= \
-	$(MY_HOME)/myEvents.o \
-	$(MY_HOME)/myFindFile.o \
-	$(MY_HOME)/myFiles.o \
-	$(MY_HOME)/myLastError.o \
-	$(MY_HOME)/myDirectoryAndPath.o \
-	$(MY_HOME)/wine_strings.o \
 	$(MY_HOME)/wine_date_and_time.o \
-	$(MY_HOME)/myModuleFileName.o \
+	$(MY_HOME)/myModuleFileName.o
 
 include ../../../makefile.machine
 
 OBJS = \
-../../../BUILD/Common/MyWindows.o \
-../../../BUILD/Common/Alloc.o \
-../../../BUILD/Common/Vector.o \
-../../../BUILD/Common/StringConvert.o \
-../../../BUILD/Common/String.o \
-../../../BUILD/Common/CRC.o \
-../../../BUILD/Common/IntToString.o \
-../../../BUILD/Common/StringToInt.o \
+../../../Common/MyWindows.o \
+../../../Common/Alloc.o \
+../../../Common/Vector.o \
+../../../Common/StringConvert.o \
+../../../Common/String.o \
+../../../Common/CRC.o \
+../../../Common/IntToString.o \
+../../../Common/StringToInt.o \
 DllExports.o \
 7zCompressionMode.o \
 7zDecode.o \

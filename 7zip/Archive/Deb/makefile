@@ -1,11 +1,8 @@
-PROG=../../../bin/Formats/deb.dll
+PROG=../../../bin/Formats/deb.so
 
 LOCAL_FLAGS=
 
-MY_WINDOWS=\
-	$(MY_HOME)/myLastError.o \
-	$(MY_HOME)/wine_strings.o \
-	$(MY_HOME)/wine_date_and_time.o 
+MY_WINDOWS=$(MY_HOME)/wine_date_and_time.o 
 
 include ../../../makefile.machine
 
@@ -13,11 +10,11 @@ LOCAL_SHARED=$(LINK_SHARED)
 LIBS=$(LOCAL_LIBS)
 
 OBJS = \
-../../../BUILD/Common/MyWindows.o \
-../../../BUILD/Common/Alloc.o\
-../../../BUILD/Common/Vector.o\
-../../../BUILD/Common/StringConvert.o\
-../../../BUILD/Common/String.o\
+../../../Common/MyWindows.o \
+../../../Common/Alloc.o\
+../../../Common/Vector.o\
+../../../Common/StringConvert.o\
+../../../Common/String.o\
 DllExports.o\
 PropVariant.o\
 CopyCoder.o\

@@ -10,14 +10,8 @@ include ../../../makefile.machine
 LIBS=$(LOCAL_LIBS)
 
 MY_WINDOWS= \
-	$(MY_HOME)/myEvents.o \
-	$(MY_HOME)/myDirectoryAndPath.o \
 	$(MY_HOME)/myGetTickCount.o \
-	$(MY_HOME)/myLastError.o \
-	$(MY_HOME)/wine_strings.o \
 	$(MY_HOME)/wine_date_and_time.o \
-	$(MY_HOME)/myFindFile.o \
-	$(MY_HOME)/myFiles.o \
 	$(MY_HOME)/mySplitCommandLine.o \
 	$(MY_HOME)/myModuleFileName.o
 
@@ -60,17 +54,17 @@ FileName.o\
 PropVariant.o\
 PropVariantConversions.o\
 Synchronization.o\
-../../../BUILD/Common/MyWindows.o\
-../../../BUILD/Common/Alloc.o\
-../../../BUILD/Common/CommandLineParser.o\
-../../../BUILD/Common/StdInStream.o\
-../../../BUILD/Common/StdOutStream.o\
-../../../BUILD/Common/StringConvert.o\
-../../../BUILD/Common/String.o\
-../../../BUILD/Common/CRC.o\
-../../../BUILD/Common/Vector.o\
-../../../BUILD/Common/Wildcard.o\
-../../../BUILD/Common/IntToString.o\
+../../../Common/MyWindows.o\
+../../../Common/Alloc.o\
+../../../Common/CommandLineParser.o\
+../../../Common/StdInStream.o\
+../../../Common/StdOutStream.o\
+../../../Common/StringConvert.o\
+../../../Common/String.o\
+../../../Common/CRC.o\
+../../../Common/Vector.o\
+../../../Common/Wildcard.o\
+../../../Common/IntToString.o\
 FilePathAutoRename.o\
 FileStreams.o\
 InBuffer.o\

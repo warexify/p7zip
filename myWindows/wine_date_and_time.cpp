@@ -14,6 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#include "config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,18 +23,12 @@
 #include <sys/time.h> /* gettimeofday */
 #include <dirent.h>
 #include <unistd.h>
-#include <pthread.h>
-#include <errno.h>
+#include <time.h>
 
 #include <windows.h>
 
 // #define TRACEN(u) u;
 #define TRACEN(u)  /* */
-
-#if  !defined(__CYGWIN__) && !defined(sparc) && !defined(sun) && !defined(__APPLE_CC__)
-#define HAVE_TIMEGM
-#endif
-
 
 typedef LONG NTSTATUS;
 #define STATUS_SUCCESS                   0x00000000
@@ -62,10 +57,9 @@ typedef LONG NTSTATUS;
 #define SECS_1601_TO_1980  ((379 * 365 + 91) * (ULONGLONG)SECSPERDAY)
 #define TICKS_1601_TO_1980 (SECS_1601_TO_1980 * TICKSPERSEC)
 typedef short CSHORT;
-static inline void NormalizeTimeFields(CSHORT *FieldToNormalize, CSHORT *CarryField,int Modulus)
-{
-	*FieldToNormalize = (CSHORT) (*FieldToNormalize - Modulus);
-	*CarryField = (CSHORT) (*CarryField + 1);
+static inline void NormalizeTimeFields(CSHORT *FieldToNormalize, CSHORT *CarryField,int Modulus) {
+  *FieldToNormalize = (CSHORT) (*FieldToNormalize - Modulus);
+  *CarryField = (CSHORT) (*CarryField + 1);
 }
 
 static int TIME_GetBias(time_t utc, int *pdaylight) {
@@ -87,13 +81,13 @@ static int TIME_GetBias(time_t utc, int *pdaylight) {
     ret = last_bias = (int)(utc-mktime(ptm));
   }
   return ret;
-*pdaylight = 0;
-return 0;
+  *pdaylight = 0;
+  return 0;
 }
 
 
 static void RtlSystemTimeToLocalTime( const LARGE_INTEGER *SystemTime,
-                                      PLARGE_INTEGER LocalTime ) {
+                                      LARGE_INTEGER *LocalTime ) {
   int bias, daylight;
   time_t gmt = time(NULL);
   bias = TIME_GetBias(gmt, &daylight);
@@ -111,6 +105,7 @@ void WINAPI RtlSecondsSince1970ToFileTime( DWORD Seconds, LPFILETIME ft ) {
 BOOL WINAPI DosDateTimeToFileTime( WORD fatdate, WORD fattime, LPFILETIME ft) {
   struct tm newtm;
 #ifndef HAVE_TIMEGM
+
   struct tm *gtm;
   time_t time1, time2;
 #endif
@@ -123,9 +118,11 @@ BOOL WINAPI DosDateTimeToFileTime( WORD fatdate, WORD fattime, LPFILETIME ft) {
   newtm.tm_mon  = ((fatdate >> 5) & 0x0f) - 1;
   newtm.tm_year = (fatdate >> 9) + 80;
 #ifdef HAVE_TIMEGM
+
   TRACEN((printf("DosDateTimeToFileTime-1\n")))
   RtlSecondsSince1970ToFileTime( timegm(&newtm), ft );
 #else
+
   TRACEN((printf("DosDateTimeToFileTime-2\n")))
   time1 = mktime(&newtm);
   gtm = gmtime(&time1);
@@ -145,30 +142,25 @@ static ULONGLONG WINAPI RtlLargeIntegerDivide( ULONGLONG a, ULONGLONG b, ULONGLO
 }
 
 
-BOOLEAN WINAPI RtlTimeToSecondsSince1970( const LARGE_INTEGER *Time, LPDWORD Seconds ) {
-  ULONGLONG tmp; /*  = ((ULONGLONG)Time->u.HighPart << 32) | Time->u.LowPart; */
-  TRACEN((printf("RtlTimeToSecondsSince1970\n")))
-  memmove(&tmp,&Time->QuadPart,sizeof(tmp));
+BOOLEAN WINAPI RtlTimeToSecondsSince1970( const LARGE_INTEGER *Time, DWORD *Seconds ) {
+  ULONGLONG tmp = Time->QuadPart;
+  TRACEN((printf("RtlTimeToSecondsSince1970-1 %llx\n",tmp)))
   tmp = RtlLargeIntegerDivide( tmp, 10000000, NULL );
   tmp -= SECS_1601_TO_1970;
+  TRACEN((printf("RtlTimeToSecondsSince1970-2 %llx\n",tmp)))
   if (tmp > 0xffffffff)
     return FALSE;
   *Seconds = (DWORD)tmp;
   return TRUE;
 }
 
-BOOL WINAPI FileTimeToDosDateTime( const FILETIME *ft, LPWORD fatdate,
-                                   LPWORD fattime ) {
+BOOL WINAPI FileTimeToDosDateTime( const FILETIME *ft, WORD *fatdate, WORD *fattime ) {
   LARGE_INTEGER       li;
   ULONG               t;
   time_t              unixtime;
   struct tm*          tm;
 
   TRACEN((printf("FileTimeToDosDateTime\n")))
-/*
-  li.u.LowPart = ft->dwLowDateTime;
-  li.u.HighPart = ft->dwHighDateTime;
-*/
   li.QuadPart = ft->dwHighDateTime;
   li.QuadPart = (li.QuadPart << 32) | ft->dwLowDateTime;
   RtlTimeToSecondsSince1970( &li, &t );
@@ -185,17 +177,9 @@ BOOL WINAPI FileTimeToLocalFileTime( const FILETIME *utcft, LPFILETIME localft )
   LARGE_INTEGER local, utc;
 
   TRACEN((printf("FileTimeToLocalFileTime\n")))
-/*
-  utc.u.LowPart = utcft->dwLowDateTime;
-  utc.u.HighPart = utcft->dwHighDateTime;
-*/
   utc.QuadPart = utcft->dwHighDateTime;
   utc.QuadPart = (utc.QuadPart << 32) | utcft->dwLowDateTime;
   RtlSystemTimeToLocalTime( &utc, &local );
-/*
-  localft->dwLowDateTime = local.u.LowPart;
-  localft->dwHighDateTime = local.u.HighPart;
-*/
   localft->dwLowDateTime = (DWORD)local.QuadPart;
   localft->dwHighDateTime = (DWORD)(local.QuadPart >> 32);
 
@@ -289,10 +273,6 @@ BOOL WINAPI FileTimeToSystemTime( const FILETIME *ft, LPSYSTEMTIME syst ) {
   LARGE_INTEGER t;
 
   TRACEN((printf("FileTimeToSystemTime\n")))
-/*
-  t.u.LowPart = ft->dwLowDateTime;
-  t.u.HighPart = ft->dwHighDateTime;
-*/
   t.QuadPart = ft->dwHighDateTime;
   t.QuadPart = (t.QuadPart << 32) | ft->dwLowDateTime;
   RtlTimeToTimeFields(&t, &tf);
@@ -310,7 +290,7 @@ BOOL WINAPI FileTimeToSystemTime( const FILETIME *ft, LPSYSTEMTIME syst ) {
 
 
 static void WINAPI RtlLocalTimeToSystemTime( const LARGE_INTEGER *LocalTime,
-    PLARGE_INTEGER SystemTime) {
+    LARGE_INTEGER *SystemTime) {
   time_t gmt;
   int bias, daylight;
 
@@ -325,39 +305,14 @@ BOOL WINAPI LocalFileTimeToFileTime( const FILETIME *localft, LPFILETIME utcft )
   LARGE_INTEGER local, utc;
 
   TRACEN((printf("LocalFileTimeToFileTime\n")))
-/*
-  local.u.LowPart = localft->dwLowDateTime;
-  local.u.HighPart = localft->dwHighDateTime;
-*/
   local.QuadPart = localft->dwHighDateTime;
   local.QuadPart = (local.QuadPart << 32) | localft->dwLowDateTime;
   RtlLocalTimeToSystemTime( &local, &utc );
-/*
-  utcft->dwLowDateTime = utc.u.LowPart;
-  utcft->dwHighDateTime = utc.u.HighPart;
-*/
   utcft->dwLowDateTime = (DWORD)utc.QuadPart;
   utcft->dwHighDateTime = (DWORD)(utc.QuadPart >> 32);
 
   return TRUE;
 }
-
-/*
-LONG WINAPI CompareFileTime( const FILETIME *x, const FILETIME *y ) {
-  if (!x || !y)
-    return -1;
-
-  if (x->dwHighDateTime > y->dwHighDateTime)
-    return 1;
-  if (x->dwHighDateTime < y->dwHighDateTime)
-    return -1;
-  if (x->dwLowDateTime > y->dwLowDateTime)
-    return 1;
-  if (x->dwLowDateTime < y->dwLowDateTime)
-    return -1;
-  return 0;
-}
-*/
 
 /***********************************************************************
  *       NtQuerySystemTime [NTDLL.@]
@@ -372,15 +327,14 @@ LONG WINAPI CompareFileTime( const FILETIME *x, const FILETIME *y ) {
  *   Success: STATUS_SUCCESS.
  *   Failure: An NTSTATUS error code indicating the problem.
  */
-NTSTATUS WINAPI NtQuerySystemTime( PLARGE_INTEGER Time )
-{
-    struct timeval now;
+NTSTATUS WINAPI NtQuerySystemTime( LARGE_INTEGER *Time ) {
+  struct timeval now;
 
   TRACEN((printf("NtQuerySystemTime\n")))
-    gettimeofday( &now, 0 );
-    Time->QuadPart = now.tv_sec * (ULONGLONG)TICKSPERSEC + TICKS_1601_TO_1970;
-    Time->QuadPart += now.tv_usec * 10;
-    return STATUS_SUCCESS;
+  gettimeofday( &now, 0 );
+  Time->QuadPart = now.tv_sec * (ULONGLONG)TICKSPERSEC + TICKS_1601_TO_1970;
+  Time->QuadPart += now.tv_usec * 10;
+  return STATUS_SUCCESS;
 }
 
 /*********************************************************************
@@ -393,14 +347,14 @@ NTSTATUS WINAPI NtQuerySystemTime( PLARGE_INTEGER Time )
  */
 VOID WINAPI GetSystemTime(LPSYSTEMTIME systime) /* [O] Destination for current time */
 {
-    FILETIME ft;
-    LARGE_INTEGER t;
+  FILETIME ft;
+  LARGE_INTEGER t;
 
   TRACEN((printf("GetSystemTime\n")))
-    NtQuerySystemTime(&t);
-    ft.dwLowDateTime = (DWORD)(t.QuadPart);
-    ft.dwHighDateTime = (DWORD)(t.QuadPart >> 32);
-    FileTimeToSystemTime(&ft, systime);
+  NtQuerySystemTime(&t);
+  ft.dwLowDateTime = (DWORD)(t.QuadPart);
+  ft.dwHighDateTime = (DWORD)(t.QuadPart >> 32);
+  FileTimeToSystemTime(&ft, systime);
 }
 
 /******************************************************************************
@@ -417,81 +371,79 @@ VOID WINAPI GetSystemTime(LPSYSTEMTIME systime) /* [O] Destination for current t
  *   Failure: FALSE.
  */
 BOOLEAN WINAPI RtlTimeFieldsToTime(
-	PTIME_FIELDS tfTimeFields,
-	PLARGE_INTEGER Time)
-{
-	int CurYear, CurMonth, DeltaYear;
-	LONGLONG rcTime;
-	TIME_FIELDS TimeFields = *tfTimeFields;
+  PTIME_FIELDS tfTimeFields,
+  LARGE_INTEGER *Time) {
+  int CurYear, CurMonth, DeltaYear;
+  LONGLONG rcTime;
+  TIME_FIELDS TimeFields = *tfTimeFields;
 
   TRACEN((printf("RtlTimeFieldsToTime\n")))
 
-	rcTime = 0;
+  rcTime = 0;
 
-	/* FIXME: normalize the TIME_FIELDS structure here */
-	while (TimeFields.Second >= SECSPERMIN)
-	{ NormalizeTimeFields(&TimeFields.Second, &TimeFields.Minute, SECSPERMIN);
-	}
-	while (TimeFields.Minute >= MINSPERHOUR)
-	{ NormalizeTimeFields(&TimeFields.Minute, &TimeFields.Hour, MINSPERHOUR);
-	}
-	while (TimeFields.Hour >= HOURSPERDAY)
-	{ NormalizeTimeFields(&TimeFields.Hour, &TimeFields.Day, HOURSPERDAY);
-	}
-	while (TimeFields.Day > MonthLengths[IsLeapYear(TimeFields.Year)][TimeFields.Month - 1])
-	{ NormalizeTimeFields(&TimeFields.Day, &TimeFields.Month, SECSPERMIN);
-	}
-	while (TimeFields.Month > MONSPERYEAR)
-	{ NormalizeTimeFields(&TimeFields.Month, &TimeFields.Year, MONSPERYEAR);
-	}
+  /* FIXME: normalize the TIME_FIELDS structure here */
+  while (TimeFields.Second >= SECSPERMIN) {
+    NormalizeTimeFields(&TimeFields.Second, &TimeFields.Minute, SECSPERMIN);
+  }
+  while (TimeFields.Minute >= MINSPERHOUR) {
+    NormalizeTimeFields(&TimeFields.Minute, &TimeFields.Hour, MINSPERHOUR);
+  }
+  while (TimeFields.Hour >= HOURSPERDAY) {
+    NormalizeTimeFields(&TimeFields.Hour, &TimeFields.Day, HOURSPERDAY);
+  }
+  while (TimeFields.Day > MonthLengths[IsLeapYear(TimeFields.Year)][TimeFields.Month - 1]) {
+    NormalizeTimeFields(&TimeFields.Day, &TimeFields.Month, SECSPERMIN);
+  }
+  while (TimeFields.Month > MONSPERYEAR) {
+    NormalizeTimeFields(&TimeFields.Month, &TimeFields.Year, MONSPERYEAR);
+  }
 
-	/* FIXME: handle calendar corrections here */
-        CurYear = TimeFields.Year - EPOCHYEAR;
-        DeltaYear = CurYear / 400;
-        CurYear -= DeltaYear * 400;
-        rcTime += DeltaYear * DAYSPERQUADRICENTENNIUM;
-        DeltaYear = CurYear / 100;
-        CurYear -= DeltaYear * 100;
-        rcTime += DeltaYear * DAYSPERNORMALCENTURY;
-        DeltaYear = CurYear / 4;
-        CurYear -= DeltaYear * 4;
-        rcTime += DeltaYear * DAYSPERNORMALQUADRENNIUM;
-        rcTime += CurYear * DAYSPERNORMALYEAR;
+  /* FIXME: handle calendar corrections here */
+  CurYear = TimeFields.Year - EPOCHYEAR;
+  DeltaYear = CurYear / 400;
+  CurYear -= DeltaYear * 400;
+  rcTime += DeltaYear * DAYSPERQUADRICENTENNIUM;
+  DeltaYear = CurYear / 100;
+  CurYear -= DeltaYear * 100;
+  rcTime += DeltaYear * DAYSPERNORMALCENTURY;
+  DeltaYear = CurYear / 4;
+  CurYear -= DeltaYear * 4;
+  rcTime += DeltaYear * DAYSPERNORMALQUADRENNIUM;
+  rcTime += CurYear * DAYSPERNORMALYEAR;
 
-	for (CurMonth = 1; CurMonth < TimeFields.Month; CurMonth++)
-	{ rcTime += MonthLengths[IsLeapYear(CurYear)][CurMonth - 1];
-	}
-	rcTime += TimeFields.Day - 1;
-	rcTime *= SECSPERDAY;
-	rcTime += TimeFields.Hour * SECSPERHOUR + TimeFields.Minute * SECSPERMIN + TimeFields.Second;
-	rcTime *= TICKSPERSEC;
-	rcTime += TimeFields.Milliseconds * TICKSPERMSEC;
-	Time->QuadPart = rcTime;
+  for (CurMonth = 1; CurMonth < TimeFields.Month; CurMonth++) {
+    rcTime += MonthLengths[IsLeapYear(CurYear)][CurMonth - 1];
+  }
+  rcTime += TimeFields.Day - 1;
+  rcTime *= SECSPERDAY;
+  rcTime += TimeFields.Hour * SECSPERHOUR + TimeFields.Minute * SECSPERMIN + TimeFields.Second;
+  rcTime *= TICKSPERSEC;
+  rcTime += TimeFields.Milliseconds * TICKSPERMSEC;
+  Time->QuadPart = rcTime;
 
-	return TRUE;
+  return TRUE;
 }
 
 /*********************************************************************
  *      SystemTimeToFileTime                            (KERNEL32.@)
  */
-BOOL WINAPI SystemTimeToFileTime( const SYSTEMTIME *syst, LPFILETIME ft )
-{
-    TIME_FIELDS tf;
-    LARGE_INTEGER t;
+BOOL WINAPI SystemTimeToFileTime( const SYSTEMTIME *syst, LPFILETIME ft ) {
+  TIME_FIELDS tf;
+  LARGE_INTEGER t;
 
   TRACEN((printf("SystemTimeToFileTime\n")))
 
-    tf.Year = syst->wYear;
-    tf.Month = syst->wMonth;
-    tf.Day = syst->wDay;
-    tf.Hour = syst->wHour;
-    tf.Minute = syst->wMinute;
-    tf.Second = syst->wSecond;
-    tf.Milliseconds = syst->wMilliseconds;
+  tf.Year = syst->wYear;
+  tf.Month = syst->wMonth;
+  tf.Day = syst->wDay;
+  tf.Hour = syst->wHour;
+  tf.Minute = syst->wMinute;
+  tf.Second = syst->wSecond;
+  tf.Milliseconds = syst->wMilliseconds;
 
-    RtlTimeFieldsToTime(&tf, &t);
-    ft->dwLowDateTime = (DWORD)t.QuadPart;
-    ft->dwHighDateTime = (DWORD)(t.QuadPart>>32);
-    return TRUE;
+  RtlTimeFieldsToTime(&tf, &t);
+  ft->dwLowDateTime = (DWORD)t.QuadPart;
+  ft->dwHighDateTime = (DWORD)(t.QuadPart>>32);
+  return TRUE;
 }
 
