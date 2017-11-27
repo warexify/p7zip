@@ -138,14 +138,6 @@ tar_all2 : clean
 	rm -f  ../$(ARCHIVE)_src_all_7z.tar.bz2
 	cd .. ; ( 7za a -ttar -so tt $(ARCHIVE) | 7za a -mx=9 -tbzip2 -si $(ARCHIVE)_src_all_7z.tar.bz2 )
 
-tar_src : clean
-	rm -f  ../$(ARCHIVE)_src.tar.bz2
-	cd .. ; ( 7za a -ttar -so tt -x!$(ARCHIVE)/7zip/Compress/Rar20 -x!$(ARCHIVE)/7zip/Compress/Rar29 $(ARCHIVE) | 7za a -mx=9 -tbzip2 -si $(ARCHIVE)_src.tar.bz2 )
-
-tar_src_extra : clean
-	rm -f  ../$(ARCHIVE)_src_extra.tar.bz2
-	cd .. ; ( 7za a -ttar -so tt $(ARCHIVE)/7zip/Compress/Rar20 $(ARCHIVE)/7zip/Compress/Rar29 | 7za a -mx=9 -tbzip2 -si $(ARCHIVE)_src_extra.tar.bz2 )
-
 src_7z : clean
 	rm -f  ../$(ARCHIVE)_src.7z
 	cd .. ; 7za a -mx=9 -m0=ppmd:mem=128m:o=32 $(ARCHIVE)_src.7z $(ARCHIVE)
