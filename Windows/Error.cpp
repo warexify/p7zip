@@ -36,17 +36,41 @@ bool MyFormatMessage(DWORD messageID, CSysString &message)
 #endif
   message = msgBuf;
 #endif
-  
   return true;
+
 }
 
 #ifndef _UNICODE
 bool MyFormatMessage(DWORD messageID, UString &message)
 {
+#ifdef WIN32
+  LPVOID msgBuf;
+  if(::FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+      FORMAT_MESSAGE_FROM_SYSTEM | 
+      FORMAT_MESSAGE_IGNORE_INSERTS,
+      NULL,
+      messageID,
+      0, // Default language
+      (LPWSTR) &msgBuf,
+      0,
+      NULL) == 0)
+  {
+    if (::GetLastError() != ERROR_CALL_NOT_IMPLEMENTED)
+      return false;
     CSysString messageSys;
     bool result = MyFormatMessage(messageID, messageSys);
     message = GetUnicodeString(messageSys);
     return result;
+  }
+  message = (LPCWSTR)msgBuf;
+  ::LocalFree(msgBuf);
+  return true;
+#else
+    CSysString messageSys;
+    bool result = MyFormatMessage(messageID, messageSys);
+    message = GetUnicodeString(messageSys);
+    return result;
+#endif
 }
 #endif
 

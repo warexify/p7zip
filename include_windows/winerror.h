@@ -16,6 +16,7 @@
 #define ERROR_FILE_EXISTS           80L
 #define ERROR_CANNOT_MAKE           82L
 #define ERROR_INVALID_PARAMETER     87L
+#define ERROR_BROKEN_PIPE          109L
 #define ERROR_DISK_FULL            112L
 #define ERROR_CALL_NOT_IMPLEMENTED 120L
 #define ERROR_DIR_NOT_EMPTY        145L

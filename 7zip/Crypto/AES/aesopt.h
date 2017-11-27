@@ -171,6 +171,8 @@
 #include <byteswap.h>
 #elif defined(__APPLE_CC__)
 #include <machine/endian.h>
+#elif defined(sparc)
+#define PLATFORM_BYTE_ORDER AES_BIG_ENDIAN
 #else
 #include <sys/endian.h>
 #endif

@@ -1,8 +1,5 @@
 
-- port plugins from 7-zip to p7zip (ex : paqar)
-
-- rewrite RAR plugin (because 7-zip does not provide source
-  code for this plugin)
+- try to fix p7zip when compiled with "gcc -m64" on Linux 64bits with AMD64.
 
 - use valgrind to detect errors in the program.
 
@@ -12,7 +9,7 @@
 - if an error occurs during the execution of 7z, some temporary files are left
   ( ex : 7zi12495.tmp )
 
-- suppress all DEBUG, exit(EXIT_FAILURE), FIXME, ...
+- suppress all exit(EXIT_FAILURE), FIXME, ...
 
 - no chmod/chown(uid,gid) for TAR
 
@@ -21,13 +18,7 @@
 
 - clean the headers file in include_windows
 
-- TESTS with ISO-LATIN1 characters in filename (ιθΰηκω ...)
-  OK  : 7zip
-  BAD : zip, tar
-
-- Use a more portable "String.h" (suppress the need of wine_strings.c)
-
-- TESTS on a Big Endian Machine (Solaris Sparc, Linux PPC ?)
+- Use a more portable "String.h" (suppress the need of wine_strings.cpp)
 
 - creation of SFX archives ?
 

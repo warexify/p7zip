@@ -3,7 +3,6 @@
 #include "StdAfx.h"
 
 #define INITGUID
-#include <initguid.h>
 
 #include "BZip2Encoder.h"
 #include "BZip2Decoder.h"

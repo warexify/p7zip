@@ -1,11 +1,9 @@
 // Common/Buffer.h
 
-// #pragma once
-
 #ifndef __COMMON_BUFFER_H
 #define __COMMON_BUFFER_H
 
-#include "Common/Defs.h" // FIXED, need MyMin
+#include "Common/Defs.h" // FIXED for MyMin
 
 template <class T> class CBuffer
 {    

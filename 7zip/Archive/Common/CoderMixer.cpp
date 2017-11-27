@@ -42,7 +42,7 @@ public:
 bool CThreadCoderInfo::WaitAndCode()
 {
   HANDLE events[2] = { ExitEvent, *CompressEvent };
-  DWORD waitResult = ::myWaitForMultipleEvents(2, events, FALSE, INFINITE);
+  DWORD waitResult = ::WaitForMultipleObjects(2, events, FALSE, INFINITE);
   if (waitResult == WAIT_OBJECT_0 + 0)
     return false;
 
@@ -87,8 +87,15 @@ CCoderMixer::CCoderMixer()
 CCoderMixer::~CCoderMixer()
 {
   ExitEvent.Set();
+  /* FIXED
+  ::WaitForSingleObject(m_MainThread, INFINITE);
+  DWORD result = ::WaitForMultipleObjects(m_Threads.Size(), 
+      &m_Threads.Front(), TRUE, INFINITE);
+  for(int i = 0; i < m_Threads.Size(); i++)
+    ::CloseHandle(m_Threads[i]);
+    */
   m_MainThread.Wait();
-  for(int i = 0; i < m_Threads.Size(); i++) m_Threads[i].WaitAndClose();
+  for(int i = 0; i < m_Threads.Size(); i++) m_Threads[i].WaitAndClose();  
 }
 
 
@@ -106,15 +113,19 @@ void CCoderMixer::FinishAddingCoders()
 {
   for(int i = 0; i < m_CoderInfoVector.Size(); i++)
   {
-    // DWORD id;
-    // HANDLE newThread = ::CreateThread(NULL, 0, CoderThread,&m_CoderInfoVector[i], 0, &id);
-    // if (newThread == 0) throw 271824;
-    // m_Threads.Add(newThread);
-
-	NWindows::CThread newThread;
-	m_Threads.Add(newThread);
-	if (m_Threads.Back().Create(CoderThread,&m_CoderInfoVector[i]) == false)
+/* FIXED	  
+    DWORD id;
+    HANDLE newThread = ::CreateThread(NULL, 0, CoderThread, 
+        &m_CoderInfoVector[i], 0, &id);
+    if (newThread == 0)
+      throw 271824;
+    m_Threads.Add(newThread);
+*/
+    NWindows::CThread newThread;
+    m_Threads.Add(newThread);
+    if (m_Threads.Back().Create(CoderThread,&m_CoderInfoVector[i]) == false)
 		throw 271824;
+
 
 
     if (i >= 1)
@@ -142,8 +153,8 @@ void CCoderMixer::ReInit()
   }
 }
 
-void CCoderMixer::SetCoderInfo(UINT32 coderIndex, const UINT64 *inSize,
-    const UINT64 *outSize)
+void CCoderMixer::SetCoderInfo(UInt32 coderIndex, const UInt64 *inSize,
+    const UInt64 *outSize)
 {
   CThreadCoderInfo &coderInfo = m_CoderInfoVector[coderIndex];
   
@@ -173,13 +184,13 @@ STDMETHODIMP CCoderMixer::Init(ISequentialInStream *inStreamMain,
 bool CCoderMixer::MyCode()
 {
   HANDLE events[2] = { ExitEvent, m_StartCompressingEvent };
-  DWORD waitResult = ::myWaitForMultipleEvents(2, events, FALSE, INFINITE);
+  DWORD waitResult = ::WaitForMultipleObjects(2, events, FALSE, INFINITE);
   if (waitResult == WAIT_OBJECT_0 + 0)
     return false;
 
   for(int i = 0; i < m_CoderInfoVector.Size(); i++)
     m_CoderInfoVector[i].CompressEvent->Set();
-  DWORD result = ::myWaitForMultipleEvents(m_CompressingCompletedEvents.Size(), 
+  DWORD result = ::WaitForMultipleObjects(m_CompressingCompletedEvents.Size(), 
       &m_CompressingCompletedEvents.Front(), TRUE, INFINITE);
   
   m_CompressingFinishedEvent.Set();
@@ -189,7 +200,7 @@ bool CCoderMixer::MyCode()
 
 STDMETHODIMP CCoderMixer::Code(ISequentialInStream *inStream,
     ISequentialOutStream *outStream, 
-    const UINT64 *inSize, const UINT64 *outSize,
+    const UInt64 *inSize, const UInt64 *outSize,
     ICompressProgressInfo *progress)
 {
   Init(inStream, outStream);
@@ -206,7 +217,7 @@ STDMETHODIMP CCoderMixer::Code(ISequentialInStream *inStream,
   while (true)
   {
     HANDLE events[2] = {m_CompressingFinishedEvent, progressSpec->ProgressEvent };
-    DWORD waitResult = ::myWaitForMultipleEvents(2, events, FALSE, INFINITE);
+    DWORD waitResult = ::WaitForMultipleObjects(2, events, FALSE, INFINITE);
     if (waitResult == WAIT_OBJECT_0 + 0)
       break;
     if (progress != NULL)
@@ -233,7 +244,7 @@ STDMETHODIMP CCoderMixer::Code(ISequentialInStream *inStream,
   return S_OK;
 }
 
-UINT64 CCoderMixer::GetWriteProcessedSize(UINT32 coderIndex)
+UInt64 CCoderMixer::GetWriteProcessedSize(UInt32 coderIndex)
 {
   return m_StreamBinders[coderIndex].ProcessedSize;
 }

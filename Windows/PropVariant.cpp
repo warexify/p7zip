@@ -33,8 +33,6 @@ CPropVariant::CPropVariant(LPCOLESTR lpszSrc)
   *this = lpszSrc;
 }
 
-///////////////////////////
-// Assignment Operators
 CPropVariant& CPropVariant::operator=(const CPropVariant& varSrc)
 {
   InternalCopy(&varSrc);
@@ -48,14 +46,7 @@ CPropVariant& CPropVariant::operator=(const PROPVARIANT& varSrc)
 
 CPropVariant& CPropVariant::operator=(BSTR bstrSrc)
 {
-  InternalClear();
-  vt = VT_BSTR;
-  bstrVal = ::SysAllocString(bstrSrc);
-  if (bstrVal == NULL && bstrSrc != NULL)
-  {
-    vt = VT_ERROR;
-    scode = E_OUTOFMEMORY;
-  }
+  *this = (LPCOLESTR)bstrSrc;
   return *this;
 }
 
@@ -64,7 +55,6 @@ CPropVariant& CPropVariant::operator=(LPCOLESTR lpszSrc)
   InternalClear();
   vt = VT_BSTR;
   bstrVal = ::SysAllocString(lpszSrc);
-  
   if (bstrVal == NULL && lpszSrc != NULL)
   {
     vt = VT_ERROR;
@@ -85,7 +75,7 @@ CPropVariant& CPropVariant::operator=(bool bSrc)
   return *this;
 }
 
-CPropVariant& CPropVariant::operator=(UINT32 value)
+CPropVariant& CPropVariant::operator=(UInt32 value)
 {
   if (vt != VT_UI4)
   {
@@ -96,14 +86,14 @@ CPropVariant& CPropVariant::operator=(UINT32 value)
   return *this;
 }
 
-CPropVariant& CPropVariant::operator=(UINT64 value)
+CPropVariant& CPropVariant::operator=(UInt64 value)
 {
   if (vt != VT_UI8)
   {
     InternalClear();
     vt = VT_UI8;
   }
-  uhVal = *(ULARGE_INTEGER*)&value;
+  uhVal.QuadPart = value;
   return *this;
 }
 
@@ -118,7 +108,7 @@ CPropVariant& CPropVariant::operator=(const FILETIME &value)
   return *this;
 }
 
-CPropVariant& CPropVariant::operator=(int value)
+CPropVariant& CPropVariant::operator=(Int32 value)
 {
   if (vt != VT_I4)
   {
@@ -130,7 +120,7 @@ CPropVariant& CPropVariant::operator=(int value)
   return *this;
 }
 
-CPropVariant& CPropVariant::operator=(BYTE value)
+CPropVariant& CPropVariant::operator=(Byte value)
 {
   if (vt != VT_UI1)
   {
@@ -141,7 +131,7 @@ CPropVariant& CPropVariant::operator=(BYTE value)
   return *this;
 }
 
-CPropVariant& CPropVariant::operator=(short value)
+CPropVariant& CPropVariant::operator=(Int16 value)
 {
   if (vt != VT_I2)
   {
@@ -163,9 +153,9 @@ CPropVariant& CPropVariant::operator=(long value)
   return *this;
 }
 
-static HRESULT MyPropVariantClear(PROPVARIANT *aPropVariant) 
+static HRESULT MyPropVariantClear(PROPVARIANT *propVariant) 
 { 
-  switch(aPropVariant->vt)
+  switch(propVariant->vt)
   {
     case VT_UI1:
     case VT_I1:
@@ -183,10 +173,10 @@ static HRESULT MyPropVariantClear(PROPVARIANT *aPropVariant)
     case VT_R8:
     case VT_CY:
     case VT_DATE:
-      aPropVariant->vt = VT_EMPTY;
+      propVariant->vt = VT_EMPTY;
       return S_OK;
   }
-  return ::VariantClear((tagVARIANT *)aPropVariant); 
+  return ::VariantClear((VARIANTARG *)propVariant); 
 }
 
 HRESULT CPropVariant::Clear() 
@@ -221,49 +211,26 @@ HRESULT CPropVariant::Copy(const PROPVARIANT* pSrc)
   return ::VariantCopy((tagVARIANT *)this, (tagVARIANT *)(pSrc)); 
 }
 
-/*
+
 HRESULT CPropVariant::Attach(PROPVARIANT* pSrc)
 {
-  // Clear out the variant
   HRESULT hr = Clear();
-  if (!FAILED(hr))
-  {
-    // Copy the contents and give control to CPropVariant
-    memcpy(this, pSrc, sizeof(PROPVARIANT));
-    pSrc->vt = VT_EMPTY;
-    hr = S_OK;
-  }
-  return hr;
+  if (FAILED(hr))
+    return hr;
+  memcpy(this, pSrc, sizeof(PROPVARIANT));
+  pSrc->vt = VT_EMPTY;
+  return S_OK;
 }
-*/
 
 HRESULT CPropVariant::Detach(PROPVARIANT* pDest)
 {
-  // Clear out the variant
   HRESULT hr = MyPropVariantClear(pDest);
-  // HRESULT hr = ::VariantClear((VARIANT* )pDest);
-  if (!FAILED(hr))
-  {
-    // Copy the contents and remove control from CPropVariant
-    memcpy(pDest, this, sizeof(PROPVARIANT));
-    vt = VT_EMPTY;
-    hr = S_OK;
-  }
-  return hr;
+  if (FAILED(hr))
+    return hr;
+  memcpy(pDest, this, sizeof(PROPVARIANT));
+  vt = VT_EMPTY;
+  return S_OK;
 }
-
-
-/*
-HRESULT CPropVariant::ChangeType(VARTYPE vtNew, const PROPVARIANT* pSrc)
-{
-  PROPVARIANT* pVar = const_cast<PROPVARIANT*>(pSrc);
-  // Convert in place if pSrc is NULL
-  if (pVar == NULL)
-    pVar = this;
-  // Do nothing if doing in place convert and vts not different
-  return ::VariantChangeType((VARIANT *)this, (VARIANT *)pVar, 0, vtNew);
-}
-*/
 
 HRESULT CPropVariant::InternalClear()
 {
@@ -283,6 +250,58 @@ void CPropVariant::InternalCopy(const PROPVARIANT* pSrc)
   {
     vt = VT_ERROR;
     scode = hr;
+  }
+}
+
+int CPropVariant::Compare(const CPropVariant &a)
+{
+  if(vt != a.vt)
+    return 0; // it's mean some bug
+  switch (vt)
+  {
+    case VT_EMPTY:
+      return 0;
+    
+    /*
+    case VT_I1:
+      return MyCompare(cVal, a.cVal);
+    */
+    case VT_UI1:
+      return MyCompare(bVal, a.bVal);
+
+    case VT_I2:
+      return MyCompare(iVal, a.iVal);
+    case VT_UI2:
+      return MyCompare(uiVal, a.uiVal);
+    
+    case VT_I4:
+      return MyCompare(lVal, a.lVal);
+    /*
+    case VT_INT:
+      return MyCompare(intVal, a.intVal);
+    */
+    case VT_UI4:
+      return MyCompare(ulVal, a.ulVal);
+    /*
+    case VT_UINT:
+      return MyCompare(uintVal, a.uintVal);
+    */
+    case VT_I8:
+      return MyCompare(hVal.QuadPart, a.hVal.QuadPart);
+    case VT_UI8:
+      return MyCompare(uhVal.QuadPart, a.uhVal.QuadPart);
+
+    case VT_BOOL:    
+      return -MyCompare(boolVal, a.boolVal);
+
+    case VT_FILETIME:
+      return ::CompareFileTime(&filetime, &a.filetime);
+    case VT_BSTR:
+      return 0; // Not implemented 
+      // return MyCompare(aPropVarint.cVal);
+
+    default:
+      return 0;
   }
 }
 

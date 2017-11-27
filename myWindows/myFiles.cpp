@@ -108,18 +108,20 @@ t_file_handle WINAPI myCreateFileA(
 
   switch (dwCreationDisposition)
   {
-    case CREATE_NEW : 
+    case CREATE_NEW    : flags |= O_CREAT | O_EXCL;
       break;
     case CREATE_ALWAYS : flags |= O_CREAT;
       break;
-    case OPEN_EXISTING: 
+    case OPEN_EXISTING : 
       break;
-    case OPEN_ALWAYS  : flags |= O_CREAT;  
+    case OPEN_ALWAYS   : flags |= O_CREAT;  
       break;
     case TRUNCATE_EXISTING : flags |= O_TRUNC;
       break;
   }
 
+  TRACEN((printf("myCreateFileA flags=%x\n",flags)))
+  
   file->fd = open(name,flags, 0666);
 
   TRACEN((printf("\nTHR 0x%lx : myCreateFileA(%s) %s %s %s %s %s => %d\n",
@@ -190,9 +192,9 @@ BOOL WINAPI SetFileTime( t_file_handle hFile,
   }
   
   if (lpLastAccessTime)
-       RtlTimeToSecondsSince1970( (PLARGE_INTEGER) lpLastAccessTime, (DWORD *)&buf.actime );
+       RtlTimeToSecondsSince1970( (LARGE_INTEGER *) lpLastAccessTime, (DWORD *)&buf.actime );
   if (lpLastWriteTime)
-       RtlTimeToSecondsSince1970( (PLARGE_INTEGER) lpLastWriteTime, (DWORD *)&buf.modtime );
+       RtlTimeToSecondsSince1970( (LARGE_INTEGER *) lpLastWriteTime, (DWORD *)&buf.modtime );
 
   ret = utime(hFile->unix_filename.c_str(), &buf);
   return (ret == 0);

@@ -1,4 +1,12 @@
 
+Version 4.10
+============
+  - new port of 7za from the source of 7za 4.10Beta for Windows
+    => p7zip now work on big endian CPU.
+
+  - 7z for Unix is not maintain anymore (because as the source of unrar plugin for 7z
+    is not available, 7z is unless on Unix).
+
 Version 0.91
 ============
   - add support for FreeBSD 5.2.1

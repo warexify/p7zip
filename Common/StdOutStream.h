@@ -1,7 +1,5 @@
 // Common/StdOutStream.h
 
-// #pragma once 
-
 #ifndef __COMMON_STDOUTSTREAM_H
 #define __COMMON_STDOUTSTREAM_H
 
@@ -19,14 +17,13 @@ public:
   ~CStdOutStream ();
   bool Open(LPCTSTR fileName);
   bool Close();
-  bool flush();
  
   CStdOutStream & operator<<(CStdOutStream & (* aFunction)(CStdOutStream  &));
   CStdOutStream & operator<<(const char *string);
   CStdOutStream & operator<<(const wchar_t *string);
   CStdOutStream & operator<<(char c);
   CStdOutStream & operator<<(int number);
-  CStdOutStream & operator<<(UINT64 number);
+  CStdOutStream & operator<<(UInt64 number);
 };
 
 CStdOutStream & endl(CStdOutStream & outStream);

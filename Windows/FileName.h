@@ -1,7 +1,5 @@
 // Windows/FileName.h
 
-// #pragma once
-
 #ifndef __WINDOWS_FILENAME_H
 #define __WINDOWS_FILENAME_H
 
@@ -34,6 +32,7 @@ struct CParsedPath
   UString Prefix; // Disk or UNC with slash
   UStringVector PathParts;
   void ParsePath(const UString &path);
+  UString MergePath() const;
 };
 
 void SplitNameToPureNameAndExtension(const UString &fullName, 

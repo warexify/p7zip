@@ -5,6 +5,8 @@
 
 #include <pthread.h>
 
+#include "Common/MyWindows.h"
+
 #include <windows.h>
 
 #include "myWindows.h"
@@ -54,31 +56,12 @@ DWORD GetModuleFileNameW( HMODULE hModule, LPWSTR lpFilename, DWORD nSize);
 #define GetModuleFileName  GetModuleFileNameA
 #endif // !UNICODE
 
-#if 0
-FARPROC GetProcAddress( HMODULE hModule, LPCSTR lpProcName);
-
-/* winbase.h */
-BOOL FreeLibrary( HMODULE hModule);
-
-HMODULE LoadLibraryA(LPCSTR lpLibFileName);
-HMODULE LoadLibraryW(LPCWSTR lpLibFileName);
-HMODULE LoadLibraryExA( LPCSTR lpLibFileName, HANDLE hFile, DWORD dwFlags);
-HMODULE LoadLibraryExW( LPCWSTR lpLibFileName, HANDLE hFile, DWORD dwFlags);
-
-DWORD GetModuleFileNameA( HMODULE hModule, LPSTR lpFilename, DWORD nSize);
-DWORD GetModuleFileNameW( HMODULE hModule, LPWSTR lpFilename, DWORD nSize);
-#ifdef UNICODE
-#define LoadLibrary  LoadLibraryW
-#define LoadLibraryEx  LoadLibraryExW
-#define GetModuleFileName  GetModuleFileNameW
-#else
-#define LoadLibrary  LoadLibraryA
-#define LoadLibraryEx  LoadLibraryExA
-#define GetModuleFileName  GetModuleFileNameA
-#endif // !UNICODE
-
-#endif // #if 0
+typedef struct _STGMEDIUM *STGMEDIUM;
+void ReleaseStgMedium(STGMEDIUM *);
 
 /***************************/
+
+#include "Common/Types.h"
+typedef UInt16 UINT16;
 
 #endif 

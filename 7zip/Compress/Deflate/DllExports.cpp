@@ -3,7 +3,6 @@
 #include "StdAfx.h"
 
 #define INITGUID
-#include <initguid.h>
 
 #include "DeflateEncoder.h"
 #include "DeflateDecoder.h"

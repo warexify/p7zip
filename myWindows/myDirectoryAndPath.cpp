@@ -7,8 +7,6 @@
 #include <sys/stat.h> // mkdir
 #include <sys/types.h>
 
-
-
 #include "../Common/StringConvert.h"
 
 #include "myPrivate.h"

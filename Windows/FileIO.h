@@ -1,7 +1,5 @@
 // Windows/FileIO.h
 
-// #pragma once
-
 #ifndef __WINDOWS_FILEIO_H
 #define __WINDOWS_FILEIO_H
 
@@ -27,10 +25,10 @@ public:
 
   virtual bool Close();
 
-  bool GetLength(UINT64 &length) const;
+  bool GetLength(UInt64 &length) const;
 
-  bool Seek(INT64 distanceToMove, DWORD moveMethod, UINT64 &newPosition) const;
-  bool Seek(UINT64 position, UINT64 &newPosition);
+  bool Seek(Int64 distanceToMove, DWORD moveMethod, UInt64 &newPosition) const;
+  bool Seek(UInt64 position, UInt64 &newPosition);
 };
 
 class CInFile: public CFileBase
@@ -45,7 +43,7 @@ public:
       DWORD creationDisposition,  DWORD flagsAndAttributes);
   bool Open(LPCWSTR fileName);
   #endif
-  bool Read(void *data, UINT32 size, UINT32 &processedSize);
+  bool Read(void *data, UInt32 size, UInt32 &processedSize);
 };
 
 class COutFile: public CFileBase
@@ -56,11 +54,14 @@ public:
   bool Open(LPCTSTR fileName, DWORD shareMode, 
       DWORD creationDisposition, DWORD flagsAndAttributes);
   bool Open(LPCTSTR fileName);
+  bool Create(LPCTSTR fileName, bool createAlways);
  
   #ifndef _UNICODE
   bool Open(LPCWSTR fileName, DWORD shareMode, 
       DWORD creationDisposition, DWORD flagsAndAttributes);
   bool Open(LPCWSTR fileName);
+  bool Open(LPCWSTR fileName, DWORD creationDisposition);
+  bool Create(LPCWSTR fileName, bool createAlways);
   #endif
 
 /*
@@ -73,9 +74,9 @@ public:
   bool SetTime(const FILETIME *creationTime,
       const FILETIME *lastAccessTime, const FILETIME *lastWriteTime);
   bool SetLastWriteTime(const FILETIME *lastWriteTime);
-  bool Write(const void *data, UINT32 size, UINT32 &processedSize);
+  bool Write(const void *data, UInt32 size, UInt32 &processedSize);
   bool SetEndOfFile();
-  bool SetLength(UINT64 length);
+  bool SetLength(UInt64 length);
 };
 
 }}}

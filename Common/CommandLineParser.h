@@ -1,11 +1,9 @@
 // Common/CommandLineParser.h
 
-// #pragma once
-
 #ifndef __COMMON_COMMANDLINEPARSER_H
 #define __COMMON_COMMANDLINEPARSER_H
 
-#include "Common/String.h"
+#include "String.h"
 
 namespace NCommandLineParser {
 
@@ -74,6 +72,10 @@ struct CCommandSubCharsSet
   wchar_t *Chars;
   bool EmptyAllowed;
 };
+
+// Returns: indices of finded chars; -1 if there is no match
+bool ParseSubCharsCommand(int numForms, const CCommandSubCharsSet *forms, 
+    const UString &commandString, CIntVector &indices);
 
 }
 

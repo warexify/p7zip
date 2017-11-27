@@ -83,6 +83,8 @@ FILE *_wfopen( const wchar_t *filename, const wchar_t *mode );
 
 #else	/* Not _UNICODE */
 
+#define _tfopen     fopen
+
 /*
  * TCHAR, the type you should use instead of char.
  */
@@ -103,8 +105,6 @@ typedef char	_TCHAR;
 /*
  * Non-unicode (standard) functions
  */
-
-#define	_tfopen		fopen
 
 #endif	/* Not _UNICODE */
 

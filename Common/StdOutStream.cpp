@@ -31,12 +31,6 @@ bool CStdOutStream::Close()
   return !_streamIsOpen;
 }
 
-bool CStdOutStream::flush()
-{
-  if(_stream == 0) return false;
-  return (fflush(_stream) == 0);
-}
-
 CStdOutStream::~CStdOutStream ()
 {
   Close();
@@ -73,14 +67,14 @@ CStdOutStream & CStdOutStream::operator<<(char c)
 
 CStdOutStream & CStdOutStream::operator<<(int number)
 {
-  char textString[16];
-  ConvertINT64ToString(number, textString);
+  char textString[32];
+  ConvertInt64ToString(number, textString);
   return operator<<(textString);
 }
 
-CStdOutStream & CStdOutStream::operator<<(UINT64 number)
+CStdOutStream & CStdOutStream::operator<<(UInt64 number)
 {
   char textString[32];
-  ConvertUINT64ToString(number, textString);
+  ConvertUInt64ToString(number, textString);
   return operator<<(textString);
 }

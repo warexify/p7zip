@@ -4,8 +4,11 @@
 
 #include "StringConvert.h"
 
-#ifdef WIN32
+#ifndef WIN32
+#include <stdlib.h>
+#endif
 
+#ifdef WIN32
 UString MultiByteToUnicodeString(const AString &srcString, UINT codePage)
 {
   UString resultString;
@@ -52,44 +55,37 @@ AString SystemStringToOemString(const CSysString &srcString)
 #endif
 
 #else
-/*
+
 UString MultiByteToUnicodeString(const AString &srcString, UINT codePage)
 {
   UString resultString;
-  for (int i = 0; i < srcString.Length(); i++)
-    resultString += wchar_t((unsigned char)(srcString[i]));
-
-  // printf("MultiByteToUnicodeString '%s' -> '%ls'\n",&srcString[0],&resultString[0]);
-  return resultString;
-}
-
-AString UnicodeStringToMultiByte(const UString &srcString, UINT codePage)
-{
-  AString resultString;
-  for (int i = 0; i < srcString.Length(); i++)
-    resultString += (unsigned char)(srcString[i]);
-
-  // printf("UnicodeStringToMultiByte '%ls' -> '%s'\n",&srcString[0],&resultString[0]);
-
-  return resultString;
-}
-*/
-
-UString MultiByteToUnicodeString(const AString &srcString, UINT /* codePage */ )
-{
-  UString resultString;
+#ifdef ENV_UNIX // FIXED
   if(!srcString.IsEmpty())
   {
     int numChars = mbstowcs(resultString.GetBuffer(srcString.Length()),srcString,srcString.Length()+1);
     if (numChars < 0) throw "Your environment does not support UNICODE filenames";
     resultString.ReleaseBuffer(numChars);
   }
+#else
+  UString resultString;
+  for (int i = 0; i < srcString.Length(); i++)
+    resultString += wchar_t(srcString[i]);
+  /*
+  if(!srcString.IsEmpty())
+  {
+    int numChars = mbstowcs(resultString.GetBuffer(srcString.Length()), srcString, srcString.Length() + 1);
+    if (numChars < 0) throw "Your environment does not support UNICODE";
+    resultString.ReleaseBuffer(numChars);
+  }
+  */
+#endif
   return resultString;
 }
 
-AString UnicodeStringToMultiByte(const UString &srcString, UINT /* codePage */ )
+AString UnicodeStringToMultiByte(const UString &srcString, UINT codePage)
 {
   AString resultString;
+#ifdef ENV_UNIX
   if(!srcString.IsEmpty())
   {
     int numRequiredBytes = srcString.Length() * 6+1;
@@ -97,18 +93,21 @@ AString UnicodeStringToMultiByte(const UString &srcString, UINT /* codePage */ )
     if (numChars < 0) throw "Your environment does not support UNICODE filenames";
     resultString.ReleaseBuffer(numChars);
   }
+#else
+  for (int i = 0; i < srcString.Length(); i++)
+    resultString += char(srcString[i]);
+  /*
+  if(!srcString.IsEmpty())
+  {
+    int numRequiredBytes = srcString.Length() * 6 + 1;
+    int numChars = wcstombs(resultString.GetBuffer(numRequiredBytes), srcString, numRequiredBytes);
+    if (numChars < 0) throw "Your environment does not support UNICODE";
+    resultString.ReleaseBuffer(numChars);
+  }
+  */
+#endif
   return resultString;
 }
 
-int WINAPI CompareStringA(LCID lcid,DWORD style,LPCSTR str1,int len1,LPCSTR str2,int len2) {
-  INT ret, len;
-
-  if (!str1 || !str2) {
-    SetLastError(ERROR_INVALID_PARAMETER);
-    return 0;
-  }
-
-  return CompareStringW(lcid, style, MultiByteToUnicodeString(str1), len1, MultiByteToUnicodeString(str2), len2);
-}
-
 #endif
+

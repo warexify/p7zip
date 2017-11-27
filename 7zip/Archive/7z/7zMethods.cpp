@@ -20,10 +20,10 @@ namespace N7z {
 static CObjectVector<CMethodInfo2> g_Methods;
 static bool g_Loaded = false;
 
-typedef UINT32 (WINAPI *GetNumberOfMethodsFunc)(UINT32 *numMethods);
+typedef UInt32 (WINAPI *GetNumberOfMethodsFunc)(UInt32 *numMethods);
 
-typedef UINT32 (WINAPI *GetMethodPropertyFunc)(
-    UINT32 index, PROPID propID, PROPVARIANT *value);
+typedef UInt32 (WINAPI *GetMethodPropertyFunc)(
+    UInt32 index, PROPID propID, PROPVARIANT *value);
 
 static void Load(const CSysString &folderPrefix)
 {
@@ -42,20 +42,19 @@ static void Load(const CSysString &folderPrefix)
     NDLL::CLibrary library;
     if (!library.Load(filePath))
       continue;
-
     GetMethodPropertyFunc getMethodProperty = (GetMethodPropertyFunc)
         library.GetProcAddress("GetMethodProperty");
     if (getMethodProperty == NULL)
       continue;
 
-    UINT32 numMethods = 1;
+    UInt32 numMethods = 1;
     GetNumberOfMethodsFunc getNumberOfMethodsFunc = (GetNumberOfMethodsFunc)
         library.GetProcAddress("GetNumberOfMethods");
     if (getNumberOfMethodsFunc != NULL)
       if (getNumberOfMethodsFunc(&numMethods) != S_OK)
         continue;
 
-    for(UINT32 i = 0; i < numMethods; i++)
+    for(UInt32 i = 0; i < numMethods; i++)
     {
       CMethodInfo2 info;
       info.FilePath = filePath;
@@ -125,7 +124,7 @@ static void Load(const CSysString &folderPrefix)
       else
         continue;
       propVariant.Clear();
-
+      
       g_Methods.Add(info);
     }
   }
@@ -142,35 +141,17 @@ void LoadMethodMap()
   Load(GetCodecsFolderPrefix());
 }
 
-/*
-static void dumpCMethodID(const CMethodID &a1)
-{
-	printf("methodID %d :",(int)a1.IDSize);
-    for (UINT32 i = 0; i < a1.IDSize; i++)
-    printf(" %x",a1.ID[i]);
-	printf("\n");
-}
-*/
-
 bool GetMethodInfo(const CMethodID &methodID, CMethodInfo &methodInfo)
 {
-  // printf("GetMethodInfo - 1\n");
   for(int i = 0; i < g_Methods.Size(); i++)
   {
     const CMethodInfo2 &method = g_Methods[i];
-
-	/*
-	dumpCMethodID(method.MethodID);
-	dumpCMethodID(methodID);
-  */
     if (method.MethodID == methodID)
     {
       methodInfo = (CMethodInfo)method;
-	  // printf("GetMethodInfo - return true\n");
       return true;
     }
   }
-  // printf("GetMethodInfo - return false\n");
   return false;
 }
 

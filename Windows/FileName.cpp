@@ -76,9 +76,19 @@ void CParsedPath::ParsePath(const UString &path)
   SplitPathToParts(path.Mid(curPos), PathParts);
 }
 
+UString CParsedPath::MergePath() const
+{
+  UString result = Prefix;
+  for(int i = 0; i < PathParts.Size(); i++)
+  {
+    if (i != 0)
+      result += kDirDelimiter;
+    result += PathParts[i];
+  }
+  return result;
+}
 
 const wchar_t kExtensionDelimiter = L'.';
-
 
 void SplitNameToPureNameAndExtension(const UString &fullName, 
     UString &pureName, UString &extensionDelimiter, UString &extension)
@@ -97,6 +107,5 @@ void SplitNameToPureNameAndExtension(const UString &fullName,
     extension = fullName.Mid(index + 1);
   }
 }
-
 
 }}}

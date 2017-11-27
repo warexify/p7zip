@@ -41,7 +41,7 @@ static void ConvertWIN32_FIND_DATA_To_FileInfo(
   fileInfo.CreationTime = findData.ftCreationTime;  
   fileInfo.LastAccessTime = findData.ftLastAccessTime; 
   fileInfo.LastWriteTime = findData.ftLastWriteTime;
-  fileInfo.Size  = (((UINT64)findData.nFileSizeHigh) << 32) + 
+  fileInfo.Size  = (((UInt64)findData.nFileSizeHigh) << 32) + 
       findData.nFileSizeLow; 
   fileInfo.Name = findData.cFileName;
   #ifndef _WIN32_WCE
@@ -64,7 +64,7 @@ static void ConvertWIN32_FIND_DATA_To_FileInfo(
   fileInfo.CreationTime = findData.ftCreationTime;  
   fileInfo.LastAccessTime = findData.ftLastAccessTime; 
   fileInfo.LastWriteTime = findData.ftLastWriteTime;
-  fileInfo.Size  = (((UINT64)findData.nFileSizeHigh) << 32) + 
+  fileInfo.Size  = (((UInt64)findData.nFileSizeHigh) << 32) + 
       findData.nFileSizeLow; 
   fileInfo.Name = findData.cFileName;
   #ifndef _WIN32_WCE
@@ -82,7 +82,7 @@ static void ConvertWIN32_FIND_DATA_To_FileInfo(
   fileInfo.CreationTime = findData.ftCreationTime;  
   fileInfo.LastAccessTime = findData.ftLastAccessTime; 
   fileInfo.LastWriteTime = findData.ftLastWriteTime;
-  fileInfo.Size  = (((UINT64)findData.nFileSizeHigh) << 32) + 
+  fileInfo.Size  = (((UInt64)findData.nFileSizeHigh) << 32) + 
       findData.nFileSizeLow; 
   fileInfo.Name = GetUnicodeString(findData.cFileName, GetCurrentCodePage());
   #ifndef _WIN32_WCE

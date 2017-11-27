@@ -1,4 +1,0 @@
-DllExports.o : ./DllExports.cpp
-	$(CXX) $(CFLAGS) $<
-CopyCoder.o : ./CopyCoder.cpp
-	$(CXX) $(CFLAGS) $<

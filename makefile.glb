@@ -1,16 +1,4 @@
 
-
-CPPFLAGS=-w -O2 -s -fPIC \
-    	-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE \
-	-DENV_UNIX -DNDEBUG -D_REENTRANT \
-	$(LOCAL_FLAGS) \
-	-I../../../ \
-	-I../../../include_windows \
-	-I../../../myWindows
-
-CXX=g++ $(CPPFLAGS)
-CC=gcc $(CPPFLAGS)
-
 MY_HOME=../../../myWindows
 
 LIBS=$(LOCAL_LIBS)

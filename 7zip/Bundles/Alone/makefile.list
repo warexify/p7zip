@@ -1,29 +1,29 @@
+MyWindows.o : ../../../Common/MyWindows.cpp
+	$(CXX) $(CFLAGS) ../../../Common/MyWindows.cpp
 ConsoleClose.o : ../../UI/Console/ConsoleClose.cpp
 	$(CXX) $(CFLAGS) ../../UI/Console/ConsoleClose.cpp
-Extract.o : ../../UI/Console/Extract.cpp
-	$(CXX) $(CFLAGS) ../../UI/Console/Extract.cpp
-ExtractCallback.o : ../../UI/Console/ExtractCallback.cpp
-	$(CXX) $(CFLAGS) ../../UI/Console/ExtractCallback.cpp
+ExtractCallbackConsole.o : ../../UI/Console/ExtractCallbackConsole.cpp
+	$(CXX) $(CFLAGS) ../../UI/Console/ExtractCallbackConsole.cpp
 List.o : ../../UI/Console/List.cpp
 	$(CXX) $(CFLAGS) ../../UI/Console/List.cpp
 Main.o : ../../UI/Console/Main.cpp
 	$(CXX) $(CFLAGS) ../../UI/Console/Main.cpp
 MainAr.o : ../../UI/Console/MainAr.cpp
 	$(CXX) $(CFLAGS) ../../UI/Console/MainAr.cpp
-OpenCallback.o : ../../UI/Console/OpenCallback.cpp
-	$(CXX) $(CFLAGS) ../../UI/Console/OpenCallback.cpp
+OpenCallbackConsole.o : ../../UI/Console/OpenCallbackConsole.cpp
+	$(CXX) $(CFLAGS) ../../UI/Console/OpenCallbackConsole.cpp
 PercentPrinter.o : ../../UI/Console/PercentPrinter.cpp
 	$(CXX) $(CFLAGS) ../../UI/Console/PercentPrinter.cpp
-TempFiles.o : ../../UI/Console/TempFiles.cpp
-	$(CXX) $(CFLAGS) ../../UI/Console/TempFiles.cpp
-Update.o : ../../UI/Console/Update.cpp
-	$(CXX) $(CFLAGS) ../../UI/Console/Update.cpp
-UpdateCallback.o : ../../UI/Console/UpdateCallback.cpp
-	$(CXX) $(CFLAGS) ../../UI/Console/UpdateCallback.cpp
+UpdateCallbackConsole.o : ../../UI/Console/UpdateCallbackConsole.cpp
+	$(CXX) $(CFLAGS) ../../UI/Console/UpdateCallbackConsole.cpp
 UserInputUtils.o : ../../UI/Console/UserInputUtils.cpp
 	$(CXX) $(CFLAGS) ../../UI/Console/UserInputUtils.cpp
 AlignedBuffer.o : ../../../Common/AlignedBuffer.cpp
 	$(CXX) $(CFLAGS) ../../../Common/AlignedBuffer.cpp
+Alloc.o : ../../../Common/Alloc.cpp
+	$(CXX) $(CFLAGS) ../../../Common/Alloc.cpp
+C_FileIO.o : ../../../Common/C_FileIO.cpp
+	$(CXX) $(CFLAGS) ../../../Common/C_FileIO.cpp
 CommandLineParser.o : ../../../Common/CommandLineParser.cpp
 	$(CXX) $(CFLAGS) ../../../Common/CommandLineParser.cpp
 CRC.o : ../../../Common/CRC.cpp
@@ -82,12 +82,12 @@ InOutTempBuffer.o : ../../Common/InOutTempBuffer.cpp
 	$(CXX) $(CFLAGS) ../../Common/InOutTempBuffer.cpp
 LimitedStreams.o : ../../Common/LimitedStreams.cpp
 	$(CXX) $(CFLAGS) ../../Common/LimitedStreams.cpp
+LockedStream.o : ../../Common/LockedStream.cpp
+	$(CXX) $(CFLAGS) ../../Common/LockedStream.cpp
 LSBFDecoder.o : ../../Common/LSBFDecoder.cpp
 	$(CXX) $(CFLAGS) ../../Common/LSBFDecoder.cpp
 LSBFEncoder.o : ../../Common/LSBFEncoder.cpp
 	$(CXX) $(CFLAGS) ../../Common/LSBFEncoder.cpp
-MultiStream.o : ../../Common/MultiStream.cpp
-	$(CXX) $(CFLAGS) ../../Common/MultiStream.cpp
 OffsetStream.o : ../../Common/OffsetStream.cpp
 	$(CXX) $(CFLAGS) ../../Common/OffsetStream.cpp
 OutBuffer.o : ../../Common/OutBuffer.cpp
@@ -98,24 +98,12 @@ StreamBinder.o : ../../Common/StreamBinder.cpp
 	$(CXX) $(CFLAGS) ../../Common/StreamBinder.cpp
 StreamObjects.o : ../../Common/StreamObjects.cpp
 	$(CXX) $(CFLAGS) ../../Common/StreamObjects.cpp
+BranchCoder.o : ../../Compress/Branch/BranchCoder.cpp
+	$(CXX) $(CFLAGS) ../../Compress/Branch/BranchCoder.cpp
 x86.o : ../../Compress/Branch/x86.cpp
 	$(CXX) $(CFLAGS) ../../Compress/Branch/x86.cpp
 x86_2.o : ../../Compress/Branch/x86_2.cpp
 	$(CXX) $(CFLAGS) ../../Compress/Branch/x86_2.cpp
-blocksort.o : ../../Compress/BZip2/Original/blocksort.c
-	$(CC) $(CFLAGS) ../../Compress/BZip2/Original/blocksort.c
-bzlib.o : ../../Compress/BZip2/Original/bzlib.c
-	$(CC) $(CFLAGS) ../../Compress/BZip2/Original/bzlib.c
-compress.o : ../../Compress/BZip2/Original/compress.c
-	$(CC) $(CFLAGS) ../../Compress/BZip2/Original/compress.c
-crctable.o : ../../Compress/BZip2/Original/crctable.c
-	$(CC) $(CFLAGS) ../../Compress/BZip2/Original/crctable.c
-decompress.o : ../../Compress/BZip2/Original/decompress.c
-	$(CC) $(CFLAGS) ../../Compress/BZip2/Original/decompress.c
-huffman.o : ../../Compress/BZip2/Original/huffman.c
-	$(CC) $(CFLAGS) ../../Compress/BZip2/Original/huffman.c
-randtable.o : ../../Compress/BZip2/Original/randtable.c
-	$(CC) $(CFLAGS) ../../Compress/BZip2/Original/randtable.c
 BZip2Decoder.o : ../../Compress/BZip2/BZip2Decoder.cpp
 	$(CXX) $(CFLAGS) ../../Compress/BZip2/BZip2Decoder.cpp
 BZip2Encoder.o : ../../Compress/BZip2/BZip2Encoder.cpp
@@ -144,10 +132,6 @@ LZMADecoder.o : ../../Compress/LZMA/LZMADecoder.cpp
 	$(CXX) $(CFLAGS) ../../Compress/LZMA/LZMADecoder.cpp
 LZMAEncoder.o : ../../Compress/LZMA/LZMAEncoder.cpp
 	$(CXX) $(CFLAGS) ../../Compress/LZMA/LZMAEncoder.cpp
-LZMALen.o : ../../Compress/LZMA/LZMALen.cpp
-	$(CXX) $(CFLAGS) ../../Compress/LZMA/LZMALen.cpp
-LZMALiteral.o : ../../Compress/LZMA/LZMALiteral.cpp
-	$(CXX) $(CFLAGS) ../../Compress/LZMA/LZMALiteral.cpp
 PPMDDecoder.o : ../../Compress/PPMD/PPMDDecoder.cpp
 	$(CXX) $(CFLAGS) ../../Compress/PPMD/PPMDDecoder.cpp
 PPMDEncoder.o : ../../Compress/PPMD/PPMDEncoder.cpp
@@ -234,20 +218,34 @@ CoderMixer.o : ../../Archive/Common/CoderMixer.cpp
 	$(CXX) $(CFLAGS) ../../Archive/Common/CoderMixer.cpp
 CoderMixer2.o : ../../Archive/Common/CoderMixer2.cpp
 	$(CXX) $(CFLAGS) ../../Archive/Common/CoderMixer2.cpp
+CoderMixer2MT.o : ../../Archive/Common/CoderMixer2MT.cpp
+	$(CXX) $(CFLAGS) ../../Archive/Common/CoderMixer2MT.cpp
+CoderMixer2ST.o : ../../Archive/Common/CoderMixer2ST.cpp
+	$(CXX) $(CFLAGS) ../../Archive/Common/CoderMixer2ST.cpp
 DummyOutStream.o : ../../Archive/Common/DummyOutStream.cpp
 	$(CXX) $(CFLAGS) ../../Archive/Common/DummyOutStream.cpp
+FilterCoder.o : ../../Archive/Common/FilterCoder.cpp
+	$(CXX) $(CFLAGS) ../../Archive/Common/FilterCoder.cpp
 InStreamWithCRC.o : ../../Archive/Common/InStreamWithCRC.cpp
 	$(CXX) $(CFLAGS) ../../Archive/Common/InStreamWithCRC.cpp
 ItemNameUtils.o : ../../Archive/Common/ItemNameUtils.cpp
 	$(CXX) $(CFLAGS) ../../Archive/Common/ItemNameUtils.cpp
 OutStreamWithCRC.o : ../../Archive/Common/OutStreamWithCRC.cpp
 	$(CXX) $(CFLAGS) ../../Archive/Common/OutStreamWithCRC.cpp
+ArchiveCommandLine.o : ../../UI/Common/ArchiveCommandLine.cpp
+	$(CXX) $(CFLAGS) ../../UI/Common/ArchiveCommandLine.cpp
+ArchiveExtractCallback.o : ../../UI/Common/ArchiveExtractCallback.cpp
+	$(CXX) $(CFLAGS) ../../UI/Common/ArchiveExtractCallback.cpp
+ArchiveOpenCallback.o : ../../UI/Common/ArchiveOpenCallback.cpp
+	$(CXX) $(CFLAGS) ../../UI/Common/ArchiveOpenCallback.cpp
 ArchiverInfo.o : ../../UI/Common/ArchiverInfo.cpp
 	$(CXX) $(CFLAGS) ../../UI/Common/ArchiverInfo.cpp
 DefaultName.o : ../../UI/Common/DefaultName.cpp
 	$(CXX) $(CFLAGS) ../../UI/Common/DefaultName.cpp
 EnumDirItems.o : ../../UI/Common/EnumDirItems.cpp
 	$(CXX) $(CFLAGS) ../../UI/Common/EnumDirItems.cpp
+Extract.o : ../../UI/Common/Extract.cpp
+	$(CXX) $(CFLAGS) ../../UI/Common/Extract.cpp
 ExtractingFilePath.o : ../../UI/Common/ExtractingFilePath.cpp
 	$(CXX) $(CFLAGS) ../../UI/Common/ExtractingFilePath.cpp
 OpenArchive.o : ../../UI/Common/OpenArchive.cpp
@@ -256,8 +254,14 @@ PropIDUtils.o : ../../UI/Common/PropIDUtils.cpp
 	$(CXX) $(CFLAGS) ../../UI/Common/PropIDUtils.cpp
 SortUtils.o : ../../UI/Common/SortUtils.cpp
 	$(CXX) $(CFLAGS) ../../UI/Common/SortUtils.cpp
+TempFiles.o : ../../UI/Common/TempFiles.cpp
+	$(CXX) $(CFLAGS) ../../UI/Common/TempFiles.cpp
+Update.o : ../../UI/Common/Update.cpp
+	$(CXX) $(CFLAGS) ../../UI/Common/Update.cpp
 UpdateAction.o : ../../UI/Common/UpdateAction.cpp
 	$(CXX) $(CFLAGS) ../../UI/Common/UpdateAction.cpp
+UpdateCallback.o : ../../UI/Common/UpdateCallback.cpp
+	$(CXX) $(CFLAGS) ../../UI/Common/UpdateCallback.cpp
 UpdatePair.o : ../../UI/Common/UpdatePair.cpp
 	$(CXX) $(CFLAGS) ../../UI/Common/UpdatePair.cpp
 UpdateProduce.o : ../../UI/Common/UpdateProduce.cpp
@@ -266,15 +270,29 @@ ZipCipher.o : ../../Crypto/Zip/ZipCipher.cpp
 	$(CXX) $(CFLAGS) ../../Crypto/Zip/ZipCipher.cpp
 ZipCrypto.o : ../../Crypto/Zip/ZipCrypto.cpp
 	$(CXX) $(CFLAGS) ../../Crypto/Zip/ZipCrypto.cpp
-aescrypt.o : ../../Crypto/AES/aescrypt.c
-	$(CC) $(CFLAGS) ../../Crypto/AES/aescrypt.c
-aeskey.o : ../../Crypto/AES/aeskey.c
-	$(CC) $(CFLAGS) ../../Crypto/AES/aeskey.c
-aestab.o : ../../Crypto/AES/aestab.c
-	$(CC) $(CFLAGS) ../../Crypto/AES/aestab.c
 MyAES.o : ../../Crypto/AES/MyAES.cpp
 	$(CXX) $(CFLAGS) ../../Crypto/AES/MyAES.cpp
 7zAES.o : ../../Crypto/7zAES/7zAES.cpp
 	$(CXX) $(CFLAGS) ../../Crypto/7zAES/7zAES.cpp
 SHA256.o : ../../Crypto/7zAES/SHA256.cpp
 	$(CXX) $(CFLAGS) ../../Crypto/7zAES/SHA256.cpp
+blocksort.o : ../../Compress/BZip2/Original/blocksort.c
+	$(CC) $(CFLAGS) ../../Compress/BZip2/Original/blocksort.c
+bzlib.o : ../../Compress/BZip2/Original/bzlib.c
+	$(CC) $(CFLAGS) ../../Compress/BZip2/Original/bzlib.c
+compress.o : ../../Compress/BZip2/Original/compress.c
+	$(CC) $(CFLAGS) ../../Compress/BZip2/Original/compress.c
+crctable.o : ../../Compress/BZip2/Original/crctable.c
+	$(CC) $(CFLAGS) ../../Compress/BZip2/Original/crctable.c
+decompress.o : ../../Compress/BZip2/Original/decompress.c
+	$(CC) $(CFLAGS) ../../Compress/BZip2/Original/decompress.c
+huffman.o : ../../Compress/BZip2/Original/huffman.c
+	$(CC) $(CFLAGS) ../../Compress/BZip2/Original/huffman.c
+randtable.o : ../../Compress/BZip2/Original/randtable.c
+	$(CC) $(CFLAGS) ../../Compress/BZip2/Original/randtable.c
+aescrypt.o : ../../Crypto/AES/aescrypt.c
+	$(CC) $(CFLAGS) ../../Crypto/AES/aescrypt.c
+aeskey.o : ../../Crypto/AES/aeskey.c
+	$(CC) $(CFLAGS) ../../Crypto/AES/aeskey.c
+aestab.o : ../../Crypto/AES/aestab.c
+	$(CC) $(CFLAGS) ../../Crypto/AES/aestab.c

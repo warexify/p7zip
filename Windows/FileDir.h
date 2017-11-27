@@ -75,10 +75,10 @@ bool MyGetCurrentDirectory(UString &resultPath);
 
 /*
 bool MySearchPath(LPCTSTR path, LPCTSTR fileName, LPCTSTR extension, 
-  CSysString &resultPath, UINT32 &filePart);
+  CSysString &resultPath, UInt32 &filePart);
 #ifndef _UNICODE
 bool MySearchPath(LPCWSTR path, LPCWSTR fileName, LPCWSTR extension, 
-  UString &resultPath, UINT32 &filePart);
+  UString &resultPath, UInt32 &filePart);
 #endif
 */
 
@@ -87,7 +87,7 @@ inline bool MySearchPath(LPCTSTR path, LPCTSTR fileName, LPCTSTR extension,
 {
 	return false;
 	/*
-  UINT32 value;
+  UInt32 value;
   return MySearchPath(path, fileName, extension, resultPath, value);
 */
   }
@@ -98,7 +98,7 @@ inline bool MySearchPath(LPCWSTR path, LPCWSTR fileName, LPCWSTR extension,
 {
 	return false;
 	/*
-  UINT32 value;
+  UInt32 value;
   return MySearchPath(path, fileName, extension, resultPath, value);
   */
 }

@@ -344,7 +344,7 @@ bool MyGetCurrentDirectory(UString &path)
 
 /*
 bool MySearchPath(LPCTSTR path, LPCTSTR fileName, LPCTSTR extension, 
-  CSysString &resultPath, UINT32 &filePart)
+  CSysString &resultPath, UInt32 &filePart)
 {
   LPTSTR filePartPointer;
   DWORD value = ::SearchPath(path, fileName, extension, 
@@ -358,7 +358,7 @@ bool MySearchPath(LPCTSTR path, LPCTSTR fileName, LPCTSTR extension,
 
 #ifndef _UNICODE
 bool MySearchPath(LPCWSTR path, LPCWSTR fileName, LPCWSTR extension, 
-  UString &resultPath, UINT32 &filePart)
+  UString &resultPath, UInt32 &filePart)
 {
   const UINT currentPage = GetCurrentCodePage();
   CSysString sysPath;

@@ -58,6 +58,7 @@ static void test_path(void)
 	printf("GetFullPathNameA(%s,%s,%s)=%u => '%s'\n",path,pathname,lastpart,ret,unix_pathname);
 }
 
+#if 0
 void test_mbs(void)
 {
    wchar_t wstr1[256] = {
@@ -114,14 +115,23 @@ void test_mbs(void)
    assert(ustr2.Length() == len1);
    assert(wcscmp(ustr2,wstr1) == 0);
 }
+#endif // 0
 
 int main()
 {
 	setlocale(LC_ALL,"");
 
+	printf("sizeof(Byte)   : %d\n",(int)sizeof(Byte));
+	printf("sizeof(UInt16) : %d\n",(int)sizeof(UInt16));
+	printf("sizeof(UInt32) : %d\n",(int)sizeof(UInt32));
+	printf("sizeof(UINT32) : %d\n",(int)sizeof(UINT32));
+	printf("sizeof(UInt64) : %d\n",(int)sizeof(UInt64));
+	printf("sizeof(UINT64) : %d\n",(int)sizeof(UINT64));
+	printf("sizeof(void *) : %d\n",(int)sizeof(void *));
+
 	test_path();
 
-	test_mbs();
+	// test_mbs();
 
 	return 0;
 }

@@ -111,8 +111,9 @@ DWORD WINAPI myInfiniteWaitForSingleEvent(HANDLE hHandle) {
   }
 }
 
-DWORD WINAPI myWaitForMultipleEvents( DWORD count, const HANDLE *handles,
-                                      BOOL wait_all, DWORD timeout ) {
+/* DWORD WINAPI myWaitForMultipleEvents( DWORD count, const HANDLE *handles, BOOL wait_all, DWORD timeout ) */
+DWORD WINAPI WaitForMultipleObjects( DWORD count, const HANDLE *handles, BOOL wait_all, DWORD timeout )
+{
   if (timeout != INFINITE) {
     printf("myWaitForMultipleEvents : timeout != INFINITE\n");
     exit(EXIT_FAILURE);
@@ -122,11 +123,11 @@ DWORD WINAPI myWaitForMultipleEvents( DWORD count, const HANDLE *handles,
   for(DWORD i=0;i<count;i++) {
     int indice = findHandle(handles[i]);
     if (indice == -1) {
-      printf("myWaitForMultipleEvents[%d] : %p is not a handle\n",i,handles[i]);
+      printf("myWaitForMultipleEvents[%d] : %p is not a handle\n",(int)i,handles[i]);
       exit(EXIT_FAILURE);
     }
     if (listOfHandle[indice].type != TYPE_EVENT) {
-      printf("myWaitForMultipleEvents[%d] : %p is not an event (type %d)\n",i,handles[i],listOfHandle[indice].type);
+      printf("myWaitForMultipleEvents[%d] : %p is not an event (type %d)\n",(int)i,handles[i],listOfHandle[indice].type);
       exit(EXIT_FAILURE);
     }
   }

@@ -1,7 +1,5 @@
 // Archive/Tar/Item.h
 
-// #pragma once
-
 #ifndef __ARCHIVE_TAR_ITEM_H
 #define __ARCHIVE_TAR_ITEM_H
 
@@ -11,8 +9,6 @@
 #include "Common/String.h"
 #include "TarHeader.h"
 
-
-
 namespace NArchive {
 namespace NTar {
 
@@ -20,11 +16,11 @@ class CItem
 {
 public:
   AString Name;
-  UINT32 Mode;
-  UINT32 UID;
-  UINT32 GID;
-  UINT64 Size;
-  time_t ModificationTime;
+  UInt32 Mode;
+  UInt32 UID;
+  UInt32 GID;
+  UInt64 Size;
+  UInt32 ModificationTime;
   char LinkFlag;
   AString LinkName;
   char Magic[8];
@@ -32,9 +28,9 @@ public:
   AString GroupName;
 
   bool DeviceMajorDefined;
-  UINT32 DeviceMajor;
+  UInt32 DeviceMajor;
   bool DeviceMinorDefined;
-  UINT32 DeviceMinor;
+  UInt32 DeviceMinor;
 
   bool IsDirectory() const 
     {  
@@ -58,10 +54,10 @@ public:
 class CItemEx: public CItem
 {
 public:
-  UINT64 HeaderPosition;
-  UINT64 LongLinkSize;
-  UINT64 GetDataPosition() const { return HeaderPosition + LongLinkSize + NFileHeader::kRecordSize; };
-  UINT64 GetFullSize() const { return LongLinkSize + NFileHeader::kRecordSize + Size; };
+  UInt64 HeaderPosition;
+  UInt64 LongLinkSize;
+  UInt64 GetDataPosition() const { return HeaderPosition + LongLinkSize + NFileHeader::kRecordSize; };
+  UInt64 GetFullSize() const { return LongLinkSize + NFileHeader::kRecordSize + Size; };
 };
 
 }}

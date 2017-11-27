@@ -1,7 +1,5 @@
 // Windows/COM.h
 
-// #pragma once
-
 #ifndef __WINDOWS_COM_H
 #define __WINDOWS_COM_H
 
@@ -10,15 +8,30 @@
 namespace NWindows {
 namespace NCOM {
 
-#ifdef WIN32
 class CComInitializer
 {
 public:
   CComInitializer() { CoInitialize(NULL);};
   ~CComInitializer() { CoUninitialize(); };
 };
-#endif
 
+class CStgMedium
+{
+  STGMEDIUM _object;
+public:
+  bool _mustBeReleased;
+  CStgMedium(): _mustBeReleased(false) {}
+  ~CStgMedium() { Free(); }
+  void Free() 
+  { 
+    if(_mustBeReleased) 
+      ReleaseStgMedium(&_object); 
+    _mustBeReleased = false;
+  }
+  const STGMEDIUM* operator->() const { return &_object;}
+  STGMEDIUM* operator->() { return &_object;}
+  STGMEDIUM* operator&() { return &_object; }
+};
 
 //////////////////////////////////
 // GUID <--> String Conversions

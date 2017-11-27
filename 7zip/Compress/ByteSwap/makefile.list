@@ -1,4 +1,0 @@
-DllExports.o : ./DllExports.cpp
-	$(CXX) $(CFLAGS) $<
-ByteSwap.o : ./ByteSwap.cpp
-	$(CXX) $(CFLAGS) $<

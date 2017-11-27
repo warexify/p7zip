@@ -1,7 +1,5 @@
 // Windows/FileFind.h
 
-// #pragma once
-
 #ifndef __WINDOWS_FILEFIND_H
 #define __WINDOWS_FILEFIND_H
 
@@ -41,10 +39,9 @@ public:
   #endif
 
 
-  bool IsDirectory() const { return MatchesMask(FILE_ATTRIBUTE_DIRECTORY); }
-  /*
   bool IsArchived() const { return MatchesMask(FILE_ATTRIBUTE_ARCHIVE); }
   bool IsCompressed() const { return MatchesMask(FILE_ATTRIBUTE_COMPRESSED); }
+  bool IsDirectory() const { return MatchesMask(FILE_ATTRIBUTE_DIRECTORY); }
   bool IsEncrypted() const { return MatchesMask(FILE_ATTRIBUTE_ENCRYPTED); }
   bool IsHidden() const { return MatchesMask(FILE_ATTRIBUTE_HIDDEN); }
   bool IsNormal() const { return MatchesMask(FILE_ATTRIBUTE_NORMAL); }
@@ -54,7 +51,7 @@ public:
   bool IsSparse() const { return MatchesMask(FILE_ATTRIBUTE_SPARSE_FILE); }
   bool IsSystem() const { return MatchesMask(FILE_ATTRIBUTE_SYSTEM); }
   bool IsTemporary() const { return MatchesMask(FILE_ATTRIBUTE_TEMPORARY); }
-  */
+
 };
 
 class CFileInfo: public CFileInfoBase
@@ -127,8 +124,26 @@ public:
 };
 #endif
 
+class CFindChangeNotification
+{
+  HANDLE _handle;
+public:
+  operator HANDLE () { return _handle; }
+  CFindChangeNotification(): _handle(INVALID_HANDLE_VALUE) {}
+  ~CFindChangeNotification() {  Close(); }
+  bool Close();
+  HANDLE FindFirst(LPCTSTR pathName, bool watchSubtree, DWORD notifyFilter);
+  #ifndef _UNICODE
+  HANDLE FindFirst(LPCWSTR pathName, bool watchSubtree, DWORD notifyFilter);
+  #endif
+  bool FindNext()
+    { return BOOLToBool(::FindNextChangeNotification(_handle)); }
+};
 
-/*
+#ifndef _WIN32_WCE
+bool MyGetLogicalDriveStrings(CSysStringVector &driveStrings);
+#endif
+
 inline bool MyGetCompressedFileSize(LPCTSTR fileName, UINT64 &size)
 {
   DWORD highPart;
@@ -150,7 +165,6 @@ inline bool MyGetCompressedFileSizeW(LPCWSTR fileName, UINT64 &size)
   size = (UINT64(highPart) << 32) | lowPart;
   return true;
 }
-*/
 
 }}}
 

@@ -31,7 +31,7 @@ static void split_path(const std::string &p_path, std::string &dir , std::string
 			base = "/";
                 	dir = "/";
 		} else {
-			return split_path(p_path.substr(0,pos+1),dir,base);
+			split_path(p_path.substr(0,pos+1),dir,base);
 		}
 	}
 }
@@ -71,9 +71,9 @@ static void remplirWIN32_FIND_DATA(WIN32_FIND_DATA *lpFindData,const char *rep,c
   if (!(stat_info.st_mode & S_IWUSR))
     lpFindData->dwFileAttributes |= FILE_ATTRIBUTE_READONLY;
 
-  RtlSecondsSince1970ToTime( stat_info.st_mtime, (LARGE_INTEGER *)&lpFindData->ftCreationTime );
-  RtlSecondsSince1970ToTime( stat_info.st_mtime, (LARGE_INTEGER *)&lpFindData->ftLastWriteTime );
-  RtlSecondsSince1970ToTime( stat_info.st_atime, (LARGE_INTEGER *)&lpFindData->ftLastAccessTime );
+  RtlSecondsSince1970ToFileTime( stat_info.st_mtime, &lpFindData->ftCreationTime );
+  RtlSecondsSince1970ToFileTime( stat_info.st_mtime, &lpFindData->ftLastWriteTime );
+  RtlSecondsSince1970ToFileTime( stat_info.st_atime, &lpFindData->ftLastAccessTime );
 
   lpFindData->nFileSizeHigh = 0;
   lpFindData->nFileSizeLow  = 0;

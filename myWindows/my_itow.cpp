@@ -12,6 +12,14 @@ wchar_t * _itow (int val,wchar_t *buf,int radix)
 	return (buf);
 }
 
+char * _ui64toa(unsigned long long int value, char *s, int base)
+{
+	if (base == 8)
+	{
+		sprintf(s,"%llo",(unsigned long long)value);
+		return s;	
+	}
 
-
+	throw "_ui64toa : not implemented for base != 8";
+}
 

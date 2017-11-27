@@ -1,16 +1,14 @@
-	p7zip 0.91
+	p7zip 4.10
 	==========
 
 Homepage : http://p7zip.sourceforge.net/
 
-p7zip is a port of the Windows programs 7z.exe and 7za.exe provide by 7-zip.
+p7zip is a port of the Windows programs 7za.exe provide by 7-zip.
 
 7-zip is a file archiver with the highest compression ratio.
 Homepage : www.7-zip.org
 
-7z.exe uses plugins to handle archives.
 7za.exe is a stand-alone executable.
-7za.exe handles less archive formats than 7z.exe.
 
 BUILD :
 -------
@@ -24,18 +22,28 @@ BUILD :
 
   If you have downloaded the "source" package,
 	According to your OS, copy makefile.linux,
-	makefile.freebsd or makefile.cygwin over makefile.machine
+	makefile.freebsd, makefile.cygwin, ...
+        over makefile.machine
 
 	make clean : to clean all directories
-	make       : to build bin/7za, bin/7z and its plugins.
+	make       : to build bin/7za
 
   this procedure has been tested on :
 	Linux - Redhat 9.0 Standart (x86)
-	Linux - Fedora 2 (Redhat) (x86)
+	Linux - Fedora 2 (Redhat) (x86) (gcc 3.3.3 and gcc-3.4.1 with 
+                stack-smashing protector from www.trl.ibm.com/projects/security/ssp/)
 	Linux - Mandrake 10.0 Official (x86)
 	Linux - Debian 3.0 Stable (x86)
-	FreeBSD 5.2.1 (x86)
+	FreeBSD 5.2.1 (x86) (gcc 3.3.3)
 	CYGWIN_NT-5.1 1.5.9(0.112/4/2) 2004-03-18 23:05 i686 Cygwin
+
+	Linux - Debian 3.0 (alpha) with gcc 2.95.4
+
+	Linux - SuSE 8 ES (AMD64 Opteron) with gcc 3.2.2
+            (use "-m32" flags to avoid bugs ...)
+
+	Solaris 8 (sparc) with gcc 2.95.2
+	Solaris 9 (sparc) with gcc 3.3.2
 
 INSTALL :
 ---------
@@ -43,50 +51,30 @@ INSTALL :
   - 7za is a stand-alone program, you can put this program where you want.
   example :  cp bin/7za /usr/local/bin/7za
 
-  - 7z needs its plugins. You must copy the file 7z and the two directories
-  Formats and Codecs in the same destination directory.
-  You can make link to 7z.
-  example :
-  mkdir -p /usr/local/share/7z  /usr/local/bin
-  cp -r bin/7z bin/Formats bin/Codecs /usr/local/share/7z/
-  ln -s /usr/local/share/7z/7z /usr/local/bin/7z
-
-
 USAGE:
 ------
-  Remark : you can replace 7z with 7za.
-
-  7z t archive.7z  : tests files in the archive archive.7z
-  7z l archive.7z  : lists all files from archive archive.7z
-  7z x archive.7z  : extracts all files from archive archive.7z
+  7za t archive.7z  : tests files in the archive archive.7z
+  7za l archive.7z  : lists all files from archive archive.7z
+  7za x archive.7z  : extracts all files from archive archive.7z
                    to the current directory
 
-  7z a archive.7z file1 fileN : add files to the archive archive.7z
+  7za a archive.7z file1 fileN : add files to the archive archive.7z
 
-  7z a -r archive.7z  "dir1/*" :  add all files from directory "dir1" to
-                                  archive archive.7z (the "" is needed)
-
-  Remarks : "" is needed if you use "*" or "?"
-            (p7zip use the Windows logic of 7za.exe)
-
-  NEW since version 0.81 :
-  7z a -r archive.7z  dir1 :  add all files from directory "dir1" to
-                              archive archive.7z
+  7za a archive.7z  dir1 :  add all files from directory "dir1" to archive archive.7z 
 
   You can also add or extract files to/from .zip or .tar archives.
   You can also compress/uncompress .gz or .bz2 files.
 
-  7z a -tzip   archive.zip file1
-  7z a -ttar   archive.tar file1
-  7z a -tgzip  file.gz     file
-  7z a -tbzip2 archive.bz2 file
+  7za a -tzip   archive.zip file1
+  7za a -ttar   archive.tar file1
+  7za a -tgzip  file.gz     file
+  7za a -tbzip2 archive.bz2 file
 
   You can use password for archives:
-  7z a -r -pmy_password archive.7z  "dir1/*" 
+  7za a -pmy_password archive.7z  dir1
 
   For more, see the documentation of 7za.exe in html directory
-  (chapter "User's Guide for command line version").
-  7z a -t7z  -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on -r archive.7z  dir1 :
+  7za a -t7z  -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on archive.7z  dir1 :
       adds all files from directory "dir1" to archive archive.7z
       using "ultra settings".
       -t7z     : 7z archive
@@ -95,16 +83,12 @@ USAGE:
       -mfb=64  : number of fast bytes for LZMA = 64
       -md=32m  : dictionary size = 32 megabytes
       -ms=on   : solid archive = on
-      -r       : enable recurse subdirectories
 
 LIMITATIONS from 7-zip :
 ------------------------
-  - works only on little-endian machine
 
   - does not support uid/gid or Unix file access permissions
   for the .tar format (so, use tar on Unix)
-
-  - the flag "-mt=on" is not understood.
 
   - can't use absolute paths (wait for 7-zip 4.0)
 
@@ -123,10 +107,6 @@ LIMITATIONS for Unix version only :
 
   - can extract files from a SFX archive (Self Extracting Archive)
   but cannot create SFX archives.
-
-  - cannot test or extract file from rar archives because the source code
-  that handles rar archives is not provide by 7-zip.
-  (but you can list rar archives)
 
   see also TODO file.
 

@@ -10,9 +10,7 @@
 #include "Windows/FileFind.h"
 #include "Windows/FileName.h"
 #include "Windows/DLL.h"
-#ifdef WIN32 // FIXED
 #include "Windows/Registry.h"
-#endif
 #include "Windows/PropVariant.h"
 #include "../../Archive/IArchive.h"
 
@@ -50,8 +48,17 @@ static void SplitString(const UString &srcString, UStringVector &destStrings)
     destStrings.Add(string);
 }
 
-typedef UINT32 (WINAPI * GetHandlerPropertyFunc)(
+typedef UInt32 (WINAPI * GetHandlerPropertyFunc)(
     PROPID propID, PROPVARIANT *value);
+
+/*
+UString GetCurrentModulePath()
+{
+  TCHAR fullPath[MAX_PATH + 1];
+  ::GetModuleFileName(g_hInstance, fullPath, MAX_PATH);
+  return fullPath;
+}
+*/
 
 static UString GetModuleFolderPrefix()
 {
@@ -70,7 +77,6 @@ UString GetBaseFolderPrefix()
   UString moduleFolderPrefix = GetModuleFolderPrefix();
   NFind::CFileInfoW fileInfo;
   if (NFind::FindFile(moduleFolderPrefix + kFormatFolderName, fileInfo))
-#ifdef WIN32 // FIXED
     if (fileInfo.IsDirectory())
       return moduleFolderPrefix;
   CSysString pathSys;
@@ -94,17 +100,22 @@ UString GetBaseFolderPrefix()
         return path;
       }
   }
-/* #else
-printf("GetBaseFolderPrefix : '%ls'\n",&moduleFolderPrefix[0]); */
-#endif
   return moduleFolderPrefix;
 }
 
-typedef UINT32 (WINAPI *CreateObjectPointer)(
+typedef UInt32 (WINAPI *CreateObjectPointer)(
     const GUID *clsID, 
     const GUID *interfaceID, 
     void **outObject);
 
+#endif
+
+#ifndef _SFX
+static void SetBuffer(CByteBuffer &bb, const Byte *data, int size)
+{
+  bb.SetCapacity(size);
+  memmove((Byte *)bb, data, size);
+}
 #endif
 
 void ReadArchiverInfoList(CObjectVector<CArchiverInfo> &archivers)
@@ -120,6 +131,10 @@ void ReadArchiverInfoList(CObjectVector<CArchiverInfo> &archivers)
     item.KeepName = false;
     item.Name = L"7z";
     item.Extensions.Add(CArchiverExtInfo(L"7z"));
+    #ifndef _SFX
+    const unsigned char kSig[] = {'7' , 'z', 0xBC, 0xAF, 0x27, 0x1C};
+    SetBuffer(item.StartSignature, kSig, 6);
+    #endif
     archivers.Add(item);
   }
   #endif
@@ -132,6 +147,10 @@ void ReadArchiverInfoList(CObjectVector<CArchiverInfo> &archivers)
     item.Name = L"BZip2";
     item.Extensions.Add(CArchiverExtInfo(L"bz2"));
     item.Extensions.Add(CArchiverExtInfo(L"tbz2", L".tar"));
+    #ifndef _SFX
+    const unsigned char sig[] = {'B' , 'Z', 'h' };
+    SetBuffer(item.StartSignature, sig, 3);
+    #endif
     archivers.Add(item);
   }
   #endif
@@ -144,6 +163,10 @@ void ReadArchiverInfoList(CObjectVector<CArchiverInfo> &archivers)
     item.Name = L"GZip";
     item.Extensions.Add(CArchiverExtInfo(L"gz"));
     item.Extensions.Add(CArchiverExtInfo(L"tgz", L".tar"));
+    #ifndef _SFX
+    const unsigned char sig[] = { 0x1F, 0x8B };
+    SetBuffer(item.StartSignature, sig, 2);
+    #endif
     archivers.Add(item);
   }
   #endif
@@ -166,6 +189,10 @@ void ReadArchiverInfoList(CObjectVector<CArchiverInfo> &archivers)
     item.KeepName = false;
     item.Name = L"Zip";
     item.Extensions.Add(CArchiverExtInfo(L"zip"));
+    #ifndef _SFX
+    const unsigned char sig[] = { 0x50, 0x4B, 0x03, 0x04 };
+    SetBuffer(item.StartSignature, sig, 4);
+    #endif
     archivers.Add(item);
   }
   #endif
@@ -196,6 +223,10 @@ void ReadArchiverInfoList(CObjectVector<CArchiverInfo> &archivers)
     item.UpdateEnabled = false;
     item.Name = L"Arj";
     item.Extensions.Add(CArchiverExtInfo(L"arj"));
+    #ifndef _SFX
+    const unsigned char sig[] = { 0x60, 0xEA };
+    SetBuffer(item.StartSignature, sig, 2);
+    #endif
     archivers.Add(item);
   }
   #endif
@@ -250,6 +281,7 @@ void ReadArchiverInfoList(CObjectVector<CArchiverInfo> &archivers)
 
     UString ext  = prop.bstrVal;
     // item.Extension = prop.bstrVal;
+    prop.Clear();
 
     UString addExt;
 
@@ -279,22 +311,29 @@ void ReadArchiverInfoList(CObjectVector<CArchiverInfo> &archivers)
       item.Extensions.Add(extInfo);
     }
 
-    if (getHandlerProperty(NArchive::kUpdate, &prop) != S_OK)
-      continue;
-    if (prop.vt != VT_BOOL)
-      continue;
-    item.UpdateEnabled = VARIANT_BOOLToBool(prop.boolVal);
+    if (getHandlerProperty(NArchive::kUpdate, &prop) == S_OK)
+      if (prop.vt == VT_BOOL)
+        item.UpdateEnabled = VARIANT_BOOLToBool(prop.boolVal);
     prop.Clear();
 
     if (item.UpdateEnabled)
     {
-      if (getHandlerProperty(NArchive::kKeepName, &prop) != S_OK)
-        continue;
-      if (prop.vt != VT_BOOL)
-        continue;
-      item.KeepName = VARIANT_BOOLToBool(prop.boolVal);
+      if (getHandlerProperty(NArchive::kKeepName, &prop) == S_OK)
+        if (prop.vt == VT_BOOL)
+          item.KeepName = VARIANT_BOOLToBool(prop.boolVal);
       prop.Clear();
     }
+
+    if (getHandlerProperty(NArchive::kStartSignature, &prop) == S_OK)
+    {
+      if (prop.vt == VT_BSTR)
+      {
+        UINT len = ::SysStringByteLen(prop.bstrVal);
+        item.StartSignature.SetCapacity(len);
+        memmove(item.StartSignature, prop.bstrVal, len);
+      }
+    }
+    prop.Clear();
 
     archivers.Add(item);
   }

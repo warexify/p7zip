@@ -1,6 +1,9 @@
 #ifndef _WINBASE_H
 #define _WINBASE_H
 
+#define STD_INPUT_HANDLE (DWORD)(0xfffffff6)
+#define STD_OUTPUT_HANDLE (DWORD)(0xfffffff5)
+#define STD_ERROR_HANDLE (DWORD)(0xfffffff4)
 #define INVALID_HANDLE_VALUE (HANDLE)(-1)
 
 #define FILE_BEGIN	0
@@ -15,10 +18,7 @@
 
 typedef void * LPOVERLAPPED;
 
-typedef struct _FILETIME {
-	DWORD dwLowDateTime;
-	DWORD dwHighDateTime;
-} FILETIME,*PFILETIME,*LPFILETIME;
+typedef FILETIME *LPFILETIME;
 
 typedef struct _SYSTEMTIME {
 	WORD wYear;
@@ -64,11 +64,23 @@ LPWSTR WINAPI GetCommandLineW(VOID);
 
 typedef void * LPSECURITY_ATTRIBUTES;
 
-BOOL WINAPI DosDateTimeToFileTime(WORD,WORD,LPFILETIME);
+/* HANDLE WINAPI GetStdHandle(DWORD); */
+
+typedef DWORD (WINAPI *LPTHREAD_START_ROUTINE)(LPVOID);
+HANDLE WINAPI CreateThread(LPSECURITY_ATTRIBUTES,DWORD,LPTHREAD_START_ROUTINE,PVOID,DWORD,PDWORD);
+DWORD WINAPI ResumeThread(HANDLE);
+DWORD WINAPI SuspendThread(HANDLE);
+BOOL WINAPI TerminateThread(HANDLE,DWORD);
+int WINAPI GetThreadPriority(HANDLE);
+BOOL WINAPI SetThreadPriority(HANDLE,int);
+
+BOOL WINAPI DosDateTimeToFileTime(WORD,WORD,FILETIME *);
 BOOL WINAPI FileTimeToDosDateTime(CONST FILETIME *,LPWORD,LPWORD);
-BOOL WINAPI FileTimeToLocalFileTime(CONST FILETIME *,LPFILETIME);
+BOOL WINAPI FileTimeToLocalFileTime(CONST FILETIME *,FILETIME *);
 BOOL WINAPI FileTimeToSystemTime(CONST FILETIME *,LPSYSTEMTIME);
-BOOL WINAPI LocalFileTimeToFileTime(CONST FILETIME *,LPFILETIME);
+BOOL WINAPI LocalFileTimeToFileTime(CONST FILETIME *,FILETIME *);
+VOID WINAPI GetSystemTime(LPSYSTEMTIME);
+BOOL WINAPI SystemTimeToFileTime(const SYSTEMTIME*,LPFILETIME);
 
 DWORD WINAPI GetShortPathNameA(LPCSTR,LPSTR,DWORD);
 DWORD WINAPI GetShortPathNameW(LPCWSTR,LPWSTR,DWORD);
@@ -98,7 +110,7 @@ BOOL WINAPI SetCurrentDirectoryW(LPCWSTR);
 
 BOOL WINAPI AreFileApisANSI(void);
 
-LONG WINAPI CompareFileTime(CONST FILETIME*,CONST FILETIME*);
+/* FIXED LONG WINAPI CompareFileTime(CONST FILETIME*,CONST FILETIME*); */
 
 UINT WINAPI GetWindowsDirectoryA(LPSTR,UINT);
 UINT WINAPI GetWindowsDirectoryW(LPWSTR,UINT);
@@ -124,7 +136,34 @@ DWORD WINAPI SearchPathW(LPCWSTR,LPCWSTR,LPCWSTR,DWORD,LPWSTR,LPWSTR*);
 
 int WINAPI lstrlenA(LPCSTR);
 int WINAPI lstrlenW(LPCWSTR);
-LPSTR WINAPI lstrcatA(LPSTR,LPCSTR);
+/* LPSTR WINAPI lstrcatA(LPSTR,LPCSTR); */
+#define lstrcatA strcat /* OK for MBS */
+
+BOOL WINAPI FindNextChangeNotification(HANDLE);
+BOOL WINAPI CloseHandle(HANDLE);
+
+DWORD WINAPI WaitForMultipleObjects(DWORD,const HANDLE*,BOOL,DWORD);
+DWORD WINAPI WaitForMultipleObjectsEx(DWORD,const HANDLE*,BOOL,DWORD,BOOL);
+DWORD WINAPI WaitForSingleObject(HANDLE,DWORD);
+DWORD WINAPI WaitForSingleObjectEx(HANDLE,DWORD,BOOL);
+
+HANDLE WINAPI CreateEventA(LPSECURITY_ATTRIBUTES,BOOL,BOOL,LPCSTR);
+HANDLE WINAPI CreateEventW(LPSECURITY_ATTRIBUTES,BOOL,BOOL,LPCWSTR);
+
+HANDLE WINAPI OpenEventA(DWORD,BOOL,LPCSTR);
+HANDLE WINAPI OpenEventW(DWORD,BOOL,LPCWSTR);
+BOOL WINAPI SetEvent(HANDLE);
+BOOL WINAPI PulseEvent(HANDLE);
+BOOL WINAPI ResetEvent(HANDLE);
+
+#define MoveMemory memmove
+
+DWORD WINAPI GetTickCount(VOID);
+
+
+HANDLE WINAPI CreateFileA(LPCSTR,DWORD,DWORD,LPSECURITY_ATTRIBUTES,DWORD,DWORD,HANDLE);
+HANDLE WINAPI CreateFileW(LPCWSTR,DWORD,DWORD,LPSECURITY_ATTRIBUTES,DWORD,DWORD,HANDLE);
+DWORD WINAPI GetFileSize(HANDLE,PDWORD);
 
 #ifdef UNICODE
 typedef WIN32_FIND_DATAW WIN32_FIND_DATA,*LPWIN32_FIND_DATA;
@@ -137,6 +176,7 @@ typedef WIN32_FIND_DATAW WIN32_FIND_DATA,*LPWIN32_FIND_DATA;
 #define SetFileAttributes SetFileAttributesW
 #define MoveFile MoveFileW
 #define RemoveDirectory RemoveDirectoryW
+#define CreateFile CreateFileW
 #define GetCompressedFileSize GetCompressedFileSizeW
 #define SetCurrentDirectory SetCurrentDirectoryW
 #define GetWindowsDirectory GetWindowsDirectoryW
@@ -147,6 +187,8 @@ typedef WIN32_FIND_DATAW WIN32_FIND_DATA,*LPWIN32_FIND_DATA;
 #define DeleteFile DeleteFileW
 #define GetFullPathName GetFullPathNameW
 #define lstrlen lstrlenW
+#define CreateEvent CreateEventW
+#define OpenEvent OpenEventW
 #else
 typedef WIN32_FIND_DATAA WIN32_FIND_DATA,*LPWIN32_FIND_DATA;
 #define FindFirstFile FindFirstFileA
@@ -157,6 +199,7 @@ typedef WIN32_FIND_DATAA WIN32_FIND_DATA,*LPWIN32_FIND_DATA;
 #define GetCurrentDirectory GetCurrentDirectoryA
 #define SetFileAttributes SetFileAttributesA
 #define MoveFile MoveFileA
+#define CreateFile CreateFileA
 #define RemoveDirectory RemoveDirectoryA
 #define GetCompressedFileSize GetCompressedFileSizeA
 #define SetCurrentDirectory SetCurrentDirectoryA
@@ -167,7 +210,11 @@ typedef WIN32_FIND_DATAA WIN32_FIND_DATA,*LPWIN32_FIND_DATA;
 #define CreateDirectory CreateDirectoryA
 #define DeleteFile DeleteFileA
 #define GetFullPathName GetFullPathNameA
-#define lstrlen lstrlenA
+/* #define lstrlen lstrlenA */
+#define lstrlen strlen  /* OK for MBS */
+#define lstrlenA strlen  /* OK for MBS */
+#define CreateEvent CreateEventA
+#define OpenEvent OpenEventA
 #endif
 
 #ifdef __cplusplus

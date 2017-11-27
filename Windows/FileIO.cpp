@@ -55,7 +55,7 @@ bool CFileBase::Close()
   return result;
 }
 
-bool CFileBase::GetLength(UINT64 &length) const
+bool CFileBase::GetLength(UInt64 &length) const
 {
 	return myGetFileLength(_handle,length);
 /*	
@@ -64,13 +64,13 @@ bool CFileBase::GetLength(UINT64 &length) const
   if(sizeLow == 0xFFFFFFFF)
     if(::GetLastError() != NO_ERROR )
       return false;
-  length = (((UINT64)sizeHigh) << 32) + sizeLow;
+  length = (((UInt64)sizeHigh) << 32) + sizeLow;
   return true;
 */
 }
 
 
-bool CFileBase::Seek(INT64 distanceToMove, DWORD moveMethod, UINT64 &newPosition) const
+bool CFileBase::Seek(Int64 distanceToMove, DWORD moveMethod, UInt64 &newPosition) const
 {
   return myFileSeek(_handle,distanceToMove,moveMethod,newPosition);
 	/*
@@ -80,13 +80,13 @@ bool CFileBase::Seek(INT64 distanceToMove, DWORD moveMethod, UINT64 &newPosition
   if (pointer->LowPart == 0xFFFFFFFF)
     if(::GetLastError() != NO_ERROR) 
       return false;
-  newPosition = *((UINT64 *)pointer);
+  newPosition = *((UInt64 *)pointer);
   return true;
   */
 }
 
 
-bool CFileBase::Seek(UINT64 position, UINT64 &newPosition)
+bool CFileBase::Seek(UInt64 position, UInt64 &newPosition)
 {
   return Seek(position, FILE_BEGIN, newPosition);
 }
@@ -122,7 +122,7 @@ bool CInFile::Open(LPCWSTR fileName)
 }
 #endif
 
-bool CInFile::Read(void *data, UINT32 size, UINT32 &processedSize)
+bool CInFile::Read(void *data, UInt32 size, UInt32 &processedSize)
 {
   return BOOLToBool(::ReadFile(_handle, data, size, 
       (DWORD *)&processedSize, NULL));
@@ -135,28 +135,45 @@ bool CInFile::Read(void *data, UINT32 size, UINT32 &processedSize)
 bool COutFile::Open(LPCTSTR fileName, DWORD shareMode, 
     DWORD creationDisposition, DWORD flagsAndAttributes)
 {
-  return Create(fileName, GENERIC_WRITE, shareMode, 
+  return CFileBase::Create(fileName, GENERIC_WRITE, shareMode, 
       creationDisposition, flagsAndAttributes);
 }
 
+static inline DWORD GetCreationDisposition(bool createAlways)
+  {  return createAlways? CREATE_ALWAYS: CREATE_NEW; }
 
 bool COutFile::Open(LPCTSTR fileName)
 {
   return Open(fileName, FILE_SHARE_READ, m_CreationDisposition, FILE_ATTRIBUTE_NORMAL);
 }
 
+bool COutFile::Create(LPCTSTR fileName, bool createAlways)
+{
+  return Open(fileName, FILE_SHARE_READ,GetCreationDisposition(createAlways), FILE_ATTRIBUTE_NORMAL);
+}
 #ifndef _UNICODE
 
 bool COutFile::Open(LPCWSTR fileName, DWORD shareMode, 
     DWORD creationDisposition, DWORD flagsAndAttributes)
 {
-  return Create(fileName, GENERIC_WRITE, shareMode, 
+  return CFileBase::Create(fileName, GENERIC_WRITE, shareMode, 
       creationDisposition, flagsAndAttributes);
 }
 
 bool COutFile::Open(LPCWSTR fileName)
 {
   return Open(fileName, FILE_SHARE_READ, m_CreationDisposition, FILE_ATTRIBUTE_NORMAL);
+}
+
+bool COutFile::Open(LPCWSTR fileName, DWORD creationDisposition)
+{
+  return Open(fileName, FILE_SHARE_READ, 
+      creationDisposition, FILE_ATTRIBUTE_NORMAL);
+}
+
+bool COutFile::Create(LPCWSTR fileName, bool createAlways)
+{
+  return Open(fileName, GetCreationDisposition(createAlways));
 }
 
 #endif
@@ -175,7 +192,7 @@ bool COutFile::SetLastWriteTime(const FILETIME *lastWriteTime)
 }
 
 
-bool COutFile::Write(const void *data, UINT32 size, UINT32 &processedSize)
+bool COutFile::Write(const void *data, UInt32 size, UInt32 &processedSize)
 {
   return BOOLToBool(::WriteFile(_handle, data, size, 
       (DWORD *)&processedSize, NULL));
@@ -188,9 +205,9 @@ bool COutFile::SetEndOfFile()
 }
 
 
-bool COutFile::SetLength(UINT64 length)
+bool COutFile::SetLength(UInt64 length)
 {
-  UINT64 newPosition;
+  UInt64 newPosition;
   if(!Seek(length, newPosition))
     return false;
   if(newPosition != length)

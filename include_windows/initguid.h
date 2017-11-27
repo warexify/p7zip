@@ -2,8 +2,10 @@
 #define _INITGUID_H
 
 #ifndef DEFINE_GUID
-#include <basetyps.h>
+#include "Common/MyWindows.h"
 #endif
 #undef DEFINE_GUID
-#define DEFINE_GUID(n,l,w1,w2,b1,b2,b3,b4,b5,b6,b7,b8) GUID_EXT const GUID n = {l,w1,w2,{b1,b2,b3,b4,b5,b6,b7,b8}}
+#define DEFINE_GUID(name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8) \
+      MY_EXTERN_C const GUID name = { l, w1, w2, { b1, b2,  b3,  b4,  b5,  b6,  b7,  b8 } }
+
 #endif
