@@ -70,7 +70,11 @@ static const wchar_t kRecursedIDChar = 'R';
 static const wchar_t *kRecursedPostCharSet = L"0-";
 
 static const wchar_t *kDefaultArchiveType = L"7z";
+#ifdef _WIN32
 static const wchar_t *kSFXExtension = L"exe";
+#else
+static const wchar_t *kSFXExtension = L"";
+#endif
 
 namespace NRecursedPostCharIndex {
   enum EEnum 
@@ -418,7 +422,7 @@ static void ConvertToLongNames(const UString &prefix, NWildcard::CCensorNode &no
     for (int j = i + 1; j < node.SubNodes.Size();)
     {
       const NWildcard::CCensorNode &nextNode2 = node.SubNodes[j];
-      if (nextNode1.Name.CollateNoCase(nextNode2.Name) == 0)
+      if (nextNode1.Name.CompareNoCase(nextNode2.Name) == 0)
       {
         nextNode1.IncludeItems += nextNode2.IncludeItems;
         nextNode1.ExcludeItems += nextNode2.ExcludeItems;
@@ -697,7 +701,8 @@ static void SetArchiveType(const UString &archiveType,
 
 CArchiveCommandLineParser::CArchiveCommandLineParser(): parser(kNumSwitches) {}
 
-void CArchiveCommandLineParser::Parse1(const UStringVector &commandStrings, CArchiveCommandLineOptions &options)
+void CArchiveCommandLineParser::Parse1(const UStringVector &commandStrings,
+    CArchiveCommandLineOptions &options)
 {
   try
   {

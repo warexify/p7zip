@@ -41,7 +41,9 @@ static const char *kCopyrightString =
 
 static const int kNumSwitches = 6;
 
+#ifdef _WIN32
 const wchar_t *defaultExt = L".exe";
+#endif
 
 namespace NKey {
 enum Enum
@@ -379,8 +381,10 @@ int Main2(
 
   bool yesToAll = parser[NKey::kYes].ThereIs;
 
+#ifdef _WIN32
   if (archiveName.Right(4).CompareNoCase(defaultExt) != 0)
     archiveName += defaultExt;
+#endif
 
   // NExtractMode::EEnum extractMode;
   // bool isExtractGroupCommand = command.IsFromExtractGroup(extractMode);

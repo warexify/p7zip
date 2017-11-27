@@ -97,7 +97,6 @@ static DWORD mySearchPathA( LPCSTR path, LPCSTR name, LPCSTR ext,
       return ret;
     }
     AString module_path(myModuleFileName);
-    // module_path.Replace('\\','/');
     AString dir,name2,dir_path;
     my_windows_split_path(module_path,dir,name2);
     dir_path = dir;

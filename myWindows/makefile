@@ -10,6 +10,7 @@ OBJS=myGetTickCount.o \
 	myModuleFileName.o \
 	wine_date_and_time.o \
 	mySplitCommandLine.o \
+	myAddExeFlag.o \
 	test_emul.o \
 	../Common/Vector.o \
 	../Common/String.o \

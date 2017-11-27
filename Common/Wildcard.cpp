@@ -211,7 +211,7 @@ int CCensorNode::FindSubNode(const UString &name) const
 #ifdef ENV_UNIX // Unix Filesystem are case sensitive.
     if (SubNodes[i].Name.Compare(name) == 0)
 #else
-    if (SubNodes[i].Name.CollateNoCase(name) == 0)
+    if (SubNodes[i].Name.CompareNoCase(name) == 0)
 #endif
       return i;
   return -1;
@@ -359,7 +359,11 @@ void CCensorNode::AddItem2(bool include, const UString &path, bool recursive)
 int CCensor::FindPrefix(const UString &prefix) const
 {
   for (int i = 0; i < Pairs.Size(); i++)
-    if (Pairs[i].Prefix.CollateNoCase(prefix) == 0)
+#ifdef ENV_UNIX // Unix Filesystem are case sensitive.
+    if (Pairs[i].Prefix.Compare(prefix) == 0)
+#else
+    if (Pairs[i].Prefix.CompareNoCase(prefix) == 0)
+#endif
       return i;
   return -1;
 }
@@ -405,7 +409,7 @@ void CCensor::AddItem(bool include, const UString &path, bool recursive)
     if (DoesNameContainWildCard(front))
       break;
     prefix += front;
-    prefix += L'\\';
+    prefix += WCHAR_PATH_SEPARATOR;
     pathParts.Delete(0);
   }
   int index = FindPrefix(prefix);

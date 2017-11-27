@@ -1,9 +1,6 @@
 
 - auto-generate config.h
 
-- creation of SFX archives
-  Only SFX archives with "*.exe" filenames are valid. 
-
 - suppress all exit(EXIT_FAILURE), FIXME, ...
 
 - no chmod/chown(uid,gid) for TAR

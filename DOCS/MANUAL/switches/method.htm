@@ -368,12 +368,14 @@ GZip uses the same parameters as Zip, but GZip compresses only with Defalte meth
   </DD>
   <DT><A name="LitContext"></A>lc={N}</DT>
   <DD>
-    <P>Sets number of literal context bits. It can be in range from 0 to 8.
+    <P>Sets number of literal context bits (high bits of previous literal). 
+       It can be in range from 0 to 8.
        Default value is 3. Sometimes lc=4 gives gain for big files.</P>
   </DD>
   <DT><A name="LitPos"></A>lp={N}</DT>
   <DD>
-    <P>Sets number of literal pos bits. It can be in range from 0 to 4.
+    <P>Sets number of literal pos bits (low bits of current position for literals).
+       It can be in range from 0 to 4.
        Default value is 0. lp switch is intended for periodical data when 
        period is equal 2^value (where lp=value). For example, for 32-bit (4 bytes)
        periodical data you can use lp=2. Often it's better to set lc=0, 
@@ -381,7 +383,8 @@ GZip uses the same parameters as Zip, but GZip compresses only with Defalte meth
   </DD>
   <DT><A name="PosBits"></A>pb={N}</DT>
   <DD>
-    <P>Sets number of pos bits. It can be in range from 0 to 4.
+    <P>Sets number of pos bits (low bits of current position). 
+       It can be in range from 0 to 4.
        Default value is 2. pb switch is intended for periodical data when
        period is equal 2^value (where lp=value). </P>
   </DD>

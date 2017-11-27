@@ -3,7 +3,7 @@
 # global install
 DEST_HOME=/usr/local
 # for testing 
-#DEST_HOME=${HOME}/INSTALL/usr/local
+# DEST_HOME=${HOME}/INSTALL/usr/local
 DEST_BIN=${DEST_HOME}/bin
 DEST_SHARE=${DEST_HOME}/lib/p7zip
 DEST_MAN=${DEST_HOME}/man
@@ -84,6 +84,8 @@ fi
 mkdir -p ${DEST_MAN}/man1
 echo "- installing ${DEST_MAN}/man1/7z.1"
 cp man1/7z.1 ${DEST_MAN}/man1/
+chmod 444    ${DEST_MAN}/man1/7z.1
 echo "- installing ${DEST_MAN}/man1/7za.1"
 cp man1/7za.1 ${DEST_MAN}/man1/
+chmod 444    ${DEST_MAN}/man1/7za.1
 

@@ -49,8 +49,6 @@ void mySplitCommandLine(int numArguments,const char *arguments[],UStringVector &
       UString tmp = MultiByteToUnicodeString(arguments[ind]);
       // tmp.Trim(); " " is a valid filename ...
       if (!tmp.IsEmpty()) {
-        // converting "/" to "\\"
-        // tmp.Replace(L'/',L'\\');
         parts.Add(tmp);
       }
     }

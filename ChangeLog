@@ -1,3 +1,16 @@
+
+Version 4.29
+============
+
+  - fix "Bugs item #1305781" : "7z a -sfx" sets the execute-flag
+    and does not add ".exe" extension.
+
+  - fix "Bugs item #1306783" : "7za a /tmp/t.7z /etc/passwd"
+
+  - fix "Bugs item #1304797" : @lists don't handle files starting with ./
+
+  - fix "Bugs item #1309287" : man 7za fails after install
+
 Version 4.27
 ============
   - From Windows version of 7-zip 4.27 :

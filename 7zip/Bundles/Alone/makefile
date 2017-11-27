@@ -18,6 +18,7 @@ MY_WINDOWS= \
 	$(MY_HOME)/myGetTickCount.o \
 	$(MY_HOME)/wine_date_and_time.o \
 	$(MY_HOME)/myModuleFileName.o \
+	$(MY_HOME)/myAddExeFlag.o \
 	$(MY_HOME)/mySplitCommandLine.o
 
 OBJS=\

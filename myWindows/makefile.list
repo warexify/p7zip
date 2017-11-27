@@ -1,6 +1,7 @@
 SRCS=myGetTickCount.cpp \
  myModuleFileName.cpp \
  mySplitCommandLine.cpp \
+ myAddExeFlag.cpp \
  test_emul.cpp \
  wine_date_and_time.cpp
 
@@ -8,6 +9,8 @@ mySplitCommandLine.o : mySplitCommandLine.cpp
 	$(CXX) $(CFLAGS) mySplitCommandLine.cpp
 myModuleFileName.o : myModuleFileName.cpp
 	$(CXX) $(CFLAGS) myModuleFileName.cpp
+myAddExeFlag.o : myAddExeFlag.cpp
+	$(CXX) $(CFLAGS) myAddExeFlag.cpp
 myGetTickCount.o : myGetTickCount.cpp
 	$(CXX) $(CFLAGS) myGetTickCount.cpp
 test_emul.o : test_emul.cpp

@@ -297,6 +297,21 @@ int Main2(
     HRESULT result = UpdateArchive(options.WildcardCensor, uo, 
         errorInfo, &openCallback, &callback);
 
+#ifdef ENV_UNIX
+    if (uo.SfxMode)
+    {
+        void myAddExeFlag(const UString &name);
+        for(int i = 0; i < uo.Commands.Size(); i++)
+        {
+            CUpdateArchiveCommand &command = uo.Commands[i];
+            if (!uo.StdOutMode)
+            {
+                myAddExeFlag(command.ArchivePath.GetFinalPath());
+            }
+        }
+    }
+#endif
+
     int exitCode = NExitCode::kSuccess;
     if (callback.CantFindFiles.Size() > 0)
     {

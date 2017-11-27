@@ -78,29 +78,6 @@ wchar_t * MyStringUpper(wchar_t *s)
   return ret;
 }
 
-int MyStringCollateNoCase(const wchar_t *s1, const wchar_t *s2)
-{ 
-  while (true)
-  {
-    wchar_t c1 = *s1++;
-    wchar_t c2 = *s2++;
-    wchar_t u1 = MyCharUpper(c1);
-    wchar_t u2 = MyCharUpper(c2);
-
-    if (u1 < u2) return -1;
-    if (u1 > u2) return 1;
-    if (u1 == 0) return 0;
-  }
-}
-
-int MyStringCollateNoCase(const char *s1, const char *s2)
-{
-  UString us1 = MultiByteToUnicodeString(s1, 0);
-  UString us2 = MultiByteToUnicodeString(s2, 0);
-
-  return MyStringCollateNoCase(us1,us2);
-}
-
 int MyStringCompare(const char *s1, const char *s2)
 { 
   while (true)
@@ -123,5 +100,30 @@ int MyStringCompare(const wchar_t *s1, const wchar_t *s2)
     if (c1 > c2) return 1;
     if (c1 == 0) return 0;
   }
+}
+
+int MyStringCompareNoCase(const wchar_t *s1, const wchar_t *s2)
+{ 
+  while (true)
+  {
+    wchar_t c1 = *s1++;
+    wchar_t c2 = *s2++;
+    if (c1 != c2)
+    {
+      wchar_t u1 = MyCharUpper(c1);
+      wchar_t u2 = MyCharUpper(c2);
+      if (u1 < u2) return -1;
+      if (u1 > u2) return 1;
+    }
+    if (c1 == 0) return 0;
+  }
+}
+
+int MyStringCompareNoCase(const char *s1, const char *s2)
+{
+  UString us1 = MultiByteToUnicodeString(s1, 0);
+  UString us2 = MultiByteToUnicodeString(s2, 0);
+
+  return MyStringCompareNoCase(us1,us2);
 }
 

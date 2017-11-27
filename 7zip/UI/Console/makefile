@@ -9,6 +9,7 @@ LIBS=$(LOCAL_LIBS_DLL)
 MY_WINDOWS=\
 	$(MY_HOME)/myModuleFileName.o \
 	$(MY_HOME)/mySplitCommandLine.o \
+	$(MY_HOME)/myAddExeFlag.o \
 	$(MY_HOME)/wine_date_and_time.o
 
 OBJS = \

@@ -67,6 +67,7 @@ bool CFileBase::Create(LPCTSTR filename, DWORD dwDesiredAccess,
     // case TRUNCATE_EXISTING : flags |= O_TRUNC;      break;
   }
 
+/*
   size_t len = strlen(name);
   if (len >= 4) {
     if (    (tolower((unsigned char)name[len-1]) == 'e')
@@ -76,6 +77,7 @@ bool CFileBase::Create(LPCTSTR filename, DWORD dwDesiredAccess,
        mode = 0777;
     }
   }
+*/
 
   _fd = -1;
 #ifdef HAVE_LSTAT
