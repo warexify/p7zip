@@ -3,14 +3,21 @@ SRCS=\
  ../../Common/StreamUtils.cpp \
  ../../Common/OutBuffer.cpp \
 ../LZ/LZOutWindow.cpp \
-DllExports.cpp \
+../CodecExports.cpp \
+../DllExports.cpp \
 Rar1Decoder.cpp \
 Rar2Decoder.cpp \
 Rar3Decoder.cpp \
-Rar3Vm.cpp
+Rar3Vm.cpp \
+RarCodecsRegister.cpp
 
-DllExports.o : ./DllExports.cpp
-	$(CXX) $(CFLAGS) ./DllExports.cpp
+SRCS_C=\
+ ../../../../C/Alloc.c
+
+DllExports.o : ../DllExports.cpp
+	$(CXX) $(CFLAGS) ../DllExports.cpp
+CodecExports.o : ../CodecExports.cpp
+	$(CXX) $(CFLAGS) ../CodecExports.cpp
 InBuffer.o : ../../Common/InBuffer.cpp
 	$(CXX) $(CFLAGS) ../../Common/InBuffer.cpp
 LZOutWindow.o : ../LZ/LZOutWindow.cpp
@@ -27,3 +34,8 @@ Rar3Decoder.o : ./Rar3Decoder.cpp
 	$(CXX) $(CFLAGS) ./Rar3Decoder.cpp
 Rar3Vm.o : ./Rar3Vm.cpp
 	$(CXX) $(CFLAGS) ./Rar3Vm.cpp
+RarCodecsRegister.o : ./RarCodecsRegister.cpp
+	$(CXX) $(CFLAGS) ./RarCodecsRegister.cpp
+Alloc.o : ../../../../C/Alloc.c
+	$(CC) $(CFLAGS) ../../../../C/Alloc.c
+
