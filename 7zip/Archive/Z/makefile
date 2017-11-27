@@ -21,6 +21,7 @@ PropVariant.o\
 InBuffer.o\
 OutBuffer.o\
 ProgressUtils.o\
+StreamUtils.o\
 CodecsPath.o\
 DummyOutStream.o
 

@@ -27,6 +27,7 @@ GZipIn.o\
 GZipOut.o\
 GZipUpdate.o\
 ProgressUtils.o\
+StreamUtils.o \
 CodecsPath.o\
 InStreamWithCRC.o\
 OutStreamWithCRC.o

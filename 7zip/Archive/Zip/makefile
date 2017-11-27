@@ -38,6 +38,7 @@ OffsetStream.o\
 ProgressUtils.o\
 StreamBinder.o\
 StreamObjects.o\
+StreamUtils.o \
 ZipAddCommon.o\
 ZipHandler.o\
 ZipHandlerOut.o\

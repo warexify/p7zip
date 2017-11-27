@@ -21,6 +21,7 @@
 #include <ctype.h>
 #include <unistd.h>
 #include <errno.h>
+#include <math.h>
 
 /***************************/
 typedef void * HINSTANCE; // FIXME

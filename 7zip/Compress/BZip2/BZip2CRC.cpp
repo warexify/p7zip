@@ -23,4 +23,4 @@ class CBZip2CRCTableInit
 {
 public:
   CBZip2CRCTableInit() { CBZip2CRC::InitTable(); }
-} g_BZ2_CRCTableInit;
+} g_BZip2CRCTableInit;

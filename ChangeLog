@@ -1,3 +1,46 @@
+Version 4.27
+============
+  - From Windows version of 7-zip 4.27 :
+    - new plugin for 7z : 7-Zip can unpack CHM/HXS (MS HTML HELP) archives
+    - cab plugin for 7z : 7-Zip can unpack multivolume CAB archives
+    - Some bugs were fixed
+    - better support for 64bits (PPMD coder/decoder)
+
+Version 4.26
+============
+  - From Windows version of 7-zip 4.26 :
+    - new plugin for 7z : LZH format support (extracting only)
+
+  - fix (courtesy from Robert Millan) to make p7zip compile on GNU/kFreeBSD.
+
+  - fix "Bug item #1273057", now "7z -so -t7z a dummy.7z file >output.7z" does not
+    finish with a "Segmentation fault (core dumped)".
+
+  - fix "Bug item #1221056", now, makefile for p7zip use the flag "-O" to
+  support compilers that build invalid programs with the flag "-O2".
+
+Version 4.25
+============
+  - From Windows version of 7-zip 4.25 :
+    - Some bugs were fixed
+    - DOCS/MANUAL/exit_codes.htm added
+
+  - new plugin for 7z : RAR format support (extracting only)
+
+  - better dependencies in makefile
+
+Version 4.23
+============
+  - From Windows version of 7-zip 4.23 :
+    - Some bugs were fixed
+
+  - manpages for 7za and 7z updated by Mohammed Adnene Trojette.
+
+  - little fix for the help message of 7za or 7z.
+
+  - bug #1224304 : Files and directories with \ in name not handled properly.
+
+  - fix for tar archives that have pax header.
 
 Version 4.20
 ============

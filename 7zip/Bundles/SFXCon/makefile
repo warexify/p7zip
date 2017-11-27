@@ -71,6 +71,7 @@ InBuffer.o\
 LimitedStreams.o\
 LockedStream.o\
 OffsetStream.o\
+StreamUtils.o\
 OutBuffer.o\
 ProgressUtils.o\
 StreamBinder.o\

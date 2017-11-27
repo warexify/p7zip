@@ -1,3 +1,15 @@
+SRCS=\
+ ../Common/CodecsPath.cpp \
+ ../Common/DummyOutStream.cpp \
+ ../../Common/InBuffer.cpp \
+ ../../Common/OutBuffer.cpp \
+ ../../Common/ProgressUtils.cpp \
+ ../../Common/StreamUtils.cpp \
+ ../../Compress/Z/ZDecoder.cpp \
+ ./DllExports.cpp \
+ ../../../Windows/PropVariant.cpp \
+ ./ZHandler.cpp
+
 DllExports.o : ./DllExports.cpp
 	$(CXX) $(CFLAGS) ./DllExports.cpp
 ZHandler.o : ./ZHandler.cpp
@@ -16,3 +28,5 @@ OutBuffer.o : ../../Common/OutBuffer.cpp
 	$(CXX) $(CFLAGS) ../../Common/OutBuffer.cpp
 ProgressUtils.o : ../../Common/ProgressUtils.cpp
 	$(CXX) $(CFLAGS) ../../Common/ProgressUtils.cpp
+StreamUtils.o : ../../Common/StreamUtils.cpp
+	$(CXX) $(CFLAGS) ../../Common/StreamUtils.cpp

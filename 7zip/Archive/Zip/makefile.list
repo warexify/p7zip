@@ -1,19 +1,45 @@
+SRCS=\
+ ../7z/7zMethodID.cpp \
+ ../7z/7zMethods.cpp \
+ ../Common/CodecsPath.cpp \
+ ../Common/CoderLoader.cpp \
+ ../Common/CrossThreadProgress.cpp \
+ ../Common/FilterCoder.cpp \
+ ../../Common/InBuffer.cpp \
+ ../Common/InStreamWithCRC.cpp \
+ ../Common/ItemNameUtils.cpp \
+ ../../Common/LimitedStreams.cpp \
+ ../../Common/LSBFDecoder.cpp \
+ ../../Common/OffsetStream.cpp \
+ ../../Common/OutBuffer.cpp \
+ ../Common/OutStreamWithCRC.cpp \
+ ../../Common/ProgressUtils.cpp \
+ ../../Common/StreamBinder.cpp \
+ ../../Common/StreamObjects.cpp \
+ ../../Common/StreamUtils.cpp \
+ ../../Compress/Copy/CopyCoder.cpp \
+ ../../Compress/Implode/ImplodeDecoder.cpp \
+ ../../Compress/Implode/ImplodeHuffmanDecoder.cpp \
+ ../../Compress/LZ/LZOutWindow.cpp \
+ ../../Compress/Shrink/ShrinkDecoder.cpp \
+ ../../Crypto/Zip/ZipCipher.cpp \
+ ../../Crypto/Zip/ZipCrypto.cpp \
+ ./DllExports.cpp \
+ ../../../Windows/DLL.cpp \
+ ../../../Windows/FileFind.cpp \
+ ../../../Windows/PropVariant.cpp \
+ ../../../Windows/Synchronization.cpp \
+ ./ZipAddCommon.cpp \
+ ./ZipHandler.cpp \
+ ./ZipHandlerOut.cpp \
+ ./ZipHeader.cpp \
+ ./ZipIn.cpp \
+ ./ZipItem.cpp \
+ ./ZipOut.cpp \
+ ./ZipUpdate.cpp
+
 DllExports.o : ./DllExports.cpp
 	$(CXX) $(CFLAGS) ./DllExports.cpp
-Alloc.o : ../../../Common/Alloc.cpp
-	$(CXX) $(CFLAGS) ../../../Common/Alloc.cpp
-CRC.o : ../../../Common/CRC.cpp
-	$(CXX) $(CFLAGS) ../../../Common/CRC.cpp
-Random.o : ../../../Common/Random.cpp
-	$(CXX) $(CFLAGS) ../../../Common/Random.cpp
-String.o : ../../../Common/String.cpp
-	$(CXX) $(CFLAGS) ../../../Common/String.cpp
-StringConvert.o : ../../../Common/StringConvert.cpp
-	$(CXX) $(CFLAGS) ../../../Common/StringConvert.cpp
-StringToInt.o : ../../../Common/StringToInt.cpp
-	$(CXX) $(CFLAGS) ../../../Common/StringToInt.cpp
-Vector.o : ../../../Common/Vector.cpp
-	$(CXX) $(CFLAGS) ../../../Common/Vector.cpp
 DLL.o : ../../../Windows/DLL.cpp
 	$(CXX) $(CFLAGS) ../../../Windows/DLL.cpp
 FileFind.o : ../../../Windows/FileFind.cpp
@@ -46,6 +72,8 @@ StreamBinder.o : ../../Common/StreamBinder.cpp
 	$(CXX) $(CFLAGS) ../../Common/StreamBinder.cpp
 StreamObjects.o : ../../Common/StreamObjects.cpp
 	$(CXX) $(CFLAGS) ../../Common/StreamObjects.cpp
+StreamUtils.o : ../../Common/StreamUtils.cpp
+	$(CXX) $(CFLAGS) ../../Common/StreamUtils.cpp
 ZipAddCommon.o : ./ZipAddCommon.cpp
 	$(CXX) $(CFLAGS) ./ZipAddCommon.cpp
 ZipHandler.o : ./ZipHandler.cpp

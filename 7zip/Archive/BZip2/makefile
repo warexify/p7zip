@@ -24,6 +24,7 @@ DummyOutStream.o\
 BZip2Handler.o\
 BZip2HandlerOut.o\
 BZip2Update.o\
+StreamUtils.o \
 ProgressUtils.o
 
 include ../../../makefile.glb

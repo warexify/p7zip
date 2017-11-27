@@ -1,3 +1,21 @@
+SRCS= AlignedBuffer.cpp \
+ Alloc.cpp \
+ CommandLineParser.cpp \
+ CRC.cpp \
+ IntToString.cpp \
+ ListFileUtils.cpp \
+ main.c \
+ MyWindows.cpp \
+ Random.cpp \
+ StdInStream.cpp \
+ StdOutStream.cpp \
+ StringConvert.cpp \
+ String.cpp \
+ StringToInt.cpp \
+ UTFConvert.cpp \
+ Vector.cpp \
+ Wildcard.cpp
+
 MyWindows.o : MyWindows.cpp
 	$(CXX) $(CFLAGS) MyWindows.cpp
 Alloc.o : Alloc.cpp

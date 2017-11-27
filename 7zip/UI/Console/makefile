@@ -61,7 +61,8 @@ UpdatePair.o \
 UpdateProduce.o \
 FilePathAutoRename.o \
 FileStreams.o \
-CopyCoder.o
+CopyCoder.o \
+StreamUtils.o
 
 include ../../../makefile.glb
 

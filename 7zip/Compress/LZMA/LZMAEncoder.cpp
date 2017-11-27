@@ -3,6 +3,7 @@
 #include "StdAfx.h"
 
 #include "../../../Common/Defs.h"
+#include "../../Common/StreamUtils.h"
 
 #include "LZMAEncoder.h"
 
@@ -384,7 +385,7 @@ STDMETHODIMP CEncoder::SetCoderProperties(const PROPID *propIDs,
         if (prop.vt != VT_UI4)
           return E_INVALIDARG;
         UInt32 numFastBytes = prop.ulVal;
-        if(numFastBytes < 2 || numFastBytes > kMatchMaxLen)
+        if(numFastBytes < 5 || numFastBytes > kMatchMaxLen)
           return E_INVALIDARG;
         _numFastBytes = numFastBytes;
         break;
@@ -498,7 +499,7 @@ STDMETHODIMP CEncoder::WriteCoderProperties(ISequentialOutStream *outStream)
   properties[0] = (_posStateBits * 5 + _numLiteralPosStateBits) * 9 + _numLiteralContextBits;
   for (int i = 0; i < 4; i++)
     properties[1 + i] = Byte(_dictionarySize >> (8 * i));
-  return outStream->Write(properties, kPropSize, NULL);
+  return WriteStream(outStream, properties, kPropSize, NULL);
 }
 
 STDMETHODIMP CEncoder::SetOutStream(ISequentialOutStream *outStream)
@@ -652,18 +653,14 @@ HRESULT CEncoder::GetOptimum(UInt32 position, UInt32 &backRes, UInt32 &lenRes)
   {
     backRes = repMaxIndex;
     lenRes = repLens[repMaxIndex];
-    MovePos(lenRes - 1);
-    return S_OK;
+    return MovePos(lenRes - 1);
   }
 
   if(lenMain > _numFastBytes)
   {
-    UInt32 backMain = (lenMain < _numFastBytes) ? _matchDistances[lenMain] :
-        _matchDistances[_numFastBytes];
-    backRes = backMain + kNumRepDistances; 
-    MovePos(lenMain - 1);
+    backRes = _matchDistances[_numFastBytes] + kNumRepDistances; 
     lenRes = lenMain;
-    return S_OK;
+    return MovePos(lenMain - 1);
   }
   Byte currentByte = _matchFinder->GetIndexByte(0 - 1);
 
@@ -1099,15 +1096,13 @@ HRESULT CEncoder::GetOptimumFast(UInt32 position, UInt32 &backRes, UInt32 &lenRe
   {
     backRes = repMaxIndex;
     lenRes = repLens[repMaxIndex];
-    MovePos(lenRes - 1);
-    return S_OK;
+    return MovePos(lenRes - 1);
   }
   if(lenMain >= _numFastBytes)
   {
     backRes = _matchDistances[_numFastBytes] + kNumRepDistances; 
-    MovePos(lenMain - 1);
     lenRes = lenMain;
-    return S_OK;
+    return MovePos(lenMain - 1);
   }
   while (lenMain > 2)
   {
@@ -1126,8 +1121,7 @@ HRESULT CEncoder::GetOptimumFast(UInt32 position, UInt32 &backRes, UInt32 &lenRe
     {
       backRes = repMaxIndex;
       lenRes = repLens[repMaxIndex];
-      MovePos(lenRes - 1);
-      return S_OK;
+      return MovePos(lenRes - 1);
     }
   }
   
@@ -1163,9 +1157,8 @@ HRESULT CEncoder::GetOptimumFast(UInt32 position, UInt32 &backRes, UInt32 &lenRe
       }
     }
     backRes = backMain + kNumRepDistances; 
-    MovePos(lenMain - 2);
     lenRes = lenMain;
-    return S_OK;
+    return MovePos(lenMain - 2);
   }
   backRes = UInt32(-1);
   lenRes = 1;

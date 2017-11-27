@@ -2,7 +2,7 @@
 # makefile for FreeBSD (x86, PPC, alpha ...)
 # LITTLE_ENDIAN and BIG_ENDIAN are already defined by the system headers
 #
-ALLFLAGS=-w -O2 -s \
+ALLFLAGS=-w -O -s \
     	-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE \
 	-DNDEBUG -D_REENTRANT -DENV_UNIX \
 	$(LOCAL_FLAGS)

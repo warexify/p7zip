@@ -17,6 +17,7 @@ OBJS = \
 DllExports.o\
 InBuffer.o\
 OutBuffer.o\
+StreamUtils.o\
 RangeCoderBit.o\
 MT.o\
 LZInWindow.o\

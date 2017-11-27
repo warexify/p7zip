@@ -20,13 +20,15 @@ DllExports.o\
 PropVariant.o\
 ArjHandler.o\
 ArjIn.o\
-Decoder1.o\
-Decoder2.o\
+ArjDecoder1.o\
+ArjDecoder2.o\
 LZOutWindow.o\
 CopyCoder.o\
 InBuffer.o\
+OutBuffer.o\
 LimitedStreams.o\
 ProgressUtils.o\
+StreamUtils.o \
 ItemNameUtils.o\
 OutStreamWithCRC.o
 

@@ -1,13 +1,17 @@
+SRCS=\
+ ../Common/ItemNameUtils.cpp \
+ ../../Common/LimitedStreams.cpp \
+ ../../Common/ProgressUtils.cpp \
+ ../../Common/StreamUtils.cpp \
+ ../../Compress/Copy/CopyCoder.cpp \
+ ./DebHandler.cpp \
+ ./DebHeader.cpp \
+ ./DebIn.cpp \
+ ./DllExports.cpp \
+ ../../../Windows/PropVariant.cpp
+
 DllExports.o : ./DllExports.cpp
 	$(CXX) $(CFLAGS) ./DllExports.cpp
-Alloc.o : ../../../Common/Alloc.cpp
-	$(CXX) $(CFLAGS) ../../../Common/Alloc.cpp
-String.o : ../../../Common/String.cpp
-	$(CXX) $(CFLAGS) ../../../Common/String.cpp
-StringConvert.o : ../../../Common/StringConvert.cpp
-	$(CXX) $(CFLAGS) ../../../Common/StringConvert.cpp
-Vector.o : ../../../Common/Vector.cpp
-	$(CXX) $(CFLAGS) ../../../Common/Vector.cpp
 PropVariant.o : ../../../Windows/PropVariant.cpp
 	$(CXX) $(CFLAGS) ../../../Windows/PropVariant.cpp
 CopyCoder.o : ../../Compress/Copy/CopyCoder.cpp
@@ -24,3 +28,5 @@ LimitedStreams.o : ../../Common/LimitedStreams.cpp
 	$(CXX) $(CFLAGS) ../../Common/LimitedStreams.cpp
 ProgressUtils.o : ../../Common/ProgressUtils.cpp
 	$(CXX) $(CFLAGS) ../../Common/ProgressUtils.cpp
+StreamUtils.o : ../../Common/StreamUtils.cpp
+	$(CXX) $(CFLAGS) ../../Common/StreamUtils.cpp

@@ -1,9 +1,18 @@
+SRCS=\
+ ./BZip2Handler.cpp \
+ ./BZip2HandlerOut.cpp \
+ ./BZip2Update.cpp \
+ ../Common/CodecsPath.cpp \
+ ../Common/DummyOutStream.cpp \
+ ../../Common/ProgressUtils.cpp \
+ ../../Compress/Copy/CopyCoder.cpp \
+ ../../Common/StreamUtils.cpp \
+ ./DllExports.cpp \
+ ../../../Windows/DLL.cpp \
+ ../../../Windows/PropVariant.cpp
+
 DllExports.o : ./DllExports.cpp
 	$(CXX) $(CFLAGS) ./DllExports.cpp
-Alloc.o : ../../../Common/Alloc.cpp
-	$(CXX) $(CFLAGS) ../../../Common/Alloc.cpp
-StringConvert.o : ../../../Common/StringConvert.cpp
-	$(CXX) $(CFLAGS) ../../../Common/StringConvert.cpp
 DLL.o : ../../../Windows/DLL.cpp
 	$(CXX) $(CFLAGS) ../../../Windows/DLL.cpp
 PropVariant.o : ../../../Windows/PropVariant.cpp
@@ -22,3 +31,5 @@ BZip2Update.o : ./BZip2Update.cpp
 	$(CXX) $(CFLAGS) ./BZip2Update.cpp
 ProgressUtils.o : ../../Common/ProgressUtils.cpp
 	$(CXX) $(CFLAGS) ../../Common/ProgressUtils.cpp
+StreamUtils.o : ../../Common/StreamUtils.cpp
+	$(CXX) $(CFLAGS) ../../Common/StreamUtils.cpp

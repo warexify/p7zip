@@ -1,3 +1,47 @@
+SRCS=\
+ ./7zCompressionMode.cpp \
+ ./7zDecode.cpp \
+ ./7zEncode.cpp \
+ ./7zExtract.cpp \
+ ./7zFolderInStream.cpp \
+ ./7zFolderOutStream.cpp \
+ ./7zHandler.cpp \
+ ./7zHandlerOut.cpp \
+ ./7zHeader.cpp \
+ ./7zIn.cpp \
+ ./7zMethodID.cpp \
+ ./7zMethods.cpp \
+ ./7zOut.cpp \
+ ./7zProperties.cpp \
+ ./7zSpecStream.cpp \
+ ./7zUpdate.cpp \
+ ../Common/CodecsPath.cpp \
+ ../Common/CoderLoader.cpp \
+ ../Common/CoderMixer2.cpp \
+ ../Common/CoderMixer2MT.cpp \
+ ../Common/CrossThreadProgress.cpp \
+ ../Common/FilterCoder.cpp \
+ ../../Common/InOutTempBuffer.cpp \
+ ../Common/InStreamWithCRC.cpp \
+ ../Common/ItemNameUtils.cpp \
+ ../../Common/LimitedStreams.cpp \
+ ../../Common/LockedStream.cpp \
+ ../Common/MultiStream.cpp \
+ ../../Common/OutBuffer.cpp \
+ ../Common/OutStreamWithCRC.cpp \
+ ../../Common/ProgressUtils.cpp \
+ ../../Common/StreamBinder.cpp \
+ ../../Common/StreamObjects.cpp \
+ ../../Common/StreamUtils.cpp \
+ ../../Compress/Copy/CopyCoder.cpp \
+ ./DllExports.cpp \
+ ../../../Windows/DLL.cpp \
+ ../../../Windows/FileDir.cpp \
+ ../../../Windows/FileFind.cpp \
+ ../../../Windows/FileIO.cpp \
+ ../../../Windows/PropVariant.cpp \
+ ../../../Windows/Synchronization.cpp
+
 DllExports.o : ./DllExports.cpp
 	$(CXX) $(CFLAGS) ./DllExports.cpp
 7zCompressionMode.o : ./7zCompressionMode.cpp
@@ -32,20 +76,6 @@ DllExports.o : ./DllExports.cpp
 	$(CXX) $(CFLAGS) ./7zSpecStream.cpp
 7zUpdate.o : ./7zUpdate.cpp
 	$(CXX) $(CFLAGS) ./7zUpdate.cpp
-Alloc.o : ../../../Common/Alloc.cpp
-	$(CXX) $(CFLAGS) ../../../Common/Alloc.cpp
-CRC.o : ../../../Common/CRC.cpp
-	$(CXX) $(CFLAGS) ../../../Common/CRC.cpp
-IntToString.o : ../../../Common/IntToString.cpp
-	$(CXX) $(CFLAGS) ../../../Common/IntToString.cpp
-String.o : ../../../Common/String.cpp
-	$(CXX) $(CFLAGS) ../../../Common/String.cpp
-StringConvert.o : ../../../Common/StringConvert.cpp
-	$(CXX) $(CFLAGS) ../../../Common/StringConvert.cpp
-StringToInt.o : ../../../Common/StringToInt.cpp
-	$(CXX) $(CFLAGS) ../../../Common/StringToInt.cpp
-Vector.o : ../../../Common/Vector.cpp
-	$(CXX) $(CFLAGS) ../../../Common/Vector.cpp
 CodecsPath.o : ../Common/CodecsPath.cpp
 	$(CXX) $(CFLAGS) ../Common/CodecsPath.cpp
 CoderLoader.o : ../Common/CoderLoader.cpp
@@ -80,6 +110,8 @@ StreamBinder.o : ../../Common/StreamBinder.cpp
 	$(CXX) $(CFLAGS) ../../Common/StreamBinder.cpp
 StreamObjects.o : ../../Common/StreamObjects.cpp
 	$(CXX) $(CFLAGS) ../../Common/StreamObjects.cpp
+StreamUtils.o : ../../Common/StreamUtils.cpp
+	$(CXX) $(CFLAGS) ../../Common/StreamUtils.cpp
 DLL.o : ../../../Windows/DLL.cpp
 	$(CXX) $(CFLAGS) ../../../Windows/DLL.cpp
 FileDir.o : ../../../Windows/FileDir.cpp

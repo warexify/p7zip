@@ -27,6 +27,8 @@
 #include "../../UI/Console/OpenCallbackConsole.h"
 #include "../../UI/Console/ExtractCallbackConsole.h"
 
+#include "../../MyVersion.h"
+
 using namespace NWindows;
 using namespace NFile;
 using namespace NCommandLineParser;
@@ -34,8 +36,8 @@ using namespace NCommandLineParser;
 extern CStdOutStream *g_StdStream;
 
 static const char *kCopyrightString = 
-"\n7-Zip SFX 4.20  Copyright (c) 1999-2005 Igor Pavlov  2005-05-30\n"
-"p7zip Version 4.20";
+"\n7-Zip SFX " MY_VERSION_COPYRIGHT_DATE "\n"
+"p7zip Version " P7ZIP_VERSION ;
 
 static const int kNumSwitches = 6;
 
@@ -153,13 +155,6 @@ static const char *kProcessArchiveMessage = " archive: ";
 static const char *kCantFindSFX = " cannot find sfx";
 
 
-// ---------------------------
-
-static const CSysString kExtractGroupProcessMessage = "Processing";
-static const CSysString kListingProcessMessage = "Listing";
-
-static const CSysString kDefaultWorkingDirectory = "";  // test it maybemust be "."
-
 struct CArchiveCommand
 {
   NCommandType::EEnum CommandType;
@@ -189,7 +184,7 @@ void PrintHelp(void)
   g_StdOut << kHelpString;
 }
 
-static void ShowMessageAndThrowException(LPCTSTR message, NExitCode::EEnum code)
+static void ShowMessageAndThrowException(const char *message, NExitCode::EEnum code)
 {
   g_StdOut << message << endl;
   throw code;
@@ -245,7 +240,7 @@ static bool AddNameToCensor(NWildcard::CCensor &wildcardCensor,
       recursed = false;
       break;
   }
-  wildcardCensor.AddItem(name, include, recursed);
+  wildcardCensor.AddItem(include, name, recursed);
   return true;
 }
 

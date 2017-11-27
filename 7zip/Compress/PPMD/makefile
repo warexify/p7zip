@@ -15,6 +15,7 @@ OBJS = \
 DllExports.o\
 PPMDDecoder.o\
 PPMDEncoder.o\
+StreamUtils.o\
 InBuffer.o\
 OutBuffer.o
 

@@ -1,3 +1,15 @@
+SRCS=\
+ ../../Common/InBuffer.cpp \
+ ../../Common/LSBFDecoder.cpp \
+ ../../Common/LSBFEncoder.cpp \
+ ../../Common/OutBuffer.cpp \
+ ./DeflateDecoder.cpp \
+ ./DeflateEncoder.cpp \
+ ./DllExports.cpp \
+ ../Huffman/HuffmanEncoder.cpp \
+ ../LZ/LZInWindow.cpp \
+ ../LZ/LZOutWindow.cpp
+
 DllExports.o : ./DllExports.cpp
 	$(CXX) $(CFLAGS) ./DllExports.cpp
 HuffmanEncoder.o : ../Huffman/HuffmanEncoder.cpp
@@ -10,10 +22,6 @@ LSBFEncoder.o : ../../Common/LSBFEncoder.cpp
 	$(CXX) $(CFLAGS) ../../Common/LSBFEncoder.cpp
 OutBuffer.o : ../../Common/OutBuffer.cpp
 	$(CXX) $(CFLAGS) ../../Common/OutBuffer.cpp
-Alloc.o : ../../../Common/Alloc.cpp
-	$(CXX) $(CFLAGS) ../../../Common/Alloc.cpp
-CRC.o : ../../../Common/CRC.cpp
-	$(CXX) $(CFLAGS) ../../../Common/CRC.cpp
 LZInWindow.o : ../LZ/LZInWindow.cpp
 	$(CXX) $(CFLAGS) ../LZ/LZInWindow.cpp
 LZOutWindow.o : ../LZ/LZOutWindow.cpp

@@ -13,6 +13,8 @@ OBJS = \
 ../../../Common/MyWindows.o \
 ../../../Common/Alloc.o\
 DllExports.o\
+StreamUtils.o\
+OutBuffer.o\
 InBuffer.o\
 LSBFDecoder.o\
 LZOutWindow.o\

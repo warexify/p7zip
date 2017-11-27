@@ -19,6 +19,7 @@ OBJS = \
 ../../../Common/String.o\
 ../../../Common/CRC.o\
 ../../../Common/IntToString.o\
+../../../Common/UTFConvert.o\
 DllExports.o\
 CodecsPath.o\
 FilterCoder.o\
@@ -41,6 +42,7 @@ Rar20Crypto.o\
 LimitedStreams.o\
 ProgressUtils.o\
 StreamObjects.o\
+StreamUtils.o\
 7zMethodID.o\
 7zMethods.o
 

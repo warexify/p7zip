@@ -19,8 +19,9 @@ DllExports.o \
 PropVariant.o \
 CopyCoder.o \
 ProgressUtils.o \
+StreamUtils.o \
 SplitHandler.o \
-SplitHanlerOut.o \
+SplitHandlerOut.o \
 MultiStream.o 
 
 include ../../../makefile.glb

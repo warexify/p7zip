@@ -1,15 +1,22 @@
+SRCS=\
+ ../Common/CodecsPath.cpp \
+ ../Common/InStreamWithCRC.cpp \
+ ../Common/OutStreamWithCRC.cpp \
+ ../../Common/StreamUtils.cpp \
+ ../../Common/ProgressUtils.cpp \
+ ../../Compress/Copy/CopyCoder.cpp \
+ ./DllExports.cpp \
+ ./GZipHandler.cpp \
+ ./GZipHandlerOut.cpp \
+ ./GZipHeader.cpp \
+ ./GZipIn.cpp \
+ ./GZipOut.cpp \
+ ./GZipUpdate.cpp \
+ ../../../Windows/DLL.cpp \
+ ../../../Windows/PropVariant.cpp
+
 DllExports.o : ./DllExports.cpp
 	$(CXX) $(CFLAGS) ./DllExports.cpp
-Alloc.o : ../../../Common/Alloc.cpp
-	$(CXX) $(CFLAGS) ../../../Common/Alloc.cpp
-CRC.o : ../../../Common/CRC.cpp
-	$(CXX) $(CFLAGS) ../../../Common/CRC.cpp
-String.o : ../../../Common/String.cpp
-	$(CXX) $(CFLAGS) ../../../Common/String.cpp
-StringConvert.o : ../../../Common/StringConvert.cpp
-	$(CXX) $(CFLAGS) ../../../Common/StringConvert.cpp
-StringToInt.o : ../../../Common/StringToInt.cpp
-	$(CXX) $(CFLAGS) ../../../Common/StringToInt.cpp
 DLL.o : ../../../Windows/DLL.cpp
 	$(CXX) $(CFLAGS) ../../../Windows/DLL.cpp
 PropVariant.o : ../../../Windows/PropVariant.cpp
@@ -36,3 +43,5 @@ InStreamWithCRC.o : ../Common/InStreamWithCRC.cpp
 	$(CXX) $(CFLAGS) ../Common/InStreamWithCRC.cpp
 OutStreamWithCRC.o : ../Common/OutStreamWithCRC.cpp
 	$(CXX) $(CFLAGS) ../Common/OutStreamWithCRC.cpp
+StreamUtils.o : ../../Common/StreamUtils.cpp
+	$(CXX) $(CFLAGS) ../../Common/StreamUtils.cpp

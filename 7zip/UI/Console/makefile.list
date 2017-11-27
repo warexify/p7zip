@@ -1,3 +1,43 @@
+SRCS=\
+ ../Common/ArchiveCommandLine.cpp \
+ ../Common/ArchiveExtractCallback.cpp \
+ ../Common/ArchiveOpenCallback.cpp \
+ ../Common/ArchiverInfo.cpp \
+ ../Common/DefaultName.cpp \
+ ../Common/EnumDirItems.cpp \
+ ../Common/Extract.cpp \
+ ../Common/ExtractingFilePath.cpp \
+ ../../Common/FilePathAutoRename.cpp \
+ ../../Common/FileStreams.cpp \
+ ../../Common/StreamUtils.cpp \
+ ../Common/OpenArchive.cpp \
+ ../Common/PropIDUtils.cpp \
+ ../Common/SortUtils.cpp \
+ ../Common/TempFiles.cpp \
+ ../Common/UpdateAction.cpp \
+ ../Common/UpdateCallback.cpp \
+ ../Common/Update.cpp \
+ ../Common/UpdatePair.cpp \
+ ../Common/UpdateProduce.cpp \
+ ../../Compress/Copy/CopyCoder.cpp \
+ ./ConsoleClose.cpp \
+ ./ExtractCallbackConsole.cpp \
+ ./List.cpp \
+ ./MainAr.cpp \
+ ./Main.cpp \
+ ./OpenCallbackConsole.cpp \
+ ./PercentPrinter.cpp \
+ ./UpdateCallbackConsole.cpp \
+ ./UserInputUtils.cpp \
+ ../../../Windows/DLL.cpp \
+ ../../../Windows/Error.cpp \
+ ../../../Windows/FileDir.cpp \
+ ../../../Windows/FileFind.cpp \
+ ../../../Windows/FileIO.cpp \
+ ../../../Windows/FileName.cpp \
+ ../../../Windows/PropVariantConversions.cpp \
+ ../../../Windows/PropVariant.cpp
+
 ConsoleClose.o : ./ConsoleClose.cpp
 	$(CXX) $(CFLAGS) ./ConsoleClose.cpp
 ExtractCallbackConsole.o : ./ExtractCallbackConsole.cpp
@@ -32,36 +72,6 @@ PropVariant.o : ../../../Windows/PropVariant.cpp
 	$(CXX) $(CFLAGS) ../../../Windows/PropVariant.cpp
 PropVariantConversions.o : ../../../Windows/PropVariantConversions.cpp
 	$(CXX) $(CFLAGS) ../../../Windows/PropVariantConversions.cpp
-Registry.o : ../../../Windows/Registry.cpp
-	$(CXX) $(CFLAGS) ../../../Windows/Registry.cpp
-System.o : ../../../Windows/System.cpp
-	$(CXX) $(CFLAGS) ../../../Windows/System.cpp
-Alloc.o : ../../../Common/Alloc.cpp
-	$(CXX) $(CFLAGS) ../../../Common/Alloc.cpp
-CommandLineParser.o : ../../../Common/CommandLineParser.cpp
-	$(CXX) $(CFLAGS) ../../../Common/CommandLineParser.cpp
-IntToString.o : ../../../Common/IntToString.cpp
-	$(CXX) $(CFLAGS) ../../../Common/IntToString.cpp
-ListFileUtils.o : ../../../Common/ListFileUtils.cpp
-	$(CXX) $(CFLAGS) ../../../Common/ListFileUtils.cpp
-NewHandler.o : ../../../Common/NewHandler.cpp
-	$(CXX) $(CFLAGS) ../../../Common/NewHandler.cpp
-StdInStream.o : ../../../Common/StdInStream.cpp
-	$(CXX) $(CFLAGS) ../../../Common/StdInStream.cpp
-StdOutStream.o : ../../../Common/StdOutStream.cpp
-	$(CXX) $(CFLAGS) ../../../Common/StdOutStream.cpp
-String.o : ../../../Common/String.cpp
-	$(CXX) $(CFLAGS) ../../../Common/String.cpp
-StringConvert.o : ../../../Common/StringConvert.cpp
-	$(CXX) $(CFLAGS) ../../../Common/StringConvert.cpp
-StringToInt.o : ../../../Common/StringToInt.cpp
-	$(CXX) $(CFLAGS) ../../../Common/StringToInt.cpp
-UTFConvert.o : ../../../Common/UTFConvert.cpp
-	$(CXX) $(CFLAGS) ../../../Common/UTFConvert.cpp
-Vector.o : ../../../Common/Vector.cpp
-	$(CXX) $(CFLAGS) ../../../Common/Vector.cpp
-Wildcard.o : ../../../Common/Wildcard.cpp
-	$(CXX) $(CFLAGS) ../../../Common/Wildcard.cpp
 ArchiveCommandLine.o : ../Common/ArchiveCommandLine.cpp
 	$(CXX) $(CFLAGS) ../Common/ArchiveCommandLine.cpp
 ArchiveExtractCallback.o : ../Common/ArchiveExtractCallback.cpp
@@ -96,11 +106,11 @@ UpdatePair.o : ../Common/UpdatePair.cpp
 	$(CXX) $(CFLAGS) ../Common/UpdatePair.cpp
 UpdateProduce.o : ../Common/UpdateProduce.cpp
 	$(CXX) $(CFLAGS) ../Common/UpdateProduce.cpp
-WorkDir.o : ../Common/WorkDir.cpp
-	$(CXX) $(CFLAGS) ../Common/WorkDir.cpp
 FilePathAutoRename.o : ../../Common/FilePathAutoRename.cpp
 	$(CXX) $(CFLAGS) ../../Common/FilePathAutoRename.cpp
 FileStreams.o : ../../Common/FileStreams.cpp
 	$(CXX) $(CFLAGS) ../../Common/FileStreams.cpp
+StreamUtils.o : ../../Common/StreamUtils.cpp
+	$(CXX) $(CFLAGS) ../../Common/StreamUtils.cpp
 CopyCoder.o : ../../Compress/Copy/CopyCoder.cpp
 	$(CXX) $(CFLAGS) ../../Compress/Copy/CopyCoder.cpp

@@ -7,9 +7,6 @@
 #include "Windows/FileFind.h"
 
 #include "../../Archive/IArchive.h"
-#ifdef _WIN32
-#include "../Common/ZipRegistry.h"
-#endif
 
 #include "ArchiveExtractCallback.h"
 #include "ArchiveOpenCallback.h"

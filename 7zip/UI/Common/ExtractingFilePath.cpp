@@ -41,14 +41,20 @@ UString GetCorrectPath(const UString &path)
       break;
   while(result.Length() > first)
   {
+#ifdef _WIN32
     if (result[first] == L'\\' || result[first] == L'/')
+#else
+    if (result[first] == L'/')
+#endif
     {
       result.Delete(first);
       continue;
     }
     break;
   }
+#ifdef _WIN32
   result.Replace(L"..\\", L"");
+#endif
   result.Replace(L"../", L"");
 
   ReplaceDisk(result);

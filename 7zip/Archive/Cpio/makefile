@@ -14,6 +14,7 @@ OBJS = \
 ../../../Common/Alloc.o\
 ../../../Common/Vector.o\
 ../../../Common/StringConvert.o\
+../../../Common/StringToInt.o\
 DllExports.o\
 CopyCoder.o\
 CpioHandler.o\
@@ -22,6 +23,7 @@ CpioIn.o\
 PropVariant.o\
 ItemNameUtils.o\
 LimitedStreams.o\
+StreamUtils.o\
 ProgressUtils.o
 
 include ../../../makefile.glb

@@ -1,3 +1,12 @@
+SRCS=\
+ ../../Common/ProgressUtils.cpp \
+ ../../Common/StreamUtils.cpp \
+ ../../Compress/Copy/CopyCoder.cpp \
+ ./DllExports.cpp \
+ ./RpmHandler.cpp \
+ ./RpmIn.cpp \
+ ../../../Windows/PropVariant.cpp
+
 DllExports.o : ./DllExports.cpp
 	$(CXX) $(CFLAGS) ./DllExports.cpp
 PropVariant.o : ../../../Windows/PropVariant.cpp
@@ -6,9 +15,9 @@ ProgressUtils.o : ../../Common/ProgressUtils.cpp
 	$(CXX) $(CFLAGS) ../../Common/ProgressUtils.cpp
 CopyCoder.o : ../../Compress/Copy/CopyCoder.cpp
 	$(CXX) $(CFLAGS) ../../Compress/Copy/CopyCoder.cpp
-Alloc.o : ../../../Common/Alloc.cpp
-	$(CXX) $(CFLAGS) ../../../Common/Alloc.cpp
 RpmHandler.o : ./RpmHandler.cpp
 	$(CXX) $(CFLAGS) ./RpmHandler.cpp
 RpmIn.o : ./RpmIn.cpp
 	$(CXX) $(CFLAGS) ./RpmIn.cpp
+StreamUtils.o : ../../Common/StreamUtils.cpp
+	$(CXX) $(CFLAGS) ../../Common/StreamUtils.cpp

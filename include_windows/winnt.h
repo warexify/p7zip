@@ -12,6 +12,7 @@ extern "C" {
 #define ERROR_INVALID_HANDLE        EBADF
 #define ERROR_PATH_NOT_FOUND        ENOENT
 #define ERROR_FILENAME_EXCED_RANGE  ENAMETOOLONG
+#define ERROR_DISK_FULL             ENOSPC
 #define ERROR_NO_MORE_FILES         0x100123 // FIXME
 
 /* see Common/WyWindows.h

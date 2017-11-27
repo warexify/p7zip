@@ -32,7 +32,7 @@ DWORD WINAPI GetFullPathName( LPCSTR name, DWORD len, LPSTR buffer, LPSTR *lastp
 
   DWORD name_len = strlen(name);
 
-  if ((name[0] == '\\') || (name[0] == '/')) {
+  if (name[0] == '/') { // if ((name[0] == '\\') || (name[0] == '/'))
     DWORD ret = name_len+2;
     if (ret >= len) {
       TRACEN((printf("GetFullPathNameA(%s,%d,)=0000 (case 0)\n",name, (int)len)))
@@ -44,7 +44,7 @@ DWORD WINAPI GetFullPathName( LPCSTR name, DWORD len, LPSTR buffer, LPSTR *lastp
     *lastpart=buffer;
     char *ptr=buffer;
     while (*ptr) {
-      if ((*ptr == '/') || (*ptr == '\\'))
+      if (*ptr == '/') // if ((*ptr == '/') || (*ptr == '\\'))
         *lastpart=ptr+1;
       ptr++;
     }
@@ -62,7 +62,7 @@ DWORD WINAPI GetFullPathName( LPCSTR name, DWORD len, LPSTR buffer, LPSTR *lastp
     *lastpart=buffer;
     char *ptr=buffer;
     while (*ptr) {
-      if ((*ptr == '/') || (*ptr == '\\'))
+      if (*ptr == '/') // if ((*ptr == '/') || (*ptr == '\\'))
         *lastpart=ptr+1;
       ptr++;
     }
@@ -103,7 +103,7 @@ DWORD WINAPI GetFullPathName( LPCSTR name, DWORD len, LPSTR buffer, LPSTR *lastp
     *lastpart=buffer + begin_len + 1;
     char *ptr=buffer;
     while (*ptr) {
-      if ((*ptr == '/') || (*ptr == '\\'))
+      if (*ptr == '/') // if ((*ptr == '/') || (*ptr == '\\'))
         *lastpart=ptr+1;
       ptr++;
     }

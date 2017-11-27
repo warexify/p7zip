@@ -16,6 +16,7 @@ OBJS = \
 ../../../Common/StringConvert.o\
 ../../../Common/String.o\
 ../../../Common/IntToString.o\
+../../../Common/StringToInt.o\
 DllExports.o\
 PropVariant.o\
 CopyCoder.o\
@@ -27,6 +28,7 @@ TarOut.o\
 TarUpdate.o\
 ItemNameUtils.o\
 LimitedStreams.o\
+StreamUtils.o \
 ProgressUtils.o
 
 include ../../../makefile.glb

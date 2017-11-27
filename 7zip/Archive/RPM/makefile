@@ -12,6 +12,7 @@ MY_WINDOWS=
 OBJS = \
 ../../../Common/MyWindows.o \
 DllExports.o\
+StreamUtils.o \
 PropVariant.o\
 ProgressUtils.o\
 CopyCoder.o\

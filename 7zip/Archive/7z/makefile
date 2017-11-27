@@ -23,7 +23,6 @@ OBJS = \
 ../../../Common/IntToString.o \
 ../../../Common/StringToInt.o \
 DllExports.o \
-7zCompressionMode.o \
 7zDecode.o \
 7zEncode.o \
 7zExtract.o \
@@ -48,6 +47,7 @@ FilterCoder.o \
 InStreamWithCRC.o \
 ItemNameUtils.o \
 MultiStream.o \
+StreamUtils.o \
 OutStreamWithCRC.o \
 InOutTempBuffer.o \
 LimitedStreams.o \
@@ -63,6 +63,8 @@ FileIO.o \
 PropVariant.o \
 Synchronization.o \
 CopyCoder.o
+
+# 7zCompressionMode.o
 
 include ../../../makefile.glb
 

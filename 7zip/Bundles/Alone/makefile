@@ -100,6 +100,7 @@ Main.o \
 MultiStream.o \
 MyAES.o \
 OffsetStream.o \
+StreamUtils.o \
 OpenCallbackConsole.o \
 OutBuffer.o \
 OutStreamWithCRC.o \

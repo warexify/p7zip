@@ -7,13 +7,24 @@ CFLAGS=-c \
 -I../../../ \
 -I../../../include_windows
 
+DFLAGS=-MM \
+-I../../../myWindows \
+-I../../../ \
+-I../../../include_windows
 all:$(PROG)
 
 $(PROG): $(OBJS) $(MY_WINDOWS)
 	$(CXX) $(LOCAL_SHARED) -o $(PROG) $(LDFLAGS) $(OBJS) $(MY_WINDOWS) $(LIBS)
 
 include makefile.list
+include makefile.depend
+
+depend:
+	rm -f makefile.depend
+	$(CXX) $(DFLAGS) $(SRCS) > makefile.depend
 
 clean:
-	-@$(RM) $(PROG) $(PROG).exe *.o *~ $(PROGS)
+	-@$(RM) $(PROG) $(PROG).exe *.o *~ .*.swp *.orig $(PROGS)
+	-@$(RM) -r SunWS_cache/ 
+	-@$(RM) -r .inslog2 pchdir/ tca.map
 

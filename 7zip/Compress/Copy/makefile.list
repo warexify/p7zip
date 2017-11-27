@@ -1,6 +1,9 @@
+SRCS= ./CopyCoder.cpp ./DllExports.cpp \
+../../Common/StreamUtils.cpp
+
 DllExports.o : ./DllExports.cpp
 	$(CXX) $(CFLAGS) $<
 CopyCoder.o : ./CopyCoder.cpp
 	$(CXX) $(CFLAGS) $<
-Alloc.o : ../../../Common/Alloc.cpp
-	$(CXX) $(CFLAGS) ../../../Common/Alloc.cpp
+StreamUtils.o : ../../Common/StreamUtils.cpp
+	$(CXX) $(CFLAGS) ../../Common/StreamUtils.cpp

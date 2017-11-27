@@ -39,31 +39,34 @@ eXtract with full paths
 .PP
 .SH SWITCHES
 .TP
-.B -ai
+.B -ai[r[-|0]]{@listfile|!wildcard}
 Include archives
 .TP
-.B -ax
+.B -ax[r[-|0]]{@listfile|!wildcard}
 eXclude archives
 .TP
 .B -bd
 Disable percentage indicator
 .TP
-.B -i 
+.B -i[r[-|0]]{@listfile|!wildcard}
 Include filenames
 .TP
 .B -l
-don’t store symlinks; store the files/directories they point to (CAUTION : the scanning stage can never end because of symlinks like 'ln -s .. ldir')
+don't store symlinks; store the files/directories they point to (CAUTION : the scanning stage can never end because of recursive symlinks like 'ln -s .. ldir')
 .TP
-.B -m 
+.B -m{Parameters}
 Set Compression Method
 .TP
-.B -o 
+.B -o{Directory}
 Set Output directory
 .TP
-.B -p 
+.B -p{Password}
 Set Password
 .TP
-.B -sfx 
+.B -r[-|0]
+Recurse subdirectories (CAUTION: this flag does not do what you think, avoid using it)
+.TP
+.B -sfx[{name}]
 Create SFX archive
 .TP
 .B -si
@@ -72,19 +75,19 @@ Read data from StdIn
 .B -so
 Write data to StdOut
 .TP
-.B -t 
+.B -t{Type}
 Type of archive
 .TP
-.B -v
+.B -v{Size}[b|k|m|g]
 Create volumes
 .TP
-.B -u 
+.B -u[-][p#][q#][r#][x#][y#][z#][!newArchiveName]
 Update options
 .TP
-.B -w 
+.B -w[{path}]
 Set Working directory
 .TP
-.B -x 
+.B -x[r[-|0]]]{@listfile|!wildcard}
 Exclude filenames
 .TP
 .B -y 
@@ -137,7 +140,7 @@ solid archive = on
 add all files from directory "dir1" to SFX archive archive.exe (Remark : SFX archive MUST end with ".exe")
 .SH MORE EXAMPLES
 .TP
-You will find more examples in /usr/share/doc/p7zip/DOCS/MANUAL .
+You will find more examples in /usr/share/doc/p7zip/DOCS/MANUAL.
 .SH "SEE ALSO"
 .BR 7za (1)
 .SH AUTHOR

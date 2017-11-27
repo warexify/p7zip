@@ -19,6 +19,7 @@ OBJS = \
 ../../../Common/String.o\
 DllExports.o\
 StreamObjects.o\
+StreamUtils.o\
 DLL.o\
 Synchronization.o\
 7zAES.o\

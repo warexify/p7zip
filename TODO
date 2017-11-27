@@ -14,9 +14,11 @@
 
 - KNOWN BUGS
 
-  - date
+  - date ('x' and 'l')
   7za l archive.7z  (7za l archive.tar)
   and 7za x archive.7z and then "ls -l"
   => not the same date
+
+  - date (format arj/rar/chm)
 
   - absolute path ?

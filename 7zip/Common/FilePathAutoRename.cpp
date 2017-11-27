@@ -26,9 +26,13 @@ bool AutoRenamePath(UString &fullProcessedPath)
 {
   UString path;
   int dotPos = fullProcessedPath.ReverseFind(L'.');
+#ifdef _WIN32
   int slashDot1 = fullProcessedPath.ReverseFind(L'\\');
   int slashDot2 = fullProcessedPath.ReverseFind(L'/');
   int slashDot = MyMin(slashDot1, slashDot2);
+#else
+  int slashDot = fullProcessedPath.ReverseFind(L'/');
+#endif
   UString name, extension;
   if (dotPos > slashDot &&  dotPos > 0)
   {

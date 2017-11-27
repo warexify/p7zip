@@ -166,7 +166,10 @@
 // #if defined(__GNUC__) || defined(__GNU_LIBRARY__)
 #if (defined(__GNUC__) || defined(__GNU_LIBRARY__)) && !defined(_WIN32) && !defined(__CYGWIN__)
 
-#ifdef __linux__
+
+#if defined(__BEOS__)
+#include <endian.h>
+#elif defined(__linux__) || defined(__GLIBC__)
 #include <endian.h>
 #include <byteswap.h>
 #elif defined(__APPLE_CC__)

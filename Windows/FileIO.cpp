@@ -289,6 +289,20 @@ bool CInFile::Open(LPCWSTR fileName,bool ignoreSymbolicLink)
 }
 #endif
 
+// ReadFile and WriteFile functions in Windows have BUG:
+// If you Read or Write 64MB or more (probably min_failure_size = 64MB - 32KB + 1) 
+// from/to Network file, it returns ERROR_NO_SYSTEM_RESOURCES 
+// (Insufficient system resources exist to complete the requested service).
+
+// static UINT32 kChunkSizeMax = (1 << 24);
+
+bool CInFile::ReadPart(void *data, UINT32 size, UINT32 &processedSize)
+{
+  // if (size > kChunkSizeMax)
+  //  size = kChunkSizeMax;
+  return Read(data,size,processedSize);
+}
+
 bool CInFile::Read(void *buffer, UINT32 bytesToRead, UINT32 &bytesRead)
 {
   if (_fd == -1)
@@ -407,6 +421,14 @@ bool COutFile::SetTime(const FILETIME *lpCreationTime,
 bool COutFile::SetLastWriteTime(const FILETIME *lastWriteTime)
 {
   return SetTime(NULL, NULL, lastWriteTime);
+}
+
+bool COutFile::WritePart(const void *data, UINT32 size, UINT32 &processedSize)
+{
+//  if (size > kChunkSizeMax)
+//    size = kChunkSizeMax;
+
+  return Write(data,size,processedSize);
 }
 
 bool COutFile::Write(const void *buffer, UINT32 bytesToWrite, UINT32 &bytesWritten)

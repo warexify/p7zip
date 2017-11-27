@@ -1,3 +1,11 @@
+SRCS=\
+ ../../Common/InBuffer.cpp \
+ ../../Common/OutBuffer.cpp \
+ ../../Common/StreamUtils.cpp \
+ ./DllExports.cpp \
+ ./PPMDDecoder.cpp \
+ ./PPMDEncoder.cpp
+
 DllExports.o : ./DllExports.cpp
 	$(CXX) $(CFLAGS) ./DllExports.cpp
 PPMDDecoder.o : ./PPMDDecoder.cpp
@@ -8,5 +16,5 @@ InBuffer.o : ../../Common/InBuffer.cpp
 	$(CXX) $(CFLAGS) ../../Common/InBuffer.cpp
 OutBuffer.o : ../../Common/OutBuffer.cpp
 	$(CXX) $(CFLAGS) ../../Common/OutBuffer.cpp
-Alloc.o : ../../../Common/Alloc.cpp
-	$(CXX) $(CFLAGS) ../../../Common/Alloc.cpp
+StreamUtils.o : ../../Common/StreamUtils.cpp
+	$(CXX) $(CFLAGS) ../../Common/StreamUtils.cpp
