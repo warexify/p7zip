@@ -1,7 +1,7 @@
-7-Zip 16.02 Sources
+7-Zip 16.04 Sources
 -------------------
 
-7-Zip is a file archiver for Windows. 
+7-Zip is a file archiver for Windows.
 
 7-Zip Copyright (C) 1999-2016 Igor Pavlov.
 
@@ -9,7 +9,7 @@
 License Info
 ------------
 
-7-Zip is free software distributed under the GNU LGPL 
+7-Zip is free software distributed under the GNU LGPL
 (except for unRar code).
 read License.txt for more infomation about license.
 
@@ -26,7 +26,7 @@ Please check main restriction from unRar license:
       not be used to develop a RAR (WinRAR) compatible archiver.
 
 In brief it means:
-1) You can compile and use compiled files under GNU LGPL rules, since 
+1) You can compile and use compiled files under GNU LGPL rules, since
    unRAR license almost has no restrictions for compiled files.
    You can link these compiled files to LGPL programs.
 2) You can fix bugs in source code and use compiled fixed version.
@@ -45,7 +45,7 @@ LZMA SDK is written and placed in the public domain by Igor Pavlov.
 How to compile
 --------------
 To compile sources you need Visual C++ 6.0.
-For compiling some files you also need 
+For compiling some files you also need
 new Platform SDK from Microsoft' Site:
 http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdk-full.htm
 or
@@ -63,7 +63,7 @@ To compile 7-Zip for AMD64 and IA64 you need:
   Windows Server 2003 SP1 Platform SDK from microsoft.com
 
 Also you need Microsoft Macro Assembler:
-  - ml.exe for x86 
+  - ml.exe for x86
   - ml64.exe for AMD64
 You can use ml.exe from Windows SDK for Windows Vista or some other version.
 
@@ -79,13 +79,13 @@ Notes:
 7-Zip consists of COM modules (DLL files).
 But 7-Zip doesn't use standard COM interfaces for creating objects.
 Look at
-7zip\UI\Client7z folder for example of using DLL files of 7-Zip. 
+7zip\UI\Client7z folder for example of using DLL files of 7-Zip.
 Some DLL files can use other DLL files from 7-Zip.
 If you don't like it, you must use standalone version of DLL.
 To compile standalone version of DLL you must include all used parts
-to project and define some defs. 
-For example, 7zip\Bundles\Format7z is a standalone version  of 7z.dll 
-that works with 7z format. So you can use such DLL in your project 
+to project and define some defs.
+For example, 7zip\Bundles\Format7z is a standalone version  of 7z.dll
+that works with 7z format. So you can use such DLL in your project
 without additional DLL files.
 
 
@@ -143,7 +143,7 @@ Windows           common files for Windows related code
   UI
 
     Agent         Intermediary modules for FAR plugin and Explorer plugin
-    Client7z      Test application for 7za.dll 
+    Client7z      Test application for 7za.dll
     Common        Common UI files
     Console       7z.exe : Console version
     Explorer      7-zip.dll: 7-Zip Shell extension

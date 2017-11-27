@@ -1,7 +1,7 @@
 // Rar2Decoder.cpp
 // According to unRAR license, this code may not be used to develop
 // a program that creates RAR archives
- 
+
 #include "StdAfx.h"
 
 #include "Rar2Decoder.h"
@@ -20,7 +20,7 @@ Byte CFilter::Decode(int &channelDelta, Byte deltaByte)
   int predictedValue = ((8 * LastChar + K1 * D1 + K2 * D2 + K3 * D3 + K4 * D4 + K5 * channelDelta) >> 3);
 
   Byte realValue = (Byte)(predictedValue - deltaByte);
-  
+
   {
     int i = ((int)(signed char)deltaByte) << 3;
 
@@ -45,7 +45,7 @@ Byte CFilter::Decode(int &channelDelta, Byte deltaByte)
     UInt32 minDif = Dif[0];
     UInt32 numMinDif = 0;
     Dif[0] = 0;
-    
+
     for (unsigned i = 1; i < ARRAY_SIZE(Dif); i++)
     {
       if (Dif[i] < minDif)
@@ -55,7 +55,7 @@ Byte CFilter::Decode(int &channelDelta, Byte deltaByte)
       }
       Dif[i] = 0;
     }
-    
+
     switch (numMinDif)
     {
       case 1: if (K1 >= -16) K1--; break;
@@ -70,7 +70,7 @@ Byte CFilter::Decode(int &channelDelta, Byte deltaByte)
       case 10:if (K5 <   16) K5++; break;
     }
   }
-  
+
   return realValue;
 }
 }
@@ -80,7 +80,8 @@ static const UInt32 kHistorySize = 1 << 20;
 static const UInt32 kWindowReservSize = (1 << 22) + 256;
 
 CDecoder::CDecoder():
-  m_IsSolid(false)
+  m_IsSolid(false),
+  m_TablesOK(false)
 {
 }
 
@@ -100,15 +101,17 @@ UInt32 CDecoder::ReadBits(unsigned numBits) { return m_InBitStream.ReadBits(numB
 
 bool CDecoder::ReadTables(void)
 {
+  m_TablesOK = false;
+
   Byte levelLevels[kLevelTableSize];
   Byte newLevels[kMaxTableSize];
   m_AudioMode = (ReadBits(1) == 1);
 
   if (ReadBits(1) == 0)
     memset(m_LastLevels, 0, kMaxTableSize);
-  
+
   unsigned numLevels;
-  
+
   if (m_AudioMode)
   {
     m_NumChannels = ReadBits(2) + 1;
@@ -118,14 +121,14 @@ bool CDecoder::ReadTables(void)
   }
   else
     numLevels = kHeapTablesSizesSum;
- 
+
   unsigned i;
   for (i = 0; i < kLevelTableSize; i++)
     levelLevels[i] = (Byte)ReadBits(4);
   RIF(m_LevelDecoder.Build(levelLevels));
-  
+
   i = 0;
-  
+
   while (i < numLevels)
   {
     UInt32 sym = m_LevelDecoder.Decode(&m_InBitStream);
@@ -168,8 +171,11 @@ bool CDecoder::ReadTables(void)
     RIF(m_DistDecoder.Build(&newLevels[kMainTableSize]));
     RIF(m_LenDecoder.Build(&newLevels[kMainTableSize + kDistTableSize]));
   }
-  
+
   memcpy(m_LastLevels, newLevels, kMaxTableSize);
+
+  m_TablesOK = true;
+
   return true;
 }
 
@@ -323,7 +329,7 @@ HRESULT CDecoder::CodeReal(ISequentialInStream *inStream, ISequentialOutStream *
   m_PackSize = *inSize;
 
   UInt64 pos = 0, unPackSize = *outSize;
-  
+
   m_OutWindowStream.SetStream(outStream);
   m_OutWindowStream.Init(m_IsSolid);
   m_InBitStream.SetStream(inStream);
@@ -340,9 +346,11 @@ HRESULT CDecoder::CodeReal(ISequentialInStream *inStream, ISequentialOutStream *
           return S_FALSE;
       return S_OK;
     }
-    if (!ReadTables())
-      return S_FALSE;
+    ReadTables();
   }
+
+  if (!m_TablesOK)
+    return S_FALSE;
 
   UInt64 startPos = m_OutWindowStream.GetProcessedSize();
   while (pos < unPackSize)

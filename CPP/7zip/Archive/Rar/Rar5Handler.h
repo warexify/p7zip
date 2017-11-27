@@ -26,7 +26,7 @@ namespace NHeaderFlags
   // const unsigned kIsChild = 1 << 5;
   // const unsigned kPreserveChild = 1 << 6;
 }
-  
+
 namespace NHeaderType
 {
   enum
@@ -128,7 +128,7 @@ namespace NTimeRecord
     k_Index_CTime,
     k_Index_ATime
   };
-  
+
   namespace NFlags
   {
     const unsigned kUnixTime = 1 << 0;
@@ -181,7 +181,7 @@ struct CItem
   UInt64 Size;
   UInt64 PackSize;
   UInt64 HostOS;
-  
+
   UInt64 DataPos;
   UInt64 Version;
 
@@ -191,7 +191,7 @@ struct CItem
   {
     CommonFlags = 0;
     Flags = 0;
-    
+
     VolIndex = 0;
     NextItem = -1;
 
@@ -224,7 +224,7 @@ struct CItem
   UInt32 GetDictSize() const { return (((UInt32)Method >> 10) & 0xF); }
 
   bool IsService() const { return RecordType == NHeaderType::kService; }
-  
+
   bool Is_STM() const { return IsService() && Name == "STM"; }
   bool Is_CMT() const { return IsService() && Name == "CMT"; }
   bool Is_ACL() const { return IsService() && Name == "ACL"; }
@@ -262,8 +262,12 @@ struct CItem
   bool FindExtra_Link(CLinkInfo &link) const;
   void Link_to_Prop(unsigned linkType, NWindows::NCOM::CPropVariant &prop) const;
   bool Is_CopyLink() const;
+  bool Is_HardLink() const;
+  bool Is_CopyLink_or_HardLink() const;
 
   bool NeedUse_as_CopyLink() const { return PackSize == 0 && Is_CopyLink(); }
+  bool NeedUse_as_HardLink() const { return PackSize == 0 && Is_HardLink(); }
+  bool NeedUse_as_CopyLink_or_HardLink() const { return PackSize == 0 && Is_CopyLink_or_HardLink(); }
 
   bool GetAltStreamName(AString &name) const;
 
@@ -304,7 +308,7 @@ struct CInArcInfo
     UInt64 Flags;
     UInt64 QuickOpen;
     UInt64 Recovery;
-    
+
     bool Is_QuickOpen() const { return (Flags & NLocatorFlags::kQuickOpen) != 0; }
     bool Is_Recovery() const { return (Flags & NLocatorFlags::kRecovery) != 0; }
   };
@@ -386,9 +390,9 @@ private:
   DECL_EXTERNAL_CODECS_VARS
 
   UInt64 GetPackSize(unsigned refIndex) const;
-  
+
   void FillLinks();
-  
+
   HRESULT Open2(IInStream *stream,
       const UInt64 *maxCheckStartPosition,
       IArchiveOpenCallback *openCallback);
@@ -399,7 +403,7 @@ public:
   QUERY_ENTRY_ISetCompressCodecsInfo
   MY_QUERYINTERFACE_END
   MY_ADDREF_RELEASE
-  
+
   INTERFACE_IInArchive(;)
   INTERFACE_IArchiveGetRawProps(;)
 
