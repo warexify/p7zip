@@ -68,13 +68,12 @@ SRCS=\
 ../../Common/StreamUtils.cpp \
 ../../Common/VirtThread.cpp
 
-SRCS_C=../../Crypto/AES/aescrypt.c \
- ../../Crypto/AES/aeskey.c \
- ../../Crypto/AES/aestab.c \
+SRCS_C=\
 ../../../../C/Compress/Lz/MatchFinder.c \
 ../../../../C/Compress/Lz/MatchFinderMt.c \
 ../../../../C/7zCrc.c \
-../../../../C/Threads.c
+../../../../C/Threads.c \
+../../../../C/Crypto/Aes.c
 
 wine_date_and_time.o : ../../../myWindows/wine_date_and_time.cpp
 	$(CXX) $(CC_SHARED) $(CFLAGS) ../../../myWindows/wine_date_and_time.cpp
@@ -476,12 +475,6 @@ ZipRegister.o : ../../Archive/Zip/ZipRegister.cpp
 	$(CXX) $(CC_SHARED) $(CFLAGS) ../../Archive/Zip/ZipRegister.cpp
 ZipUpdate.o : ../../Archive/Zip/ZipUpdate.cpp
 	$(CXX) $(CC_SHARED) $(CFLAGS) ../../Archive/Zip/ZipUpdate.cpp
-aescrypt.o : ../../Crypto/AES/aescrypt.c
-	$(CC) $(CC_SHARED) $(CFLAGS) ../../Crypto/AES/aescrypt.c
-aeskey.o : ../../Crypto/AES/aeskey.c
-	$(CC) $(CC_SHARED) $(CFLAGS) ../../Crypto/AES/aeskey.c
-aestab.o : ../../Crypto/AES/aestab.c
-	$(CC) $(CC_SHARED) $(CFLAGS) ../../Crypto/AES/aestab.c
 MatchFinder.o : ../../../../C/Compress/Lz/MatchFinder.c
 	$(CC) $(CC_SHARED) $(CFLAGS) ../../../../C/Compress/Lz/MatchFinder.c
 MatchFinderMt.o : ../../../../C/Compress/Lz/MatchFinderMt.c
@@ -504,6 +497,8 @@ Sort.o : ../../../../C/Sort.c
 	$(CC) $(CC_SHARED) $(CFLAGS) ../../../../C/Sort.c
 Threads.o : ../../../../C/Threads.c
 	$(CC) $(CC_SHARED) $(CFLAGS) ../../../../C/Threads.c
+Aes.o : ../../../../C/Crypto/Aes.c
+	$(CC) $(CC_SHARED) $(CFLAGS) ../../../../C/Crypto/Aes.c
 # CRC32, C version
 7zCrc.o : ../../../../C/7zCrc.c
 	$(CC) $(CC_SHARED) $(CC_SHARED) $(CFLAGS) ../../../../C/7zCrc.c

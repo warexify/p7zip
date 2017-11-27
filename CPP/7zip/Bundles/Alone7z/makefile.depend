@@ -1318,24 +1318,23 @@ LzmaBenchCon.o: ../../Compress/LZMA_Alone/LzmaBenchCon.cpp \
   ../../Archive/7z/../../../Common/Types.h ../../Archive/7z/../IArchive.h \
   ../../Archive/7z/../../IStream.h ../../Archive/7z/../../IProgress.h \
   ../../Archive/7z/../../PropID.h ../../Archive/7z/7zIn.h \
+  ../../Archive/7z/../../../Common/MyCom.h \
   ../../Archive/7z/../../IStream.h ../../Archive/7z/../../IPassword.h \
   ../../Archive/7z/../../Common/CreateCoder.h ../../../Common/MyCom.h \
-  ../../../Common/MyWindows.h ../../../Common/MyString.h \
-  ../../../Common/MyVector.h ../../../Common/Defs.h \
-  ../../Archive/7z/../../Common/../ICoder.h \
+  ../../../Common/MyString.h ../../../Common/MyVector.h \
+  ../../../Common/Defs.h ../../Archive/7z/../../Common/../ICoder.h \
   ../../Archive/7z/../../Common/MethodId.h \
   ../../Archive/7z/../../Common/../../Common/Types.h \
-  ../../Archive/7z/../../../Common/MyCom.h \
   ../../Archive/7z/../../Common/InBuffer.h \
   ../../Archive/7z/../../Common/../IStream.h \
   ../../Archive/7z/../../Common/../../Common/MyCom.h \
   ../../Archive/7z/../../Common/../../Common/MyException.h \
   ../../Archive/7z/../../Common/../../Common/MyWindows.h \
-  ../../Archive/7z/7zHeader.h ../../Archive/7z/../../../Common/Types.h \
   ../../Archive/7z/7zItem.h ../../Archive/7z/../../../Common/Buffer.h \
   ../../Archive/7z/../../../Common/Defs.h \
   ../../Archive/7z/../../../Common/MyString.h \
-  ../../Archive/7z/../../Common/MethodId.h \
+  ../../Archive/7z/../../Common/MethodId.h ../../Archive/7z/7zHeader.h \
+  ../../Archive/7z/../../../Common/Types.h \
   ../../Archive/7z/7zCompressionMode.h \
   ../../Archive/7z/../../../Windows/PropVariant.h \
   ../../Archive/7z/../../../Windows/../Common/MyWindows.h \
@@ -1407,29 +1406,28 @@ LzmaBenchCon.o: ../../Compress/LZMA_Alone/LzmaBenchCon.cpp \
   ../../../include_windows/windows.h ../../../Common/MyWindows.h \
   ../../../include_windows/basetyps.h ../../../include_windows/tchar.h \
   ../../Archive/7z/7zFolderOutStream.h ../../Archive/7z/7zIn.h \
+  ../../Archive/7z/../../../Common/MyCom.h \
+  ../../Archive/7z/../../../Common/MyWindows.h \
   ../../Archive/7z/../../IStream.h \
   ../../Archive/7z/../../../Common/MyUnknown.h \
-  ../../Archive/7z/../../../Common/MyWindows.h \
   ../../Archive/7z/../../../Common/Types.h \
   ../../Archive/7z/../../IPassword.h \
   ../../Archive/7z/../../Common/CreateCoder.h ../../../Common/MyCom.h \
-  ../../../Common/MyWindows.h ../../../Common/MyString.h \
-  ../../../Common/MyVector.h ../../../Common/Defs.h \
-  ../../Archive/7z/../../Common/../ICoder.h \
+  ../../../Common/MyString.h ../../../Common/MyVector.h \
+  ../../../Common/Defs.h ../../Archive/7z/../../Common/../ICoder.h \
   ../../Archive/7z/../../Common/../IStream.h \
   ../../Archive/7z/../../Common/MethodId.h \
   ../../Archive/7z/../../Common/../../Common/Types.h \
-  ../../Archive/7z/../../../Common/MyCom.h \
   ../../Archive/7z/../../Common/InBuffer.h \
   ../../Archive/7z/../../Common/../IStream.h \
   ../../Archive/7z/../../Common/../../Common/MyCom.h \
   ../../Archive/7z/../../Common/../../Common/MyException.h \
   ../../Archive/7z/../../Common/../../Common/MyWindows.h \
-  ../../Archive/7z/7zHeader.h ../../Archive/7z/../../../Common/Types.h \
   ../../Archive/7z/7zItem.h ../../Archive/7z/../../../Common/Buffer.h \
   ../../Archive/7z/../../../Common/Defs.h \
   ../../Archive/7z/../../../Common/MyString.h \
-  ../../Archive/7z/../../Common/MethodId.h ../../Archive/7z/../IArchive.h \
+  ../../Archive/7z/../../Common/MethodId.h ../../Archive/7z/7zHeader.h \
+  ../../Archive/7z/../../../Common/Types.h ../../Archive/7z/../IArchive.h \
   ../../Archive/7z/../../IStream.h ../../Archive/7z/../../IProgress.h \
   ../../Archive/7z/../../PropID.h \
   ../../Archive/7z/../Common/OutStreamWithCRC.h \
@@ -1449,24 +1447,23 @@ LzmaBenchCon.o: ../../Compress/LZMA_Alone/LzmaBenchCon.cpp \
   ../../Archive/7z/../../../Common/Types.h ../../Archive/7z/../IArchive.h \
   ../../Archive/7z/../../IStream.h ../../Archive/7z/../../IProgress.h \
   ../../Archive/7z/../../PropID.h ../../Archive/7z/7zIn.h \
+  ../../Archive/7z/../../../Common/MyCom.h \
   ../../Archive/7z/../../IStream.h ../../Archive/7z/../../IPassword.h \
   ../../Archive/7z/../../Common/CreateCoder.h ../../../Common/MyCom.h \
-  ../../../Common/MyWindows.h ../../../Common/MyString.h \
-  ../../../Common/MyVector.h ../../../Common/Defs.h \
-  ../../Archive/7z/../../Common/../ICoder.h \
+  ../../../Common/MyString.h ../../../Common/MyVector.h \
+  ../../../Common/Defs.h ../../Archive/7z/../../Common/../ICoder.h \
   ../../Archive/7z/../../Common/MethodId.h \
   ../../Archive/7z/../../Common/../../Common/Types.h \
-  ../../Archive/7z/../../../Common/MyCom.h \
   ../../Archive/7z/../../Common/InBuffer.h \
   ../../Archive/7z/../../Common/../IStream.h \
   ../../Archive/7z/../../Common/../../Common/MyCom.h \
   ../../Archive/7z/../../Common/../../Common/MyException.h \
   ../../Archive/7z/../../Common/../../Common/MyWindows.h \
-  ../../Archive/7z/7zHeader.h ../../Archive/7z/../../../Common/Types.h \
   ../../Archive/7z/7zItem.h ../../Archive/7z/../../../Common/Buffer.h \
   ../../Archive/7z/../../../Common/Defs.h \
   ../../Archive/7z/../../../Common/MyString.h \
-  ../../Archive/7z/../../Common/MethodId.h \
+  ../../Archive/7z/../../Common/MethodId.h ../../Archive/7z/7zHeader.h \
+  ../../Archive/7z/../../../Common/Types.h \
   ../../Archive/7z/7zCompressionMode.h \
   ../../Archive/7z/../../../Windows/PropVariant.h \
   ../../Archive/7z/../../../Windows/../Common/MyWindows.h \
@@ -1498,24 +1495,23 @@ LzmaBenchCon.o: ../../Compress/LZMA_Alone/LzmaBenchCon.cpp \
   ../../Archive/7z/../../../Common/Types.h ../../Archive/7z/../IArchive.h \
   ../../Archive/7z/../../IStream.h ../../Archive/7z/../../IProgress.h \
   ../../Archive/7z/../../PropID.h ../../Archive/7z/7zIn.h \
+  ../../Archive/7z/../../../Common/MyCom.h \
   ../../Archive/7z/../../IStream.h ../../Archive/7z/../../IPassword.h \
   ../../Archive/7z/../../Common/CreateCoder.h ../../../Common/MyCom.h \
-  ../../../Common/MyWindows.h ../../../Common/MyString.h \
-  ../../../Common/MyVector.h ../../../Common/Defs.h \
-  ../../Archive/7z/../../Common/../ICoder.h \
+  ../../../Common/MyString.h ../../../Common/MyVector.h \
+  ../../../Common/Defs.h ../../Archive/7z/../../Common/../ICoder.h \
   ../../Archive/7z/../../Common/MethodId.h \
   ../../Archive/7z/../../Common/../../Common/Types.h \
-  ../../Archive/7z/../../../Common/MyCom.h \
   ../../Archive/7z/../../Common/InBuffer.h \
   ../../Archive/7z/../../Common/../IStream.h \
   ../../Archive/7z/../../Common/../../Common/MyCom.h \
   ../../Archive/7z/../../Common/../../Common/MyException.h \
   ../../Archive/7z/../../Common/../../Common/MyWindows.h \
-  ../../Archive/7z/7zHeader.h ../../Archive/7z/../../../Common/Types.h \
   ../../Archive/7z/7zItem.h ../../Archive/7z/../../../Common/Buffer.h \
   ../../Archive/7z/../../../Common/Defs.h \
   ../../Archive/7z/../../../Common/MyString.h \
-  ../../Archive/7z/../../Common/MethodId.h \
+  ../../Archive/7z/../../Common/MethodId.h ../../Archive/7z/7zHeader.h \
+  ../../Archive/7z/../../../Common/Types.h \
   ../../Archive/7z/7zCompressionMode.h \
   ../../Archive/7z/../../../Windows/PropVariant.h \
   ../../Archive/7z/../../../Windows/../Common/MyWindows.h \
@@ -1565,29 +1561,28 @@ LzmaBenchCon.o: ../../Compress/LZMA_Alone/LzmaBenchCon.cpp \
   ../../../Common/Types.h ../../../include_windows/windows.h \
   ../../../Common/MyWindows.h ../../../include_windows/basetyps.h \
   ../../../include_windows/tchar.h ../../Archive/7z/7zIn.h \
+  ../../Archive/7z/../../../Common/MyCom.h \
+  ../../Archive/7z/../../../Common/MyWindows.h \
   ../../Archive/7z/../../IStream.h \
   ../../Archive/7z/../../../Common/MyUnknown.h \
-  ../../Archive/7z/../../../Common/MyWindows.h \
   ../../Archive/7z/../../../Common/Types.h \
   ../../Archive/7z/../../IPassword.h \
   ../../Archive/7z/../../Common/CreateCoder.h ../../../Common/MyCom.h \
-  ../../../Common/MyWindows.h ../../../Common/MyString.h \
-  ../../../Common/MyVector.h ../../../Common/Defs.h \
-  ../../Archive/7z/../../Common/../ICoder.h \
+  ../../../Common/MyString.h ../../../Common/MyVector.h \
+  ../../../Common/Defs.h ../../Archive/7z/../../Common/../ICoder.h \
   ../../Archive/7z/../../Common/../IStream.h \
   ../../Archive/7z/../../Common/MethodId.h \
   ../../Archive/7z/../../Common/../../Common/Types.h \
-  ../../Archive/7z/../../../Common/MyCom.h \
   ../../Archive/7z/../../Common/InBuffer.h \
   ../../Archive/7z/../../Common/../IStream.h \
   ../../Archive/7z/../../Common/../../Common/MyCom.h \
   ../../Archive/7z/../../Common/../../Common/MyException.h \
   ../../Archive/7z/../../Common/../../Common/MyWindows.h \
-  ../../Archive/7z/7zHeader.h ../../Archive/7z/../../../Common/Types.h \
   ../../Archive/7z/7zItem.h ../../Archive/7z/../../../Common/Buffer.h \
   ../../Archive/7z/../../../Common/Defs.h \
   ../../Archive/7z/../../../Common/MyString.h \
-  ../../Archive/7z/../../Common/MethodId.h ../../Archive/7z/7zDecode.h \
+  ../../Archive/7z/../../Common/MethodId.h ../../Archive/7z/7zHeader.h \
+  ../../Archive/7z/../../../Common/Types.h ../../Archive/7z/7zDecode.h \
   ../../Archive/7z/../Common/CoderMixer2.h \
   ../../Archive/7z/../Common/../../../Common/MyVector.h \
   ../../Archive/7z/../Common/../../../Common/Types.h \
@@ -1679,14 +1674,13 @@ LzmaBenchCon.o: ../../Compress/LZMA_Alone/LzmaBenchCon.cpp \
   ../../Archive/7z/../../../Common/Types.h ../../Archive/7z/../IArchive.h \
   ../../Archive/7z/../../IStream.h ../../Archive/7z/../../IProgress.h \
   ../../Archive/7z/../../PropID.h ../../Archive/7z/7zIn.h \
+  ../../Archive/7z/../../../Common/MyCom.h \
   ../../Archive/7z/../../IStream.h ../../Archive/7z/../../IPassword.h \
   ../../Archive/7z/../../Common/CreateCoder.h ../../../Common/MyCom.h \
-  ../../../Common/MyWindows.h ../../../Common/MyString.h \
-  ../../../Common/MyVector.h ../../../Common/Defs.h \
-  ../../Archive/7z/../../Common/../ICoder.h \
+  ../../../Common/MyString.h ../../../Common/MyVector.h \
+  ../../../Common/Defs.h ../../Archive/7z/../../Common/../ICoder.h \
   ../../Archive/7z/../../Common/MethodId.h \
   ../../Archive/7z/../../Common/../../Common/Types.h \
-  ../../Archive/7z/../../../Common/MyCom.h \
   ../../Archive/7z/../../Common/InBuffer.h \
   ../../Archive/7z/../../Common/../IStream.h \
   ../../Archive/7z/../../Common/../../Common/MyCom.h \
@@ -1722,27 +1716,26 @@ LzmaBenchCon.o: ../../Compress/LZMA_Alone/LzmaBenchCon.cpp \
   ../../Archive/7z/../../Common/../Archive/../PropID.h \
   ../../Archive/7z/7zHandler.h ../../Archive/7z/../../ICoder.h \
   ../../Archive/7z/../../IStream.h ../../Archive/7z/../IArchive.h \
-  ../../Archive/7z/7zIn.h ../../Archive/7z/../../IStream.h \
-  ../../Archive/7z/../../IPassword.h \
+  ../../Archive/7z/7zIn.h ../../Archive/7z/../../../Common/MyCom.h \
+  ../../Archive/7z/../../../Common/MyWindows.h \
+  ../../Archive/7z/../../IStream.h ../../Archive/7z/../../IPassword.h \
   ../../Archive/7z/../../../Common/MyUnknown.h \
   ../../Archive/7z/../../../Common/Types.h \
   ../../Archive/7z/../../Common/CreateCoder.h ../../../Common/MyCom.h \
-  ../../../Common/MyWindows.h ../../../Common/MyString.h \
-  ../../../Common/MyVector.h ../../../Common/Defs.h \
-  ../../Archive/7z/../../Common/../ICoder.h \
+  ../../../Common/MyString.h ../../../Common/MyVector.h \
+  ../../../Common/Defs.h ../../Archive/7z/../../Common/../ICoder.h \
   ../../Archive/7z/../../Common/MethodId.h \
   ../../Archive/7z/../../Common/../../Common/Types.h \
-  ../../Archive/7z/../../../Common/MyCom.h \
   ../../Archive/7z/../../Common/InBuffer.h \
   ../../Archive/7z/../../Common/../IStream.h \
   ../../Archive/7z/../../Common/../../Common/MyCom.h \
   ../../Archive/7z/../../Common/../../Common/MyException.h \
   ../../Archive/7z/../../Common/../../Common/MyWindows.h \
-  ../../Archive/7z/7zHeader.h ../../Archive/7z/../../../Common/Types.h \
   ../../Archive/7z/7zItem.h ../../Archive/7z/../../../Common/Buffer.h \
   ../../Archive/7z/../../../Common/Defs.h \
   ../../Archive/7z/../../../Common/MyString.h \
-  ../../Archive/7z/../../Common/MethodId.h \
+  ../../Archive/7z/../../Common/MethodId.h ../../Archive/7z/7zHeader.h \
+  ../../Archive/7z/../../../Common/Types.h \
   ../../Archive/7z/7zCompressionMode.h \
   ../../Archive/7z/../../../Windows/PropVariant.h \
   ../../Archive/7z/../../../Windows/../Common/MyWindows.h \
@@ -1771,29 +1764,28 @@ LzmaBenchCon.o: ../../Compress/LZMA_Alone/LzmaBenchCon.cpp \
   ../../../Common/Types.h ../../../include_windows/windows.h \
   ../../../Common/MyWindows.h ../../../include_windows/basetyps.h \
   ../../../include_windows/tchar.h ../../Archive/7z/7zUpdate.h \
-  ../../Archive/7z/7zIn.h ../../Archive/7z/../../IStream.h \
-  ../../Archive/7z/../../../Common/MyUnknown.h \
+  ../../Archive/7z/7zIn.h ../../Archive/7z/../../../Common/MyCom.h \
   ../../Archive/7z/../../../Common/MyWindows.h \
+  ../../Archive/7z/../../IStream.h \
+  ../../Archive/7z/../../../Common/MyUnknown.h \
   ../../Archive/7z/../../../Common/Types.h \
   ../../Archive/7z/../../IPassword.h \
   ../../Archive/7z/../../Common/CreateCoder.h ../../../Common/MyCom.h \
-  ../../../Common/MyWindows.h ../../../Common/MyString.h \
-  ../../../Common/MyVector.h ../../../Common/Defs.h \
-  ../../Archive/7z/../../Common/../ICoder.h \
+  ../../../Common/MyString.h ../../../Common/MyVector.h \
+  ../../../Common/Defs.h ../../Archive/7z/../../Common/../ICoder.h \
   ../../Archive/7z/../../Common/../IStream.h \
   ../../Archive/7z/../../Common/MethodId.h \
   ../../Archive/7z/../../Common/../../Common/Types.h \
-  ../../Archive/7z/../../../Common/MyCom.h \
   ../../Archive/7z/../../Common/InBuffer.h \
   ../../Archive/7z/../../Common/../IStream.h \
   ../../Archive/7z/../../Common/../../Common/MyCom.h \
   ../../Archive/7z/../../Common/../../Common/MyException.h \
   ../../Archive/7z/../../Common/../../Common/MyWindows.h \
-  ../../Archive/7z/7zHeader.h ../../Archive/7z/../../../Common/Types.h \
   ../../Archive/7z/7zItem.h ../../Archive/7z/../../../Common/Buffer.h \
   ../../Archive/7z/../../../Common/Defs.h \
   ../../Archive/7z/../../../Common/MyString.h \
-  ../../Archive/7z/../../Common/MethodId.h ../../Archive/7z/7zOut.h \
+  ../../Archive/7z/../../Common/MethodId.h ../../Archive/7z/7zHeader.h \
+  ../../Archive/7z/../../../Common/Types.h ../../Archive/7z/7zOut.h \
   ../../Archive/7z/7zCompressionMode.h \
   ../../Archive/7z/../../../Windows/PropVariant.h \
   ../../Archive/7z/../../../Windows/../Common/MyWindows.h \
@@ -2311,7 +2303,8 @@ SortUtils.o: ../../UI/Common/SortUtils.cpp ../../../myWindows/StdAfx.h \
   ../../../Common/MyWindows.h ../../../include_windows/basetyps.h \
   ../../../include_windows/tchar.h ../../UI/Common/SortUtils.h \
   ../../../Common/MyString.h ../../../Common/MyVector.h \
-  ../../../Common/Defs.h ../../../Common/Types.h
+  ../../../Common/Defs.h ../../../Common/Wildcard.h \
+  ../../../Common/MyString.h
 TempFiles.o: ../../UI/Common/TempFiles.cpp ../../../myWindows/StdAfx.h \
   ../../../myWindows/config.h ../../../Common/MyWindows.h \
   ../../../Common/MyGuidDef.h ../../../Common/Types.h \
@@ -2422,10 +2415,11 @@ UpdatePair.o: ../../UI/Common/UpdatePair.cpp ../../../myWindows/StdAfx.h \
   ../../../Common/Types.h ../../../include_windows/windows.h \
   ../../../Common/MyWindows.h ../../../include_windows/basetyps.h \
   ../../../include_windows/tchar.h ../../../Common/Defs.h \
+  ../../../Common/Wildcard.h ../../../Common/MyString.h \
+  ../../../Common/MyVector.h ../../../Common/Defs.h \
   ../../../Windows/Time.h ../../../Common/Types.h ../../../Windows/Defs.h \
   ../../UI/Common/UpdatePair.h ../../UI/Common/DirItem.h \
-  ../../../Common/MyString.h ../../../Common/MyVector.h \
-  ../../../Common/Defs.h ../../../Common/Types.h \
+  ../../../Common/MyString.h ../../../Common/Types.h \
   ../../UI/Common/UpdateAction.h ../../UI/Common/../../Archive/IArchive.h \
   ../../UI/Common/../../Archive/../IStream.h \
   ../../UI/Common/../../Archive/../../Common/MyUnknown.h \

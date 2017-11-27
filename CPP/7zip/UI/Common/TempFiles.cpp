@@ -14,7 +14,7 @@ void CTempFiles::Clear()
 {
   while(!Paths.IsEmpty())
   {
-    NDirectory::DeleteFileAlways((LPCWSTR)Paths.Back()); // FIXED for gcc 2.95.2
+    NDirectory::DeleteFileAlways((LPCWSTR)Paths.Back());
     Paths.DeleteBack();
   }
 }

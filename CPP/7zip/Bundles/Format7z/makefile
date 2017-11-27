@@ -103,9 +103,6 @@ PPMDRegister.o \
 7zAES.o \
 7zAESRegister.o \
 MyAES.o \
-aescrypt.o \
-aeskey.o \
-aestab.o \
 RandGen.o \
 Sha1.o \
 Sha256.o \
@@ -119,7 +116,8 @@ BranchIA64.o \
 BranchPPC.o \
 BranchSPARC.o \
 BranchX86.o \
-RangeCoderBit.o
+RangeCoderBit.o \
+Aes.o
 
 include ../../../../makefile.glb
 

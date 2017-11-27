@@ -12,9 +12,9 @@ OBJS=myGetTickCount.o \
 	mySplitCommandLine.o \
 	myAddExeFlag.o \
 	test_emul.o \
-	../Common/MyVector.o \
-	../Common/MyString.o \
-	../Common/MyWindows.o
+	MyVector.o \
+	MyString.o \
+	MyWindows.o
 
 include ../../makefile.glb
 

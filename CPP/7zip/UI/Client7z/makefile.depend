@@ -147,6 +147,13 @@ Client7z.o: Client7z.cpp ../../../myWindows/StdAfx.h \
   ../../../Common/StringConvert.h ../../../Common/MyWindows.h \
   ../../../Common/MyString.h ../../../Common/MyVector.h \
   ../../../Common/Defs.h ../../../Common/IntToString.h \
+  ../../../Windows/PropVariant.h ../../../Windows/../Common/MyWindows.h \
+  ../../../Windows/../Common/Types.h \
+  ../../../Windows/PropVariantConversions.h ../../../Common/Types.h \
+  ../../../Common/MyString.h ../../../Windows/DLL.h \
+  ../../../Windows/../Common/MyString.h ../../../Windows/FileDir.h \
+  ../../../Windows/Defs.h ../../../Windows/FileName.h \
+  ../../../Windows/FileFind.h ../../../Windows/FileName.h \
   ../../Common/FileStreams.h ../../Common/../../Windows/FileIO.h \
   ../../../Common/MyString.h ../../Common/../IStream.h \
   ../../Common/../../Common/MyUnknown.h \
@@ -156,10 +163,4 @@ Client7z.o: Client7z.cpp ../../../myWindows/StdAfx.h \
   ../../Archive/../../Common/MyUnknown.h \
   ../../Archive/../../Common/Types.h ../../Archive/../PropID.h \
   ../../IPassword.h ../../../Common/MyUnknown.h ../../../Common/Types.h \
-  ../../../Windows/PropVariant.h ../../../Windows/../Common/MyWindows.h \
-  ../../../Windows/../Common/Types.h \
-  ../../../Windows/PropVariantConversions.h ../../../Common/Types.h \
-  ../../../Windows/DLL.h ../../../Windows/../Common/MyString.h \
-  ../../../Windows/FileDir.h ../../../Windows/Defs.h \
-  ../../../Windows/FileName.h ../../../Windows/FileFind.h \
-  ../../../Windows/FileName.h
+  ../../MyVersion.h

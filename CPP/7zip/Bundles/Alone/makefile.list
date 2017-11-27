@@ -187,9 +187,6 @@ SRCS=\
  ../../Common/StreamUtils.cpp
 
 SRCS_C=\
- ../../Crypto/AES/aescrypt.c \
- ../../Crypto/AES/aeskey.c \
- ../../Crypto/AES/aestab.c \
  ../../../../C/Compress/Lz/MatchFinder.c \
  ../../../../C/Compress/Lz/MatchFinderMt.c \
  ../../../../C/Compress/Huffman/HuffmanEncode.c \
@@ -201,7 +198,8 @@ SRCS_C=\
  ../../../../C/Compress/Branch/BranchX86.c \
  ../../../../C/7zCrc.c \
  ../../../../C/Sort.c \
- ../../../../C/Threads.c
+ ../../../../C/Threads.c \
+ ../../../../C/Crypto/Aes.c
 
 myGetTickCount.o : ../../../myWindows/myGetTickCount.cpp
 	$(CXX) $(CFLAGS) ../../../myWindows/myGetTickCount.cpp
@@ -583,12 +581,6 @@ Sha1.o : ../../Crypto/Hash/Sha1.cpp
 	$(CXX) $(CFLAGS) ../../Crypto/Hash/Sha1.cpp
 Sha256.o : ../../Crypto/Hash/Sha256.cpp
 	$(CXX) $(CFLAGS) ../../Crypto/Hash/Sha256.cpp
-aescrypt.o : ../../Crypto/AES/aescrypt.c
-	$(CC) $(CFLAGS) ../../Crypto/AES/aescrypt.c
-aeskey.o : ../../Crypto/AES/aeskey.c
-	$(CC) $(CFLAGS) ../../Crypto/AES/aeskey.c
-aestab.o : ../../Crypto/AES/aestab.c
-	$(CC) $(CFLAGS) ../../Crypto/AES/aestab.c
 MatchFinder.o : ../../../../C/Compress/Lz/MatchFinder.c
 	$(CC) $(CFLAGS) ../../../../C/Compress/Lz/MatchFinder.c
 MatchFinderMt.o : ../../../../C/Compress/Lz/MatchFinderMt.c
@@ -611,6 +603,8 @@ Sort.o : ../../../../C/Sort.c
 	$(CC) $(CFLAGS) ../../../../C/Sort.c
 Threads.o : ../../../../C/Threads.c
 	$(CC) $(CFLAGS) ../../../../C/Threads.c
+Aes.o : ../../../../C/Crypto/Aes.c
+	$(CC) $(CFLAGS) ../../../../C/Crypto/Aes.c
 # CRC32, C version
 7zCrc.o : ../../../../C/7zCrc.c
 	$(CC) $(CC_SHARED) $(CFLAGS) ../../../../C/7zCrc.c

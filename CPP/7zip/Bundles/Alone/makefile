@@ -201,9 +201,6 @@ Pbkdf2HmacSha1.o \
 RandGen.o \
 Sha1.o \
 Sha256.o \
-aescrypt.o \
-aeskey.o \
-aestab.o \
 MatchFinder.o \
 MatchFinderMt.o \
 HuffmanEncode.o \
@@ -215,7 +212,8 @@ BranchSPARC.o \
 BranchX86.o \
 $(OBJ_CRC32) \
 Sort.o \
-Threads.o
+Threads.o \
+Aes.o
 
 include ../../../../makefile.glb
 

@@ -244,9 +244,6 @@ SRCS=\
 ../../../Common/UTFConvert.cpp
 
 SRCS_C=\
- ../../Crypto/AES/aescrypt.c \
- ../../Crypto/AES/aeskey.c \
- ../../Crypto/AES/aestab.c \
  ../../../../C/Compress/Lz/MatchFinder.c \
  ../../../../C/Compress/Lz/MatchFinderMt.c \
  ../../../../C/Compress/Huffman/HuffmanEncode.c \
@@ -258,7 +255,8 @@ SRCS_C=\
  ../../../../C/Compress/Branch/BranchX86.c \
  ../../../../C/7zCrc.c \
  ../../../../C/Sort.c \
- ../../../../C/Threads.c
+ ../../../../C/Threads.c \
+ ../../../../C/Crypto/Aes.c
 
 all : copy 7za.exe
 	

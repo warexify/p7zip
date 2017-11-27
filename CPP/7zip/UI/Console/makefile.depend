@@ -430,7 +430,8 @@ SortUtils.o: ../Common/SortUtils.cpp ../../../myWindows/StdAfx.h \
   ../../../Common/MyWindows.h ../../../include_windows/basetyps.h \
   ../../../include_windows/tchar.h ../Common/SortUtils.h \
   ../../../Common/MyString.h ../../../Common/MyVector.h \
-  ../../../Common/Defs.h ../../../Common/Types.h
+  ../../../Common/Defs.h ../../../Common/Wildcard.h \
+  ../../../Common/MyString.h
 TempFiles.o: ../Common/TempFiles.cpp ../../../myWindows/StdAfx.h \
   ../../../myWindows/config.h ../../../Common/MyWindows.h \
   ../../../Common/MyGuidDef.h ../../../Common/Types.h \
@@ -531,9 +532,10 @@ UpdatePair.o: ../Common/UpdatePair.cpp ../../../myWindows/StdAfx.h \
   ../../../Common/Types.h ../../../include_windows/windows.h \
   ../../../Common/MyWindows.h ../../../include_windows/basetyps.h \
   ../../../include_windows/tchar.h ../../../Common/Defs.h \
+  ../../../Common/Wildcard.h ../../../Common/MyString.h \
+  ../../../Common/MyVector.h ../../../Common/Defs.h \
   ../../../Windows/Time.h ../../../Common/Types.h ../../../Windows/Defs.h \
   ../Common/UpdatePair.h ../Common/DirItem.h ../../../Common/MyString.h \
-  ../../../Common/MyVector.h ../../../Common/Defs.h \
   ../../../Common/Types.h ../Common/UpdateAction.h \
   ../Common/../../Archive/IArchive.h ../Common/../../Archive/../IStream.h \
   ../Common/../../Archive/../../Common/MyUnknown.h \

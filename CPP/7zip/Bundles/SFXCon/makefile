@@ -87,14 +87,12 @@ PropIDUtils.o\
 CreateCoder.o\
 Main.o\
 Sha256.o \
-aescrypt.o\
-aeskey.o\
-aestab.o \
 BranchX86.o \
 BCJ2Register.o\
 BCJRegister.o\
 Threads.o\
-$(OBJ_CRC32)
+$(OBJ_CRC32) \
+Aes.o
 
 include ../../../../makefile.glb
 

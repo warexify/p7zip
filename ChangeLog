@@ -1,4 +1,27 @@
 
+Version 4.51
+============
+  - From Windows version of 7-zip 4.50 :
+     - Bug was fixed: 7-Zip 4.50 beta could not open some .7z archives.
+
+  - fix built of test_emul
+
+Version 4.50 (never published)
+============
+  - From Windows version of 7-zip 4.50 :
+    - New switch for command line version:
+    -ssc[-] enables/disables case-sensitive mode for file names.
+    - Speed optimizations for AES encryption.
+    - Some bugs were fixed.
+
+  - contrib/gzip-like_CLI_wrapper_for_7z/p7zip now supports commands like :
+    p7zip -- -name
+    p7zip "file name"
+    p7zip file1 file2 file3
+    p7zip -d file1.7z file2.7z file3.7z
+
+  never published because this version does not pass my tests.
+
 Version 4.49
 ============
   - From Windows version of 7-zip 4.49 :

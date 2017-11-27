@@ -138,15 +138,17 @@ Rar3Decoder.o: Rar3Decoder.cpp ../../../myWindows/StdAfx.h \
   ../PPMD/../RangeCoder/../../Common/../../Common/MyException.h \
   ../PPMD/PPMDSubAlloc.h ../PPMD/PPMDType.h ../PPMD/../../../../C/Alloc.h \
   Rar3Vm.h ../../../Common/Types.h ../../../Common/MyVector.h \
-  ../../../Common/Defs.h ../../Common/StreamUtils.h
+  ../../../Common/Defs.h ../../../../C/CpuArch.h \
+  ../../Common/StreamUtils.h
 Rar3Vm.o: Rar3Vm.cpp ../../../myWindows/StdAfx.h \
   ../../../myWindows/config.h ../../../Common/MyWindows.h \
   ../../../Common/MyGuidDef.h ../../../Common/Types.h \
   ../../../Common/Types.h ../../../include_windows/windows.h \
   ../../../Common/MyWindows.h ../../../include_windows/basetyps.h \
   ../../../include_windows/tchar.h Rar3Vm.h ../../../Common/Types.h \
-  ../../../Common/MyVector.h ../../../Common/Defs.h ../../../../C/Alloc.h \
-  ../../../../C/7zCrc.h ../../../../C/Types.h
+  ../../../Common/MyVector.h ../../../Common/Defs.h \
+  ../../../../C/CpuArch.h ../../../../C/Alloc.h ../../../../C/7zCrc.h \
+  ../../../../C/Types.h
 RarCodecsRegister.o: RarCodecsRegister.cpp ../../../myWindows/StdAfx.h \
   ../../../myWindows/config.h ../../../Common/MyWindows.h \
   ../../../Common/MyGuidDef.h ../../../Common/Types.h \
@@ -172,4 +174,4 @@ RarCodecsRegister.o: RarCodecsRegister.cpp ../../../myWindows/StdAfx.h \
   ../PPMD/../RangeCoder/../../Common/OutBuffer.h ../PPMD/PPMDSubAlloc.h \
   ../PPMD/PPMDType.h ../PPMD/../../../../C/Alloc.h Rar3Vm.h \
   ../../../Common/Types.h ../../../Common/MyVector.h \
-  ../../../Common/Defs.h
+  ../../../Common/Defs.h ../../../../C/CpuArch.h

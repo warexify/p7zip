@@ -210,9 +210,6 @@ ZipItem.o  \
 ZipOut.o  \
 ZipRegister.o  \
 ZipUpdate.o  \
-aescrypt.o  \
-aeskey.o  \
-aestab.o  \
 MatchFinder.o  \
 MatchFinderMt.o  \
 HuffmanEncode.o  \
@@ -228,7 +225,8 @@ WimRegister.o \
 OutStreamWithSha1.o \
 $(OBJ_CRC32)  \
 Sort.o  \
-Threads.o
+Threads.o \
+Aes.o
 
 include ../../../../makefile.glb
 

@@ -122,6 +122,7 @@ static const char *kHelpString =
         "a"
 #endif
         " a dummy -tgzip -so Doc.txt > archive.gz)\n"
+    "  -ssc[-]: set sensitive case mode\n"
     "  -t{Type}: Set type of archive\n"
     "  -v{Size}[b|k|m|g]: Create volumes\n"
     "  -u[-][p#][q#][r#][x#][y#][z#][!newArchiveName]: Update options\n"
