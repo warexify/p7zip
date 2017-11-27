@@ -20,7 +20,7 @@ include makefile.list
 include makefile.depend
 
 $(PROG): $(OBJS)
-	$(CXX) $(ALLFLAGS_CPP) $(LOCAL_SHARED) -o $(PROG) $(LDFLAGS) $(OBJS) $(LIBS)
+	$(CXX) $(ALLFLAGS) $(ALLFLAGS_CPP) $(LOCAL_SHARED) -o $(PROG) $(LDFLAGS) $(OBJS) $(LIBS)
 
 depend:
 	rm -f makefile.depend

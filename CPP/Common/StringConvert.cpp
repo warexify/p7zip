@@ -138,6 +138,8 @@ UString MultiByteToUnicodeString(const AString &srcString, UINT /* codePage */ )
     UString resultString;
     int numChars = mbstowcs(resultString.GetBuffer(srcString.Len()),srcString,srcString.Len()+1);
     if (numChars >= 0) {
+        resultString.ReleaseBuffer(numChars);
+
 #if WCHAR_MAX > 0xffff
       for (int i = numChars; i >= 0; i--) {
         if (resultString[i] > 0xffff) {
@@ -149,7 +151,7 @@ UString MultiByteToUnicodeString(const AString &srcString, UINT /* codePage */ )
         }
       }
 #endif
-      resultString.ReleaseBuffer(numChars);
+
       return resultString;
     }
   }
