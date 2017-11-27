@@ -99,8 +99,16 @@ then
 
   if [ -x bin/7z.so ]
   then
+    echo "- installing ${DEST_DIR}${DEST_SHARE}/7z.so"
     cp bin/7z.so "${DEST_DIR}${DEST_SHARE}/7z.so"
     chmod 555 "${DEST_DIR}${DEST_SHARE}/7z.so"
+  fi
+
+  if [ -d bin/Codecs ]
+  then
+    echo "- installing ${DEST_DIR}${DEST_SHARE}/Codecs"
+    cp -r bin/Codecs "${DEST_DIR}${DEST_SHARE}/"
+    chmod 555 "${DEST_DIR}${DEST_SHARE}"/*/*
   fi
 
 else

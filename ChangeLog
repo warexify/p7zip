@@ -1,4 +1,10 @@
 
+Version 9.20.1
+==============
+
+  - #3211479 "p7zip 9.20 - "unsupported method" with RAR files - " fixed
+  	"install.sh" installs again "bin/Codecs/Rar29.so"
+
 Version 9.20
 ============
 
