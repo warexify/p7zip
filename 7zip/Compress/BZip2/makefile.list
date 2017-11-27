@@ -1,0 +1,24 @@
+DllExports.o : ./DllExports.cpp
+	$(CXX) $(CFLAGS) ./DllExports.cpp
+Alloc.o : ../../../Common/Alloc.cpp
+	$(CXX) $(CFLAGS) ../../../Common/Alloc.cpp
+BZip2Decoder.o : ./BZip2Decoder.cpp
+	$(CXX) $(CFLAGS) ./BZip2Decoder.cpp
+BZip2Encoder.o : ./BZip2Encoder.cpp
+	$(CXX) $(CFLAGS) ./BZip2Encoder.cpp
+BZip2Error.o : ./BZip2Error.cpp
+	$(CXX) $(CFLAGS) ./BZip2Error.cpp
+blocksort.o : ./Original/blocksort.c
+	$(CC) $(CFLAGS) ./Original/blocksort.c
+bzlib.o : ./Original/bzlib.c
+	$(CC) $(CFLAGS) ./Original/bzlib.c
+compress.o : ./Original/compress.c
+	$(CC) $(CFLAGS) ./Original/compress.c
+crctable.o : ./Original/crctable.c
+	$(CC) $(CFLAGS) ./Original/crctable.c
+decompress.o : ./Original/decompress.c
+	$(CC) $(CFLAGS) ./Original/decompress.c
+huffman.o : ./Original/huffman.c
+	$(CC) $(CFLAGS) ./Original/huffman.c
+randtable.o : ./Original/randtable.c
+	$(CC) $(CFLAGS) ./Original/randtable.c

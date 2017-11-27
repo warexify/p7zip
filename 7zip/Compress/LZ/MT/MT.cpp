@@ -230,10 +230,6 @@ CMatchFinderMT::CMatchFinderMT():
 CMatchFinderMT::~CMatchFinderMT() 
 {
   m_ExitEvent.Set();
-  /* FIXED
-  if (HANDLE(m_Thread) != 0)
-    ::WaitForSingleObject(m_Thread, INFINITE);
-    */
   m_Thread.Wait();
   FreeMem();
 }

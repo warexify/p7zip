@@ -6,7 +6,10 @@
 #include "StringConvert.h"
 #else
 #include "ctype.h"
+#ifndef ENV_MACOSX
 #include "wctype.h"
+#endif
+#include "StringConvert.h" // FIXED
 #endif
 
 #include "String.h"
@@ -139,8 +142,15 @@ wchar_t * MyStringUpper(wchar_t *s)
   if (s == 0)
     return 0;
   wchar_t *ret = s;
-  while ((*s = towupper(*s)))
+  while (*s)
+  {
+#ifdef ENV_MACOSX
+   if ((*s >= 'a') && (*s <= 'z')) *s += 'A' - 'a';
+#else
+   *s = towupper(*s);
+#endif
     s++;
+  }
   return ret;
 }
 
@@ -157,6 +167,14 @@ int MyStringCollateNoCase(const wchar_t *s1, const wchar_t *s2)
     if (u1 > u2) return 1;
     if (u1 == 0) return 0;
   }
+}
+
+int MyStringCollateNoCase(const char *s1, const char *s2)
+{
+  UString us1 = MultiByteToUnicodeString(s1, 0);
+  UString us2 = MultiByteToUnicodeString(s2, 0);
+
+  return MyStringCollateNoCase(us1,us2);
 }
 
 #endif

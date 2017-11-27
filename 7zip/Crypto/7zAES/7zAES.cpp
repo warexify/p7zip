@@ -243,7 +243,11 @@ bool GetAESLibPath(TCHAR *path)
       path, &fileNamePointer);
   if (needLength == 0 || needLength >= MAX_PATH)
     return false;
+#ifdef ENV_UNIX // FIXED
+  lstrcpy(fileNamePointer, TEXT("..\\Codecs\\AES.dll"));
+#else
   lstrcpy(fileNamePointer, TEXT("AES.dll"));
+#endif
   return true;
 }
 #endif

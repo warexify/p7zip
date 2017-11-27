@@ -1,4 +1,39 @@
 
+Version 4.12
+============
+  - new port of 7za from the source of 7za 4.12Beta for Windows
+
+  - From Windows version of 7-zip 4.11 and 4.12 :
+    - 7-Zip now supports Zip64 extension of ZIP format. So now it's 
+      possible to compress files bigger than 4 GB to ZIP archives.
+    - Some bugs were fixed
+
+  - fix "7za a archive.7z file" that added all the files and directories
+    with filename "file", "FILE", "File" ...
+
+  - p7zip now displays the locale (ex : en_US.UTF-8) in the banner.
+
+  - new flag "-no-utf16" to avoid lossly conversion in filenames.
+    CAUTION : use this flag when you do not plan to export your archive.
+
+  - support creation of self extracting archive.
+
+  - better support of symbolic link (now, an invalid symbolic link
+    do not stop archiving but displays a warning).
+
+  - better support of files that the user cannot read.
+    (now this kind of file is not added to the archive, and p7zip displays a warning).
+
+  - return of 7z and its plugins.
+
+  - support of listing/testing/extracting files from a splitted archive (only with 7z).
+
+  - support of MacOX X 10.X.
+
+  - creation of Gzip/Tar archives didn't work on Linux Alpha.
+
+  - see "contrib/VirtualFileSystemForMidnightCommander/readme" to use 7za with "mc".
+
 Version 4.10
 ============
   - new port of 7za from the source of 7za 4.10Beta for Windows

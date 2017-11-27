@@ -1,10 +1,10 @@
 
-- try to fix p7zip when compiled with "gcc -m64" on Linux 64bits with AMD64.
+- creation of SFX archives
+  Only SFX archives with "*.exe" filenames are valid. 
 
 - use valgrind to detect errors in the program.
 
-- use a more thread-friendly "WaitForMultipleObjects"
-  (see myEvents.cpp)
+- use a more thread-friendly "WaitForMultipleObjects" (see myEvents.cpp)
 
 - if an error occurs during the execution of 7z, some temporary files are left
   ( ex : 7zi12495.tmp )
@@ -13,12 +13,17 @@
 
 - no chmod/chown(uid,gid) for TAR
 
-- no support for linked files (the file or directory behind the link
-  is archived ...)
-
-- clean the headers file in include_windows
+- no real support for linked files (the file or directory behind the link is archived ...)
 
 - Use a more portable "String.h" (suppress the need of wine_strings.cpp)
 
-- creation of SFX archives ?
+- UTF16 : try to test with Complex Unicode filenames
 
+- KNOWN BUGS
+
+  - date
+  7za l archive.7z  (7za l archive.tar)
+  and 7za x archive.7z and then "ls -l"
+  => not the same date
+
+  - absolute path ?

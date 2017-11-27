@@ -22,6 +22,33 @@
 // #define TRACEN(u) u;
 #define TRACEN(u)  /* */
 
+
+void my_windows_split_path(const std::string &p_path, std::string &dir , std::string &base)
+{
+	size_t pos = p_path.find_last_of("/");
+	if (pos == std::string::npos) {
+		// no separator
+		dir  = ".";
+		if (p_path.empty()) base = ".";
+		else              base = p_path;
+	} else if ((pos+1) < p_path.size()) {
+		// true separator
+		base = p_path.substr(pos+1);
+		while ((pos >= 1) && (p_path[pos-1] == '/')) pos--;
+		if (pos == 0) dir = "/";
+               	else          dir = p_path.substr(0,pos);
+	} else {
+		// separator at the end of the path
+		pos = p_path.find_last_not_of("/");
+		if (pos == std::string::npos) {
+			base = "/";
+                	dir = "/";
+		} else {
+			my_windows_split_path(p_path.substr(0,pos+1),dir,base);
+		}
+	}
+}
+
 static const char * myModuleFileName = 0;
 extern "C" void mySetModuleFileNameA(const char * moduleFileName)
 {
@@ -73,3 +100,82 @@ DWORD GetModuleFileNameA( HMODULE hModule, LPSTR lpFilename, DWORD nSize)
 	}
 	return 0;
 }
+
+
+static DWORD mySearchPathA( LPCSTR path, LPCSTR name, LPCSTR ext,
+                          DWORD buflen, LPSTR buffer, LPSTR *lastpart )
+{
+	if (path != 0) {
+		printf("NOT EXPECTED : SearchPathA : path != NULL\n");
+		exit(EXIT_FAILURE);
+	}
+
+	if (ext != 0) {
+		printf("NOT EXPECTED : SearchPathA : ext != NULL\n");
+		exit(EXIT_FAILURE);
+	}
+
+	if (myModuleFileName)
+	{
+		FILE *file;
+		file = fopen(name,"r");
+		if (file)
+		{
+			DWORD ret = (DWORD)strlen(name);
+			fclose(file);
+			if (ret >= buflen) {
+				SetLastError(ERROR_FILENAME_EXCED_RANGE);
+				return 0;
+			}
+			strcpy(buffer,name);
+			if (lastpart) *lastpart = buffer;
+			
+			return ret;
+		}
+		std::string module_path(myModuleFileName);
+		std::string dir,name2,dir_path;
+		int ind = 0;
+		while (module_path[ind]) {
+			if (module_path[ind] == '\\') module_path[ind]='/';
+			ind++;
+		}
+		my_windows_split_path(module_path,dir,name2);
+		dir_path = dir;
+		dir_path += "/";
+		dir_path += name;
+
+		file = fopen(dir_path.c_str(),"r");
+		if (file)
+		{
+			DWORD ret = strlen(dir_path.c_str());
+			fclose(file);
+			if (ret >= buflen) {
+				SetLastError(ERROR_FILENAME_EXCED_RANGE);
+				return 0;
+			}
+			strcpy(buffer,dir_path.c_str());
+			if (lastpart) *lastpart = buffer + (strlen(dir.c_str()) + 1);
+			
+			return ret;
+		}
+
+	}
+					
+	return 0;
+}
+
+DWORD SearchPathA( LPCSTR path, LPCSTR name, LPCSTR ext,
+                          DWORD buflen, LPSTR buffer, LPSTR *lastpart )
+{
+	*buffer=0;
+	DWORD ret = mySearchPathA(path,name,ext,buflen,buffer,lastpart);
+
+	TRACEN((printf("SearchPathA(%s,%s,%s,%d,%s,%p)=%d\n",
+					(path ? path : "<NULL>"),
+					(name ? name : "<NULL>"),
+					(ext ? ext : "<NULL>"),
+					(int)buflen,
+					buffer,lastpart,(int)ret)));
+	return ret;
+}
+

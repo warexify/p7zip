@@ -106,6 +106,11 @@ main(int numArguments, const char *arguments[])
     g_StdErr << kExceptionErrorMessage << s << endl;
     return (NExitCode::kFatalError);
   }
+  catch(const AString &s) // FIXED : added
+  {
+    g_StdErr << kExceptionErrorMessage << s << endl;
+    return (NExitCode::kFatalError);
+  }
   catch(const char *s)
   {
     g_StdErr << kExceptionErrorMessage << s << endl;

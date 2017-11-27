@@ -15,8 +15,7 @@
 #define TRACEN(u)  /* */
 
 static void FILE_SetDosError(void) {
-  int save_errno = errno; /* errno gets overwritten by printf */
-
+  int save_errno = errno;
   switch (save_errno) {
   case EAGAIN:
     SetLastError( ERROR_SHARING_VIOLATION );
@@ -62,7 +61,6 @@ static void FILE_SetDosError(void) {
     SetLastError( ERROR_GEN_FAILURE );
     break;
   }
-  errno = save_errno;
 }
 
 #ifdef _UNICODE
@@ -216,6 +214,12 @@ DWORD WINAPI GetFullPathNameA( LPCSTR name, DWORD len, LPSTR buffer,
     buffer[len-1]=0;
     ret = strlen(buffer);
     *lastpart=buffer + begin_len + 1;
+    char *ptr=buffer;
+    while (*ptr) {
+      if ((*ptr == '/') || (*ptr == '\\'))
+        *lastpart=ptr+1;
+      ptr++;
+    }
     TRACEN((printf("GetFullPathNameA(%s,%d,%s,%s)=%d\n",name, (int)len,buffer, *lastpart,(int)ret)))
   } else {
     ret = 0;

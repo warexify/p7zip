@@ -1,0 +1,32 @@
+DllExports.o : ./DllExports.cpp
+	$(CXX) $(CFLAGS) ./DllExports.cpp
+Alloc.o : ../../../Common/Alloc.cpp
+	$(CXX) $(CFLAGS) ../../../Common/Alloc.cpp
+String.o : ../../../Common/String.cpp
+	$(CXX) $(CFLAGS) ../../../Common/String.cpp
+StringConvert.o : ../../../Common/StringConvert.cpp
+	$(CXX) $(CFLAGS) ../../../Common/StringConvert.cpp
+Vector.o : ../../../Common/Vector.cpp
+	$(CXX) $(CFLAGS) ../../../Common/Vector.cpp
+PropVariant.o : ../../../Windows/PropVariant.cpp
+	$(CXX) $(CFLAGS) ../../../Windows/PropVariant.cpp
+CopyCoder.o : ../../Compress/Copy/CopyCoder.cpp
+	$(CXX) $(CFLAGS) ../../Compress/Copy/CopyCoder.cpp
+TarHandler.o : ./TarHandler.cpp
+	$(CXX) $(CFLAGS) ./TarHandler.cpp
+TarHandlerOut.o : ./TarHandlerOut.cpp
+	$(CXX) $(CFLAGS) ./TarHandlerOut.cpp
+TarHeader.o : ./TarHeader.cpp
+	$(CXX) $(CFLAGS) ./TarHeader.cpp
+TarIn.o : ./TarIn.cpp
+	$(CXX) $(CFLAGS) ./TarIn.cpp
+TarOut.o : ./TarOut.cpp
+	$(CXX) $(CFLAGS) ./TarOut.cpp
+TarUpdate.o : ./TarUpdate.cpp
+	$(CXX) $(CFLAGS) ./TarUpdate.cpp
+ItemNameUtils.o : ../Common/ItemNameUtils.cpp
+	$(CXX) $(CFLAGS) ../Common/ItemNameUtils.cpp
+LimitedStreams.o : ../../Common/LimitedStreams.cpp
+	$(CXX) $(CFLAGS) ../../Common/LimitedStreams.cpp
+ProgressUtils.o : ../../Common/ProgressUtils.cpp
+	$(CXX) $(CFLAGS) ../../Common/ProgressUtils.cpp

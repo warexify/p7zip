@@ -1,0 +1,24 @@
+DllExports.o : ./DllExports.cpp
+	$(CXX) $(CFLAGS) ./DllExports.cpp
+Alloc.o : ../../../Common/Alloc.cpp
+	$(CXX) $(CFLAGS) ../../../Common/Alloc.cpp
+StringConvert.o : ../../../Common/StringConvert.cpp
+	$(CXX) $(CFLAGS) ../../../Common/StringConvert.cpp
+Vector.o : ../../../Common/Vector.cpp
+	$(CXX) $(CFLAGS) ../../../Common/Vector.cpp
+CopyCoder.o : ../../Compress/Copy/CopyCoder.cpp
+	$(CXX) $(CFLAGS) ../../Compress/Copy/CopyCoder.cpp
+CpioHandler.o : ./CpioHandler.cpp
+	$(CXX) $(CFLAGS) ./CpioHandler.cpp
+CpioHeader.o : ./CpioHeader.cpp
+	$(CXX) $(CFLAGS) ./CpioHeader.cpp
+CpioIn.o : ./CpioIn.cpp
+	$(CXX) $(CFLAGS) ./CpioIn.cpp
+PropVariant.o : ../../../Windows/PropVariant.cpp
+	$(CXX) $(CFLAGS) ../../../Windows/PropVariant.cpp
+ItemNameUtils.o : ../Common/ItemNameUtils.cpp
+	$(CXX) $(CFLAGS) ../Common/ItemNameUtils.cpp
+LimitedStreams.o : ../../Common/LimitedStreams.cpp
+	$(CXX) $(CFLAGS) ../../Common/LimitedStreams.cpp
+ProgressUtils.o : ../../Common/ProgressUtils.cpp
+	$(CXX) $(CFLAGS) ../../Common/ProgressUtils.cpp

@@ -1,11 +1,14 @@
 
+# use "-m64" to have a 64bits executable
 ALLFLAGS=-m32 -w -O2 -s -fPIC \
     	-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE \
-	-DNDEBUG -D_REENTRANT \
+	-DNDEBUG -D_REENTRANT -DENV_UNIX \
+	-DLITTLE_ENDIAN \
 	$(LOCAL_FLAGS)
 
 CXX=g++ $(ALLFLAGS)
 CC=gcc $(ALLFLAGS)
+LINK_SHARED=-shared
 
-LOCAL_LIBS=-lpthread # -ldl
+LOCAL_LIBS=-lpthread -ldl
 

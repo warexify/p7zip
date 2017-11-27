@@ -1,11 +1,11 @@
 #ifndef _WINDEF_H
 #define _WINDEF_H
 
+#include "Common/MyWindows.h" // FIXED
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "Common/MyWindows.h" // FIXED
 
 #ifndef CONST
 #define CONST const

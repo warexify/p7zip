@@ -18,21 +18,6 @@ public:
    CThread() : _created(false) {}
   ~CThread() { Close(); }
 
-  void Wait()
-  {
-	if (_created) 
-	{
-		void *thread_return;
-		pthread_join(_tid,&thread_return);
-		_created = false;
-	}
-  }
-  void WaitAndClose()
-  {
-	Wait();
-	Close();
-  }
-
   bool Close()
   {
     if (!_created) return true;
@@ -50,7 +35,6 @@ public:
   bool Create(DWORD (*startAddress)(void *), LPVOID parameter)
   {
 	pthread_attr_t attr;
-	pthread_t tid;
 	int ret;
 
 	_created = false;
@@ -70,6 +54,17 @@ public:
 	_created = true;
 
 	return _created;
+  }
+
+  bool Wait()
+  {
+	if (_created) 
+	{
+		void *thread_return;
+		pthread_join(_tid,&thread_return);
+		_created = false;
+	}
+        return true;
   }
 };
 

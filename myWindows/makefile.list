@@ -19,8 +19,8 @@ myModuleFileName.o : myModuleFileName.cpp
 myGetTickCount.o : myGetTickCount.cpp
 	$(CXX) $(CFLAGS) myGetTickCount.cpp
 
-my_itow.o : my_itow.cpp
-	$(CXX) $(CFLAGS) my_itow.cpp
+my_ui64toa.o : my_ui64toa.cpp
+	$(CXX) $(CFLAGS) my_ui64toa.cpp
 
 test_emul.o : test_emul.cpp
 	$(CXX) $(CFLAGS) test_emul.cpp

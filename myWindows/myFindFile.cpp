@@ -8,37 +8,15 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <unistd.h>
+#include <errno.h>
 #include <string>
 
-static void split_path(const std::string &p_path, std::string &dir , std::string &base)
-{
-	size_t pos = p_path.find_last_of("/");
-	if (pos == std::string::npos) {
-		// no separator
-		dir  = ".";
-		if (p_path.empty()) base = ".";
-		else              base = p_path;
-	} else if ((pos+1) < p_path.size()) {
-		// true separator
-		base = p_path.substr(pos+1);
-		while ((pos >= 1) && (p_path[pos-1] == '/')) pos--;
-		if (pos == 0) dir = "/";
-               	else          dir = p_path.substr(0,pos);
-	} else {
-		// separator at the end of the path
-		pos = p_path.find_last_not_of("/");
-		if (pos == std::string::npos) {
-			base = "/";
-                	dir = "/";
-		} else {
-			split_path(p_path.substr(0,pos+1),dir,base);
-		}
-	}
-}
+extern void my_windows_split_path(const std::string &p_path, std::string &dir , std::string &base);
+
 
 #include "myPrivate.h"
 
-// #define TRACEN(u) u;
+//#define TRACEN(u) u;
 #define TRACEN(u)  /* */
 
 typedef struct {
@@ -50,15 +28,15 @@ typedef struct {
 }
 t_st_dir;
 
-static void remplirWIN32_FIND_DATA(WIN32_FIND_DATA *lpFindData,const char *rep,const char *nom) {
+static void fillin_WIN32_FIND_DATA(WIN32_FIND_DATA *lpFindData,const char *rep,const char *nom) {
   struct stat stat_info;
   char filename[MAX_PATHNAME_LEN];
   int ret;
   snprintf(filename,MAX_PATHNAME_LEN,"%s/%s",rep,nom);
   filename[MAX_PATHNAME_LEN-1] = 0;
-  ret = stat(filename,&stat_info);
+  ret = lstat(filename,&stat_info);
   if (ret != 0) {
-    printf("remplirWIN32_FIND_DATA(%s) : ERROR !?\n",filename);
+    printf("fillin_WIN32_FIND_DATA) - lstat(%s) : error=%d (%s)\n",filename,errno,strerror(errno));
     exit(EXIT_FAILURE);
   }
   memset(lpFindData,0,sizeof(*lpFindData));
@@ -80,6 +58,13 @@ static void remplirWIN32_FIND_DATA(WIN32_FIND_DATA *lpFindData,const char *rep,c
   if (!S_ISDIR(stat_info.st_mode)) {
     lpFindData->nFileSizeHigh = stat_info.st_size >> 32;
     lpFindData->nFileSizeLow  = stat_info.st_size & 0xffffffff;
+  }
+  if (S_ISLNK(stat_info.st_mode)) {
+    struct stat stat_info2;
+    if (stat(filename,&stat_info2) == 0) {
+       lpFindData->nFileSizeHigh = stat_info2.st_size >> 32;
+       lpFindData->nFileSizeLow  = stat_info2.st_size & 0xffffffff;
+    }
   }
 #ifdef _UNICODE
   UString ustr = MultiByteToUnicodeString(AString(nom));
@@ -134,7 +119,7 @@ extern "C" HANDLE WINAPI FindFirstFileA(LPCSTR lpFileName, WIN32_FIND_DATA *lpFi
   nameWindowToUnixA(lpFileName,cb);
 
   std::string base,dir;
-  split_path(cb,dir,base);
+  my_windows_split_path(cb,dir,base);
 
   TRACEN((printf("FindFirstFileA : %s (dirname=%s,pattern=%s)\n",lpFileName,dir.c_str(),base.c_str())))
 
@@ -154,8 +139,8 @@ extern "C" HANDLE WINAPI FindFirstFileA(LPCSTR lpFileName, WIN32_FIND_DATA *lpFi
     struct dirent *dp;
     while ((dp = readdir(retour->dirp)) != NULL) {
       if (filtre_pattern(dp->d_name,retour->pattern.c_str(),0) == 1) {
-        remplirWIN32_FIND_DATA(lpFindData,retour->directory.c_str(),dp->d_name);
-        TRACEN((printf("FindFirstFileA : ret_handle=%ld\n",(unsigned long)retour)))
+        fillin_WIN32_FIND_DATA(lpFindData,retour->directory.c_str(),dp->d_name);
+        TRACEN((printf("FindFirstFileA -%s- ret_handle=%ld\n",dp->d_name,(unsigned long)retour)))
         return (HANDLE)retour;
       }
     }
@@ -179,7 +164,8 @@ extern "C" BOOL WINAPI FindNextFileA( HANDLE handle, WIN32_FIND_DATA  *lpFindDat
     struct dirent *dp;
     while ((dp = readdir(retour->dirp)) != NULL) {
       if (filtre_pattern(dp->d_name,retour->pattern.c_str(),0) == 1) {
-        remplirWIN32_FIND_DATA(lpFindData,retour->directory.c_str(),dp->d_name);
+        fillin_WIN32_FIND_DATA(lpFindData,retour->directory.c_str(),dp->d_name);
+        TRACEN((printf("FindNextFileA -%s- ret_handle=%ld\n",dp->d_name,(unsigned long)retour)))
         return TRUE;
       }
     }

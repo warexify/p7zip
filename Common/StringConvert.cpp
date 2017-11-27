@@ -4,11 +4,11 @@
 
 #include "StringConvert.h"
 
-#ifndef WIN32
+#ifndef _WIN32
 #include <stdlib.h>
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
 UString MultiByteToUnicodeString(const AString &srcString, UINT codePage)
 {
   UString resultString;
@@ -56,58 +56,67 @@ AString SystemStringToOemString(const CSysString &srcString)
 
 #else
 
+#ifdef ENV_UNIX // FIXED
+
+int global_use_utf16_conversion = 0;
+
+UString MultiByteToUnicodeString(const AString &srcString, UINT codePage)
+{
+  if ((global_use_utf16_conversion) && (!srcString.IsEmpty()))
+  {
+    UString resultString;
+    int numChars = mbstowcs(resultString.GetBuffer(srcString.Length()),srcString,srcString.Length()+1);
+    if (numChars >= 0) {
+      resultString.ReleaseBuffer(numChars);
+      return resultString;
+    }
+  }
+
+  UString resultString;
+  for (int i = 0; i < srcString.Length(); i++)
+    resultString += wchar_t(srcString[i] & 255);
+
+  return resultString;
+}
+
+AString UnicodeStringToMultiByte(const UString &srcString, UINT codePage)
+{
+  if ((global_use_utf16_conversion) && (!srcString.IsEmpty()))
+  {
+    AString resultString;
+    int numRequiredBytes = srcString.Length() * 6+1;
+    int numChars = wcstombs(resultString.GetBuffer(numRequiredBytes),srcString,numRequiredBytes);
+    if (numChars >= 0) {
+      resultString.ReleaseBuffer(numChars);
+      return resultString;
+    }
+  }
+
+  AString resultString;
+  for (int i = 0; i < srcString.Length(); i++)
+  {
+    if (srcString[i] >= 256) resultString += '?';
+    else                     resultString += char(srcString[i]);
+  }
+  return resultString;
+}
+#else /* ENV_UNIX */
 UString MultiByteToUnicodeString(const AString &srcString, UINT codePage)
 {
   UString resultString;
-#ifdef ENV_UNIX // FIXED
-  if(!srcString.IsEmpty())
-  {
-    int numChars = mbstowcs(resultString.GetBuffer(srcString.Length()),srcString,srcString.Length()+1);
-    if (numChars < 0) throw "Your environment does not support UNICODE filenames";
-    resultString.ReleaseBuffer(numChars);
-  }
-#else
-  UString resultString;
   for (int i = 0; i < srcString.Length(); i++)
     resultString += wchar_t(srcString[i]);
-  /*
-  if(!srcString.IsEmpty())
-  {
-    int numChars = mbstowcs(resultString.GetBuffer(srcString.Length()), srcString, srcString.Length() + 1);
-    if (numChars < 0) throw "Your environment does not support UNICODE";
-    resultString.ReleaseBuffer(numChars);
-  }
-  */
-#endif
   return resultString;
 }
 
 AString UnicodeStringToMultiByte(const UString &srcString, UINT codePage)
 {
   AString resultString;
-#ifdef ENV_UNIX
-  if(!srcString.IsEmpty())
-  {
-    int numRequiredBytes = srcString.Length() * 6+1;
-    int numChars = wcstombs(resultString.GetBuffer(numRequiredBytes),srcString,numRequiredBytes);
-    if (numChars < 0) throw "Your environment does not support UNICODE filenames";
-    resultString.ReleaseBuffer(numChars);
-  }
-#else
   for (int i = 0; i < srcString.Length(); i++)
     resultString += char(srcString[i]);
-  /*
-  if(!srcString.IsEmpty())
-  {
-    int numRequiredBytes = srcString.Length() * 6 + 1;
-    int numChars = wcstombs(resultString.GetBuffer(numRequiredBytes), srcString, numRequiredBytes);
-    if (numChars < 0) throw "Your environment does not support UNICODE";
-    resultString.ReleaseBuffer(numChars);
-  }
-  */
-#endif
   return resultString;
 }
+#endif /* ENV_UNIX */
 
 #endif
 

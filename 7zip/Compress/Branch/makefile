@@ -1,0 +1,26 @@
+PROG=../../../bin/Codecs/Branch.dll
+
+LOCAL_FLAGS=
+
+MY_WINDOWS= 
+
+include ../../../makefile.machine
+
+LOCAL_SHARED=$(LINK_SHARED)
+
+OBJS = \
+../../../BUILD/Common/MyWindows.o \
+../../../BUILD/Common/Alloc.o \
+DllExports.o\
+ARM.o\
+ARMThumb.o\
+BranchCoder.o\
+IA64.o\
+PPC.o\
+x86.o\
+x86_2.o\
+InBuffer.o\
+OutBuffer.o
+
+include ../../../makefile.glb
+

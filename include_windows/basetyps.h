@@ -8,6 +8,8 @@
 #define EXTERN_C extern
 #endif  /* __cplusplus */ 
 
+#define STDAPI      EXTERN_C HRESULT
+
 #if defined(__cplusplus) && !defined(CINTERFACE)
 #define THIS_
 #define THIS	void

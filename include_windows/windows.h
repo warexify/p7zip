@@ -130,7 +130,7 @@ DECLARE_INTERFACE_(ISequentialStream,IUnknown)
   #endif
 /* END #include <ole2.h> */
 
-#include <wchar.h>
+#include <stddef.h>
 #ifdef __cplusplus
 extern "C" {
 #endif

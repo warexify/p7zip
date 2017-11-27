@@ -1,0 +1,36 @@
+DllExports.o : ./DllExports.cpp
+	$(CXX) $(CFLAGS) ./DllExports.cpp
+Alloc.o : ../../../Common/Alloc.cpp
+	$(CXX) $(CFLAGS) ../../../Common/Alloc.cpp
+CRC.o : ../../../Common/CRC.cpp
+	$(CXX) $(CFLAGS) ../../../Common/CRC.cpp
+String.o : ../../../Common/String.cpp
+	$(CXX) $(CFLAGS) ../../../Common/String.cpp
+StringConvert.o : ../../../Common/StringConvert.cpp
+	$(CXX) $(CFLAGS) ../../../Common/StringConvert.cpp
+Vector.o : ../../../Common/Vector.cpp
+	$(CXX) $(CFLAGS) ../../../Common/Vector.cpp
+PropVariant.o : ../../../Windows/PropVariant.cpp
+	$(CXX) $(CFLAGS) ../../../Windows/PropVariant.cpp
+ArjHandler.o : ./ArjHandler.cpp
+	$(CXX) $(CFLAGS) ./ArjHandler.cpp
+ArjIn.o : ./ArjIn.cpp
+	$(CXX) $(CFLAGS) ./ArjIn.cpp
+Decoder1.o : ../../Compress/Arj/Decoder1.cpp
+	$(CXX) $(CFLAGS) ../../Compress/Arj/Decoder1.cpp
+Decoder2.o : ../../Compress/Arj/Decoder2.cpp
+	$(CXX) $(CFLAGS) ../../Compress/Arj/Decoder2.cpp
+LZOutWindow.o : ../../Compress/LZ/LZOutWindow.cpp
+	$(CXX) $(CFLAGS) ../../Compress/LZ/LZOutWindow.cpp
+CopyCoder.o : ../../Compress/Copy/CopyCoder.cpp
+	$(CXX) $(CFLAGS) ../../Compress/Copy/CopyCoder.cpp
+InBuffer.o : ../../Common/InBuffer.cpp
+	$(CXX) $(CFLAGS) ../../Common/InBuffer.cpp
+LimitedStreams.o : ../../Common/LimitedStreams.cpp
+	$(CXX) $(CFLAGS) ../../Common/LimitedStreams.cpp
+ProgressUtils.o : ../../Common/ProgressUtils.cpp
+	$(CXX) $(CFLAGS) ../../Common/ProgressUtils.cpp
+ItemNameUtils.o : ../Common/ItemNameUtils.cpp
+	$(CXX) $(CFLAGS) ../Common/ItemNameUtils.cpp
+OutStreamWithCRC.o : ../Common/OutStreamWithCRC.cpp
+	$(CXX) $(CFLAGS) ../Common/OutStreamWithCRC.cpp

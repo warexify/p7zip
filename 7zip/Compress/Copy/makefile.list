@@ -1,0 +1,6 @@
+DllExports.o : ./DllExports.cpp
+	$(CXX) $(CFLAGS) $<
+CopyCoder.o : ./CopyCoder.cpp
+	$(CXX) $(CFLAGS) $<
+Alloc.o : ../../../Common/Alloc.cpp
+	$(CXX) $(CFLAGS) ../../../Common/Alloc.cpp

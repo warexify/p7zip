@@ -7,7 +7,9 @@
 #include <pthread.h>
 #include <errno.h>
 
+#ifndef __APPLE_CC__
 #include <wchar.h>
+#endif
 #include <windows.h>
 #include <locale.h>
 
@@ -58,7 +60,7 @@ static void test_path(void)
 	printf("GetFullPathNameA(%s,%s,%s)=%u => '%s'\n",path,pathname,lastpart,ret,unix_pathname);
 }
 
-#if 0
+#ifndef __APPLE_CC__ 
 void test_mbs(void)
 {
    wchar_t wstr1[256] = {
@@ -115,7 +117,7 @@ void test_mbs(void)
    assert(ustr2.Length() == len1);
    assert(wcscmp(ustr2,wstr1) == 0);
 }
-#endif // 0
+#endif
 
 int main()
 {
@@ -131,7 +133,9 @@ int main()
 
 	test_path();
 
-	// test_mbs();
+#ifndef __APPLE_CC__
+	test_mbs();
+#endif
 
 	return 0;
 }

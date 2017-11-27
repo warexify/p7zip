@@ -1,0 +1,24 @@
+DllExports.o : ./DllExports.cpp
+	$(CXX) $(CFLAGS) ./DllExports.cpp
+Alloc.o : ../../../Common/Alloc.cpp
+	$(CXX) $(CFLAGS) ../../../Common/Alloc.cpp
+StringConvert.o : ../../../Common/StringConvert.cpp
+	$(CXX) $(CFLAGS) ../../../Common/StringConvert.cpp
+DLL.o : ../../../Windows/DLL.cpp
+	$(CXX) $(CFLAGS) ../../../Windows/DLL.cpp
+PropVariant.o : ../../../Windows/PropVariant.cpp
+	$(CXX) $(CFLAGS) ../../../Windows/PropVariant.cpp
+CopyCoder.o : ../../Compress/Copy/CopyCoder.cpp
+	$(CXX) $(CFLAGS) ../../Compress/Copy/CopyCoder.cpp
+CodecsPath.o : ../Common/CodecsPath.cpp
+	$(CXX) $(CFLAGS) ../Common/CodecsPath.cpp
+DummyOutStream.o : ../Common/DummyOutStream.cpp
+	$(CXX) $(CFLAGS) ../Common/DummyOutStream.cpp
+BZip2Handler.o : ./BZip2Handler.cpp
+	$(CXX) $(CFLAGS) ./BZip2Handler.cpp
+BZip2HandlerOut.o : ./BZip2HandlerOut.cpp
+	$(CXX) $(CFLAGS) ./BZip2HandlerOut.cpp
+BZip2Update.o : ./BZip2Update.cpp
+	$(CXX) $(CFLAGS) ./BZip2Update.cpp
+ProgressUtils.o : ../../Common/ProgressUtils.cpp
+	$(CXX) $(CFLAGS) ../../Common/ProgressUtils.cpp

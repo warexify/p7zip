@@ -113,7 +113,7 @@ typedef char	_TCHAR;
  * unmodified.  Also defined in w32api/winnt.h.
  */
 #define _TEXT(x)	__TEXT(x)
-#define	_T(x)		__TEXT(x)
+/* #define	_T(x)		__TEXT(x) */
 
 #endif	/* Not _TCHAR_H_ */
 

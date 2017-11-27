@@ -1,0 +1,40 @@
+DllExports.o : ./DllExports.cpp
+	$(CXX) $(CFLAGS) ./DllExports.cpp
+Alloc.o : ../../../Common/Alloc.cpp
+	$(CXX) $(CFLAGS) ../../../Common/Alloc.cpp
+String.o : ../../../Common/String.cpp
+	$(CXX) $(CFLAGS) ../../../Common/String.cpp
+StringConvert.o : ../../../Common/StringConvert.cpp
+	$(CXX) $(CFLAGS) ../../../Common/StringConvert.cpp
+UTFConvert.o : ../../../Common/UTFConvert.cpp
+	$(CXX) $(CFLAGS) ../../../Common/UTFConvert.cpp
+Vector.o : ../../../Common/Vector.cpp
+	$(CXX) $(CFLAGS) ../../../Common/Vector.cpp
+PropVariant.o : ../../../Windows/PropVariant.cpp
+	$(CXX) $(CFLAGS) ../../../Windows/PropVariant.cpp
+CabCopyDecoder.o : ./CabCopyDecoder.cpp
+	$(CXX) $(CFLAGS) ./CabCopyDecoder.cpp
+CabHandler.o : ./CabHandler.cpp
+	$(CXX) $(CFLAGS) ./CabHandler.cpp
+CabHeader.o : ./CabHeader.cpp
+	$(CXX) $(CFLAGS) ./CabHeader.cpp
+CabIn.o : ./CabIn.cpp
+	$(CXX) $(CFLAGS) ./CabIn.cpp
+CabInBuffer.o : ./CabInBuffer.cpp
+	$(CXX) $(CFLAGS) ./CabInBuffer.cpp
+LZXDecoder.o : ./LZXDecoder.cpp
+	$(CXX) $(CFLAGS) ./LZXDecoder.cpp
+LZXi86Converter.o : ./LZXi86Converter.cpp
+	$(CXX) $(CFLAGS) ./LZXi86Converter.cpp
+MSZipDecoder.o : ./MSZipDecoder.cpp
+	$(CXX) $(CFLAGS) ./MSZipDecoder.cpp
+InBuffer.o : ../../Common/InBuffer.cpp
+	$(CXX) $(CFLAGS) ../../Common/InBuffer.cpp
+LSBFDecoder.o : ../../Common/LSBFDecoder.cpp
+	$(CXX) $(CFLAGS) ../../Common/LSBFDecoder.cpp
+OutBuffer.o : ../../Common/OutBuffer.cpp
+	$(CXX) $(CFLAGS) ../../Common/OutBuffer.cpp
+ProgressUtils.o : ../../Common/ProgressUtils.cpp
+	$(CXX) $(CFLAGS) ../../Common/ProgressUtils.cpp
+LZOutWindow.o : ../../Compress/LZ/LZOutWindow.cpp
+	$(CXX) $(CFLAGS) ../../Compress/LZ/LZOutWindow.cpp

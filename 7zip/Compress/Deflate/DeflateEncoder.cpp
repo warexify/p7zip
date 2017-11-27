@@ -461,7 +461,7 @@ void CCoder::WriteBlockData(bool writeMode, bool finalBlock)
   for(i = 0; i < kDistTableSize64; i++)
   {
     Byte dummy = m_LastLevels[kDistTableStart + i];
-    if (dummy != 0)
+    if (dummy != 0) // NEED FIXED (1) to avoid Conditional jump or move depends on uninitialised value(s)
       m_PosPrices[i] = dummy;
     else
       m_PosPrices[i] = kNoPosDummy;
@@ -571,6 +571,8 @@ int CCoder::WriteTables(bool writeMode, bool finalBlock)
 {
   Byte newLevels[kMaxTableSize64 + 1]; // (+ 1) for guard 
 
+  memset(newLevels, 0, kMaxTableSize64); // FIXED (1)
+
   m_MainCoder.BuildTree(&newLevels[0]);
   m_DistCoder.BuildTree(&newLevels[kDistTableStart]);
 
@@ -603,7 +605,6 @@ int CCoder::WriteTables(bool writeMode, bool finalBlock)
     CodeLevelTable(&newLevels[kDistTableStart], numDistLevels, false);
 
     memcpy(m_LastLevels, newLevels, kMaxTableSize64);
-    
 
     Byte levelLevels[kLevelTableSize];
     m_LevelCoder.BuildTree(levelLevels);

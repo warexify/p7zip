@@ -1,0 +1,28 @@
+DllExports.o : ./DllExports.cpp
+	$(CXX) $(CFLAGS) ./DllExports.cpp
+InBuffer.o : ../../Common/InBuffer.cpp
+	$(CXX) $(CFLAGS) ../../Common/InBuffer.cpp
+OutBuffer.o : ../../Common/OutBuffer.cpp
+	$(CXX) $(CFLAGS) ../../Common/OutBuffer.cpp
+RangeCoderBit.o : ../RangeCoder/RangeCoderBit.cpp
+	$(CXX) $(CFLAGS) ../RangeCoder/RangeCoderBit.cpp
+MT.o : ../LZ/MT/MT.cpp
+	$(CXX) $(CFLAGS) ../LZ/MT/MT.cpp
+LZInWindow.o : ../LZ/LZInWindow.cpp
+	$(CXX) $(CFLAGS) ../LZ/LZInWindow.cpp
+LZOutWindow.o : ../LZ/LZOutWindow.cpp
+	$(CXX) $(CFLAGS) ../LZ/LZOutWindow.cpp
+AlignedBuffer.o : ../../../Common/AlignedBuffer.cpp
+	$(CXX) $(CFLAGS) ../../../Common/AlignedBuffer.cpp
+Alloc.o : ../../../Common/Alloc.cpp
+	$(CXX) $(CFLAGS) ../../../Common/Alloc.cpp
+CRC.o : ../../../Common/CRC.cpp
+	$(CXX) $(CFLAGS) ../../../Common/CRC.cpp
+NewHandler.o : ../../../Common/NewHandler.cpp
+	$(CXX) $(CFLAGS) ../../../Common/NewHandler.cpp
+Synchronization.o : ../../../Windows/Synchronization.cpp
+	$(CXX) $(CFLAGS) ../../../Windows/Synchronization.cpp
+LZMADecoder.o : ./LZMADecoder.cpp
+	$(CXX) $(CFLAGS) ./LZMADecoder.cpp
+LZMAEncoder.o : ./LZMAEncoder.cpp
+	$(CXX) $(CFLAGS) ./LZMAEncoder.cpp

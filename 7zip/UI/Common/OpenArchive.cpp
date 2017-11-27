@@ -102,7 +102,8 @@ HRESULT IsArchiveItemAnti(IInArchive *archive, UInt32 index, bool &result)
 }
 
 
-const UInt64 kMaxCheckStartPosition = 1 << 20;
+// const UInt64 kMaxCheckStartPosition = 1 << 20; // FIXED : support 7zCon.sfx compiled with flag "-g2"
+const UInt64 kMaxCheckStartPosition = 1 << 24; // 16 Mo
 
 HRESULT ReOpenArchive(IInArchive *archive, const UString &fileName)
 {
@@ -223,7 +224,6 @@ HRESULT OpenArchive(
     if (archiverInfo.Name.CompareNoCase(L"Zip") == 0)
       archive = new NArchive::NZip::CHandler;
     #endif
-
 
     #ifndef EXCLUDE_COM
     if (!archive)

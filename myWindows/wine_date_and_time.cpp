@@ -25,13 +25,12 @@
 #include <pthread.h>
 #include <errno.h>
 
-#include <wchar.h>
 #include <windows.h>
 
 // #define TRACEN(u) u;
 #define TRACEN(u)  /* */
 
-#if  !defined(__CYGWIN__) && !defined(sparc) && !defined(sun)
+#if  !defined(__CYGWIN__) && !defined(sparc) && !defined(sun) && !defined(__APPLE_CC__)
 #define HAVE_TIMEGM
 #endif
 
@@ -88,6 +87,8 @@ static int TIME_GetBias(time_t utc, int *pdaylight) {
     ret = last_bias = (int)(utc-mktime(ptm));
   }
   return ret;
+*pdaylight = 0;
+return 0;
 }
 
 
@@ -101,9 +102,9 @@ static void RtlSystemTimeToLocalTime( const LARGE_INTEGER *SystemTime,
 
 void WINAPI RtlSecondsSince1970ToFileTime( DWORD Seconds, LPFILETIME ft ) {
   ULONGLONG secs = Seconds * (ULONGLONG)TICKSPERSEC + TICKS_1601_TO_1970;
-  TRACEN((printf("RtlSecondsSince1970ToFileTime\n")))
   ft->dwLowDateTime  = (DWORD)secs;
   ft->dwHighDateTime = (DWORD)(secs >> 32);
+  TRACEN((printf("RtlSecondsSince1970ToFileTime %lx => %lx %lx\n",(long)Seconds,(long)ft->dwHighDateTime,(long)ft->dwLowDateTime)))
 }
 
 

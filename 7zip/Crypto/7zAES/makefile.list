@@ -1,0 +1,18 @@
+DllExports.o : ./DllExports.cpp
+	$(CXX) $(CFLAGS) ./DllExports.cpp
+Alloc.o : ../../../Common/Alloc.cpp
+	$(CXX) $(CFLAGS) ../../../Common/Alloc.cpp
+Vector.o : ../../../Common/Vector.cpp
+	$(CXX) $(CFLAGS) ../../../Common/Vector.cpp
+StreamObjects.o : ../../Common/StreamObjects.cpp
+	$(CXX) $(CFLAGS) ../../Common/StreamObjects.cpp
+StringConvert.o : ../../../Common/StringConvert.cpp
+	$(CXX) $(CFLAGS) ../../../Common/StringConvert.cpp
+DLL.o : ../../../Windows/DLL.cpp
+	$(CXX) $(CFLAGS) ../../../Windows/DLL.cpp
+Synchronization.o : ../../../Windows/Synchronization.cpp
+	$(CXX) $(CFLAGS) ../../../Windows/Synchronization.cpp
+7zAES.o : ./7zAES.cpp
+	$(CXX) $(CFLAGS) ./7zAES.cpp
+SHA256.o : ./SHA256.cpp
+	$(CXX) $(CFLAGS) ./SHA256.cpp

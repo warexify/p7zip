@@ -3,12 +3,17 @@
 #ifndef __MYWINDOWS_H
 #define __MYWINDOWS_H
 
-#ifndef WIN32
+#ifdef _WIN32
 
-#include <wchar.h> /* FIXED - for wchar_t */
+#include <windows.h>
+
+#else
+
+#include <stddef.h> /* FIXED - for wchar_t */
 #include <string.h>
 
 #include "Types.h"
+#include "MyGuidDef.h"
 
 typedef char CHAR;
 typedef unsigned char UCHAR;
@@ -23,9 +28,15 @@ typedef int INT;
 typedef Int32 INT32;
 typedef unsigned int UINT;
 typedef UInt32 UINT32;
+/* FIXED : LONG, ULONG and DWORD must be 32bits
+   (needed for alpha CPU)
 typedef long LONG;
 typedef unsigned long ULONG;
 typedef unsigned long DWORD;
+*/
+typedef  INT32 LONG;
+typedef UINT32 ULONG;
+typedef UINT32 DWORD;
 
 typedef Int64 LONGLONG;
 typedef UInt64 ULONGLONG;
@@ -76,47 +87,7 @@ typedef LONG SCODE;
 
 #define PURE = 0
 
-typedef struct {
-  unsigned long  Data1;
-  unsigned short Data2;
-  unsigned short Data3;
-  unsigned char Data4[8];
-} GUID;
-
-#ifdef __cplusplus
-    #define MY_EXTERN_C    extern "C"
-#else
-    #define MY_EXTERN_C    extern
-#endif
-
-#ifdef INITGUID
-  #define DEFINE_GUID(name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8) \
-      MY_EXTERN_C const GUID name = { l, w1, w2, { b1, b2,  b3,  b4,  b5,  b6,  b7,  b8 } }
-#else
-  #define DEFINE_GUID(name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8) \
-      MY_EXTERN_C const GUID name
-#endif
-
-#ifdef __cplusplus
-#define REFGUID const GUID &
-#else
-#define REFGUID const GUID * __MIDL_CONST
-#endif
-
-#define REFCLSID REFGUID
-#define REFIID REFGUID
-
 #define MIDL_INTERFACE(x) struct 
-#ifdef __cplusplus // FIXED
-inline bool operator==(REFGUID g1, REFGUID g2)
-{ 
-  for (size_t i = 0; i < sizeof(g1); i++)
-    if (((unsigned char *)&g1)[i] != ((unsigned char *)&g2)[i])
-      return false;
-  return true;
-}
-inline bool operator!=(REFGUID g1, REFGUID g2)
-  { return !(g1 == g2); }
 
 struct IUnknown
 {
@@ -126,7 +97,6 @@ struct IUnknown
 };
 
 typedef IUnknown *LPUNKNOWN;
-#endif /* __cplusplus */
 
 #define VARIANT_TRUE ((VARIANT_BOOL)-1)
 #define VARIANT_FALSE ((VARIANT_BOOL)0)

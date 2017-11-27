@@ -3,7 +3,10 @@ MY_HOME=../../../myWindows
 
 LIBS=$(LOCAL_LIBS)
 RM=rm -f
-CFLAGS=-c
+CFLAGS=-c \
+-I../../../myWindows \
+-I../../../ \
+-I../../../include_windows
 
 all:$(PROG)
 
@@ -13,5 +16,5 @@ $(PROG): $(OBJS) $(MY_WINDOWS)
 include makefile.list
 
 clean:
-	-@$(RM) $(PROG) $(PROG).exe $(OBJS) $(MY_WINDOWS) *~ 
+	-@$(RM) $(PROG) $(PROG).exe *.o *~ 
 

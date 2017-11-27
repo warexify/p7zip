@@ -21,7 +21,8 @@ static int MyStringLen(const wchar_t *s)
 BSTR SysAllocStringByteLen(LPCSTR psz, unsigned int len)
 {
   // FIXED int realLen = len + sizeof(UInt32) + 3;
-  int realLen = len + sizeof(UInt32) + sizeof(wchar_t);
+  const int LEN_ADDON = sizeof(wchar_t) - 1;
+  int realLen = len + sizeof(UInt32) + sizeof(wchar_t) + LEN_ADDON;
   void *p = AllocateForBSTR(realLen);
   if (p == 0)
     return 0;
@@ -33,7 +34,8 @@ BSTR SysAllocStringByteLen(LPCSTR psz, unsigned int len)
   pb[0] = pb[1] = pb[2] = 0;
 */
   wchar_t *pb = (wchar_t *)(((Byte *)bstr) + len);
-  *pb =  L'\0';
+  // *pb =  L'\0';
+  memset(pb,0,sizeof(wchar_t) + LEN_ADDON);
   return bstr;
 }
 

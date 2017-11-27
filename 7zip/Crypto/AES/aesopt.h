@@ -164,7 +164,7 @@
 
 // 2003-09-16: Changed by Igor Pavlov. Check it.
 // #if defined(__GNUC__) || defined(__GNU_LIBRARY__)
-#if (defined(__GNUC__) || defined(__GNU_LIBRARY__)) && !defined(WIN32) && !defined(__CYGWIN__)
+#if (defined(__GNUC__) || defined(__GNU_LIBRARY__)) && !defined(_WIN32) && !defined(__CYGWIN__)
 
 #ifdef __linux__
 #include <endian.h>
@@ -173,6 +173,10 @@
 #include <machine/endian.h>
 #elif defined(sparc)
 #define PLATFORM_BYTE_ORDER AES_BIG_ENDIAN
+#elif defined(BIG_ENDIAN)
+#define PLATFORM_BYTE_ORDER AES_BIG_ENDIAN
+#elif defined(LITTLE_ENDIAN)
+#define PLATFORM_BYTE_ORDER AES_LITTLE_ENDIAN
 #else
 #include <sys/endian.h>
 #endif
@@ -192,7 +196,7 @@
 #  endif
 #elif defined(_MSC_VER)
 #  include <stdlib.h>
-#elif !defined(WIN32)
+#elif !defined(_WIN32)
 #  include <stdlib.h>
 #  if !defined (_ENDIAN_H)
 #    include <sys/param.h>

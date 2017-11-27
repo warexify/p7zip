@@ -50,8 +50,10 @@ static bool EnhancedMaskTest(const UString &mask, int maskPos,
   wchar_t maskChar = mask[maskPos];
   if(maskChar == kAnyCharChar)
   {
+    /*
     if (EnhancedMaskTest(mask, maskPos + 1, name, namePos))
       return true;
+    */
     if (nameLen == 0) 
       return false;
     return EnhancedMaskTest(mask,  maskPos + 1, name, namePos + 1);
@@ -68,7 +70,11 @@ static bool EnhancedMaskTest(const UString &mask, int maskPos,
   {
     wchar_t c = name[namePos];
     if (maskChar != c)
+#ifdef ENV_UNIX // Unix Filesystem are case sensitive.
+      if (maskChar != c)
+#else
       if (MyCharUpper(maskChar) != MyCharUpper(c))
+#endif
         return false;
     return EnhancedMaskTest(mask,  maskPos + 1, name, namePos + 1);
   }
@@ -204,7 +210,11 @@ bool CItem::CheckPath(const UStringVector &pathParts, bool isFile) const
 int CCensorNode::FindSubNode(const UString &name) const
 {
   for (int i = 0; i < SubNodes.Size(); i++)
+#ifdef ENV_UNIX // Unix Filesystem are case sensitive.
+    if (SubNodes[i].Name.Compare(name) == 0)
+#else
     if (SubNodes[i].Name.CollateNoCase(name) == 0)
+#endif
       return i;
   return -1;
 }
@@ -350,7 +360,11 @@ void CCensorNode::AddItem2(const UString &path, bool include, bool recursive)
 int CCensor::FindPrefix(const UString &prefix) const
 {
   for (int i = 0; i < Pairs.Size(); i++)
+#ifdef ENV_UNIX // Unix Filesystem are case sensitive.
+    if (Pairs[i].Prefix.Compare(prefix) == 0)
+#else
     if (Pairs[i].Prefix.CollateNoCase(prefix) == 0)
+#endif
       return i;
   return -1;
 }

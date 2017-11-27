@@ -18,6 +18,54 @@ extern BOOLEAN WINAPI RtlTimeToSecondsSince1970( const LARGE_INTEGER *Time, LPDW
 // #define TRACEN(u) u;
 #define TRACEN(u)  /* */
 
+static void FILE_SetDosError(void) {
+  int save_errno = errno;
+  switch (save_errno) {
+  case EAGAIN:
+    SetLastError( ERROR_SHARING_VIOLATION );
+    break;
+  case EBADF:
+    SetLastError( ERROR_INVALID_HANDLE );
+    break;
+  case ENOSPC:
+    SetLastError( ERROR_HANDLE_DISK_FULL );
+    break;
+  case EACCES:
+  case EPERM:
+  case EROFS:
+    SetLastError( ERROR_ACCESS_DENIED );
+    break;
+  case EBUSY:
+    SetLastError( ERROR_LOCK_VIOLATION );
+    break;
+  case ENOENT:
+    SetLastError( ERROR_FILE_NOT_FOUND );
+    break;
+  case EISDIR:
+    SetLastError( ERROR_CANNOT_MAKE );
+    break;
+  case ENFILE:
+  case EMFILE:
+    SetLastError( ERROR_NO_MORE_FILES );
+    break;
+  case EEXIST:
+    SetLastError( ERROR_FILE_EXISTS );
+    break;
+  case EINVAL:
+  case ESPIPE:
+    SetLastError( ERROR_SEEK );
+    break;
+  case ENOTEMPTY:
+    SetLastError( ERROR_DIR_NOT_EMPTY );
+    break;
+  case ENOEXEC:
+    SetLastError( ERROR_BAD_FORMAT );
+    break;
+  default:
+    SetLastError( ERROR_GEN_FAILURE );
+    break;
+  }
+}
 
 static void local_nameWindowToUnixA(LPCSTR lpFileName,char name[MAX_PATHNAME_LEN]) {
   char temp[MAX_PATHNAME_LEN];
@@ -103,6 +151,12 @@ t_file_handle WINAPI myCreateFileA(
   int   flags = 0;
 #endif
 
+#ifdef O_LARGEFILE
+  flags |= O_LARGEFILE;
+#endif
+
+ int mode = 0666;
+
   if (dwDesiredAccess & GENERIC_WRITE) flags |= O_WRONLY;
   if (dwDesiredAccess & GENERIC_READ)  flags |= O_RDONLY;
 
@@ -121,8 +175,39 @@ t_file_handle WINAPI myCreateFileA(
   }
 
   TRACEN((printf("myCreateFileA flags=%x\n",flags)))
+
+  size_t len = strlen(name);
+  if (len >= 4) {
+    if (    (tolower((unsigned char)name[len-1]) == 'e')
+         && (tolower((unsigned char)name[len-2]) == 'x')
+         && (tolower((unsigned char)name[len-3]) == 'e')
+         && (name[len-4] == '.') ) {
+       mode = 0777;
+    }
+  }
   
-  file->fd = open(name,flags, 0666);
+  file->fd = open(name,flags, mode);
+
+  if (file->fd == -1) {
+    int save_errno = errno; // save errno before lstat
+
+    delete file;
+    file = 0;
+
+    struct stat stat_info;
+    int ret = lstat(name,&stat_info);
+    if ((ret == 0) && (S_ISLNK(stat_info.st_mode)))
+    {
+       // FIXME : an invalid symbolic link becomes a sharing violation for 7-zip
+       SetLastError(ERROR_SHARING_VIOLATION);
+    } else {
+       errno = save_errno;
+       FILE_SetDosError();
+    }
+  } else {
+    file->ident_file = IDENT_FILE;
+    file->unix_filename = name;
+  }
 
   TRACEN((printf("\nTHR 0x%lx : myCreateFileA(%s) %s %s %s %s %s => %d\n",
                  (unsigned long)pthread_self(),name,
@@ -138,16 +223,6 @@ t_file_handle WINAPI myCreateFileA(
                  (dwCreationDisposition ==OPEN_ALWAYS)?"OPEN_ALWAYS ":
                  (dwCreationDisposition ==TRUNCATE_EXISTING)?"TRUNCATE_EXISTING ":"",
                  file->fd)))
-
-  if (file->fd == -1) {
-    printf("myCreateFileA : errno = %d (%s)\n",errno,strerror(errno));
-    delete file;
-    file = 0;
-  } else {
-    file->ident_file = IDENT_FILE;
-    file->unix_filename = name;
-  }
-
   return file;
 }
 

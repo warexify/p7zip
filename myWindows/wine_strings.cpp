@@ -27,10 +27,12 @@
 #include <pthread.h>
 #include <errno.h>
 
-#include <wchar.h>
 #include <windows.h>
-#include <ctype.h>
+#ifndef ENV_MACOSX
+#include <wchar.h>
 #include <wctype.h>
+#endif
+#include <ctype.h>
 
 LPSTR WINAPI CharPrevA( LPCSTR start, LPCSTR ptr ) { // OK for MBS
   while (*start && (start < ptr)) {
@@ -52,10 +54,14 @@ LPSTR WINAPI CharPrevA( LPCSTR start, LPCSTR ptr ) { // OK for MBS
 LPSTR WINAPI CharNextA( LPCSTR ptr ) {
   if (!*ptr)
     return (LPSTR)ptr;
+#ifdef ENV_MACOSX
+  return (LPSTR)(ptr + 1); // FIXME
+#else
   wchar_t wc;
   size_t len  = mbrtowc(&wc,ptr,MB_LEN_MAX,0); 
   if (len >= 1) return (LPSTR)(ptr + len);
   printf("INTERNAL ERROR - CharNextA\n");
   exit(EXIT_FAILURE);
+#endif
 }
 

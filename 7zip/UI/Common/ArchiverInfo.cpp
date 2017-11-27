@@ -10,7 +10,9 @@
 #include "Windows/FileFind.h"
 #include "Windows/FileName.h"
 #include "Windows/DLL.h"
+#ifdef WIN32 // FIXED
 #include "Windows/Registry.h"
+#endif
 #include "Windows/PropVariant.h"
 #include "../../Archive/IArchive.h"
 
@@ -72,11 +74,13 @@ static wchar_t *kFormatFolderName = L"Formats";
 static LPCTSTR kRegistryPath = TEXT("Software\\7-zip");
 static LPCTSTR kProgramPathValue = TEXT("Path");
 
-UString GetBaseFolderPrefix()
+static UString GetBaseFolderPrefixFromRegistry()
 {
   UString moduleFolderPrefix = GetModuleFolderPrefix();
+#ifdef WIN32 // FIXED  
   NFind::CFileInfoW fileInfo;
   if (NFind::FindFile(moduleFolderPrefix + kFormatFolderName, fileInfo))
+	  
     if (fileInfo.IsDirectory())
       return moduleFolderPrefix;
   CSysString pathSys;
@@ -100,6 +104,7 @@ UString GetBaseFolderPrefix()
         return path;
       }
   }
+#endif  
   return moduleFolderPrefix;
 }
 
@@ -233,7 +238,7 @@ void ReadArchiverInfoList(CObjectVector<CArchiverInfo> &archivers)
   
   #else
 
-  UString folderPath = GetBaseFolderPrefix() + 
+  UString folderPath = GetBaseFolderPrefixFromRegistry() + 
       kFormatFolderName + L"\\";
   NFind::CEnumeratorW enumerator(folderPath + L"*");
   NFind::CFileInfoW fileInfo;

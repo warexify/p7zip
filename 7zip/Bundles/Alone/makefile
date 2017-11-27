@@ -1,16 +1,12 @@
 
 PROG=../../../bin/7za
 
-LOCAL_FLAGS=-DENV_UNIX \
+LOCAL_FLAGS= \
 -DEXCLUDE_COM -DNO_REGISTRY -DFORMAT_7Z -DFORMAT_BZIP2 -DFORMAT_ZIP \
 -DFORMAT_TAR -DFORMAT_GZIP -DCOMPRESS_LZMA -DCOMPRESS_BCJ_X86 \
 -DCOMPRESS_BCJ2 -DCOMPRESS_COPY -DCOMPRESS_MF_MT -DCOMPRESS_PPMD \
 -DCOMPRESS_DEFLATE -DCOMPRESS_DEFLATE64 -DCOMPRESS_IMPLODE -DCOMPRESS_BZIP2 \
--DCRYPTO_ZIP -DCRYPTO_7ZAES -DCRYPTO_AES \
--I../../../myWindows \
--I../../../ \
--I../../../include_windows
-
+-DCRYPTO_ZIP -DCRYPTO_7ZAES -DCRYPTO_AES
 
 include ../../../makefile.machine
 
@@ -24,11 +20,10 @@ MY_WINDOWS= \
 	$(MY_HOME)/myFindFile.o \
 	$(MY_HOME)/myFiles.o \
 	$(MY_HOME)/myModuleFileName.o \
-	$(MY_HOME)/my_itow.o \
-	$(MY_HOME)/stuff_for_cygwin.o
+	$(MY_HOME)/my_ui64toa.o
 
 OBJS=\
-MyWindows.o \
+../../../BUILD/Common/MyWindows.o \
 7zAES.o \
 7zCompressionMode.o \
 7zDecode.o \
@@ -45,8 +40,21 @@ MyWindows.o \
 7zProperties.o \
 7zSpecStream.o \
 7zUpdate.o \
-AlignedBuffer.o \
-Alloc.o \
+../../../BUILD/Common/AlignedBuffer.o \
+../../../BUILD/Common/Alloc.o \
+../../../BUILD/Common/CommandLineParser.o \
+../../../BUILD/Common/ListFileUtils.o \
+../../../BUILD/Common/StdInStream.o \
+../../../BUILD/Common/StdOutStream.o \
+../../../BUILD/Common/Wildcard.o \
+../../../BUILD/Common/UTFConvert.o \
+../../../BUILD/Common/Vector.o \
+../../../BUILD/Common/StringConvert.o \
+../../../BUILD/Common/String.o \
+../../../BUILD/Common/CRC.o \
+../../../BUILD/Common/IntToString.o \
+../../../BUILD/Common/StringToInt.o \
+../../../BUILD/Common/Random.o \
 BZip2Decoder.o \
 BZip2Encoder.o \
 BZip2Error.o \
@@ -54,8 +62,6 @@ BZip2Handler.o \
 BZip2HandlerOut.o \
 BZip2Update.o \
 BranchCoder.o \
-CRC.o \
-CommandLineParser.o \
 ConsoleClose.o \
 CopyCoder.o \
 DefaultName.o \
@@ -80,7 +86,6 @@ ImplodeDecoder.o \
 ImplodeHuffmanDecoder.o \
 InBuffer.o \
 InStreamWithCRC.o \
-IntToString.o \
 ItemNameUtils.o \
 LSBFDecoder.o \
 LSBFEncoder.o \
@@ -90,7 +95,6 @@ LZMAEncoder.o \
 LZOutWindow.o \
 LimitedStreams.o \
 List.o \
-ListFileUtils.o \
 LockedStream.o \
 MT.o \
 Main.o \
@@ -107,19 +111,12 @@ ProgressUtils.o \
 PropIDUtils.o \
 PropVariant.o \
 PropVariantConversions.o \
-Random.o \
 RangeCoderBit.o \
 SHA256.o \
 SortUtils.o \
-StdInStream.o \
-StdOutStream.o \
 StreamBinder.o \
 StreamObjects.o \
-String.o \
-StringConvert.o \
-StringToInt.o \
 Synchronization.o \
-System.o \
 TarHandler.o \
 TarHandlerOut.o \
 TarHeader.o \
@@ -127,14 +124,11 @@ TarIn.o \
 TarOut.o \
 TarUpdate.o \
 TempFiles.o \
-UTFConvert.o \
 UpdateAction.o \
 UpdateCallbackConsole.o \
 UpdatePair.o \
 UpdateProduce.o \
 UserInputUtils.o \
-Vector.o \
-Wildcard.o \
 ZipAddCommon.o \
 ZipCipher.o \
 ZipCrypto.o \
@@ -158,7 +152,6 @@ x86.o \
 x86_2.o \
 ArchiveCommandLine.o \
 ArchiverInfo.o \
-CoderMixer.o \
 CoderMixer2.o \
 CoderMixer2MT.o \
 CrossThreadProgress.o \

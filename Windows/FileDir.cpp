@@ -342,7 +342,7 @@ bool MyGetCurrentDirectory(UString &path)
 #endif
 #endif
 
-/*
+
 bool MySearchPath(LPCTSTR path, LPCTSTR fileName, LPCTSTR extension, 
   CSysString &resultPath, UInt32 &filePart)
 {
@@ -377,7 +377,7 @@ bool MySearchPath(LPCWSTR path, LPCWSTR fileName, LPCWSTR extension,
   return true;
 }
 #endif
-*/
+
 
 bool MyGetTempPath(CSysString &path)
 {

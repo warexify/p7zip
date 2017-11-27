@@ -1,7 +1,5 @@
 // Windows/FileDir.h
 
-// #pragma once
-
 #ifndef __WINDOWS_FILEDIR_H
 #define __WINDOWS_FILEDIR_H
 
@@ -73,34 +71,26 @@ bool MyGetCurrentDirectory(UString &resultPath);
 #endif
 #endif
 
-/*
 bool MySearchPath(LPCTSTR path, LPCTSTR fileName, LPCTSTR extension, 
-  CSysString &resultPath, UInt32 &filePart);
+  CSysString &resultPath, UINT32 &filePart);
 #ifndef _UNICODE
 bool MySearchPath(LPCWSTR path, LPCWSTR fileName, LPCWSTR extension, 
-  UString &resultPath, UInt32 &filePart);
+  UString &resultPath, UINT32 &filePart);
 #endif
-*/
 
 inline bool MySearchPath(LPCTSTR path, LPCTSTR fileName, LPCTSTR extension, 
   CSysString &resultPath)
 {
-	return false;
-	/*
-  UInt32 value;
+  UINT32 value;
   return MySearchPath(path, fileName, extension, resultPath, value);
-*/
-  }
+}
 
 #ifndef _UNICODE
 inline bool MySearchPath(LPCWSTR path, LPCWSTR fileName, LPCWSTR extension, 
   UString &resultPath)
 {
-	return false;
-	/*
-  UInt32 value;
+  UINT32 value;
   return MySearchPath(path, fileName, extension, resultPath, value);
-  */
 }
 #endif
 

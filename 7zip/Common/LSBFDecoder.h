@@ -35,6 +35,7 @@ public:
   {
     m_Stream.Init();
     m_BitPos = kNumBigValueBits; 
+    m_Value = 0; // FIXED for valgrind : Use of uninitialised value of size in "void Normalize()", "m_Value = (m_Value << 8) | kInvertTable[b];"
     m_NormalValue = 0;
     NumExtraBytes = 0;
   }
@@ -47,7 +48,7 @@ public:
   {
     for (;m_BitPos >= 8; m_BitPos -= 8)
     {
-      Byte b;
+      Byte b = 0; // FIXED for valgrind
       if (!m_Stream.ReadByte(b))
         NumExtraBytes++;
       m_NormalValue = (b << (kNumBigValueBits - m_BitPos)) | m_NormalValue;

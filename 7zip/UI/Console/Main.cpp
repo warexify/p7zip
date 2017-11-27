@@ -2,9 +2,11 @@
 
 #include "StdAfx.h"
 
-#include <initguid.h>
+#include <locale.h> // FIXED
+
 #include <io.h>
 
+#include "Common/MyInitGuid.h"
 #include "Common/CommandLineParser.h"
 #include "Common/StdOutStream.h"
 #include "Common/Wildcard.h"
@@ -53,8 +55,8 @@ static const char *kCopyrightString = "\n7-Zip"
 " [NT]"
 #endif
 
-" 4.10 beta  Copyright (c) 1999-2004 Igor Pavlov  2004-10-21\n"
-"p7zip Version 4.10\n";
+" 4.12 beta  Copyright (c) 1999-2004 Igor Pavlov  2004-11-18\n"
+"p7zip Version 4.12";
 
 static const char *kHelpString = 
     "\nUsage: 7z <command> [<switches>...] <archive_name> [<file_names>...]\n"
@@ -121,19 +123,46 @@ static void PrintProcessTitle(const AString &processTitle, const UString &archiv
 }
 
 #ifdef ENV_UNIX
+extern int global_use_utf16_conversion;
+
 static void mySplitCommandLine(int numArguments,const char *arguments[],UStringVector &parts)
 {
    parts.Clear();
 
+   char *locale = setlocale(LC_CTYPE,0);
+   if (locale)
+   {
+      size_t len = strlen(locale);
+      char *locale_upper = (char *)malloc(len+1);
+      if (locale_upper)
+      {
+         strcpy(locale_upper,locale);
+
+         for(size_t i=0;i<len;i++) locale_upper[i] = toupper(locale_upper[i] & 255);
+
+         char * str = strstr(locale_upper,"UTF");
+         if (str) global_use_utf16_conversion = 1;
+
+         free(locale_upper);
+      }
+   }
+
    for(int ind=0;ind < numArguments; ind++)
    {
-      UString tmp = MultiByteToUnicodeString(arguments[ind]);
-      // tmp.Trim(); " " is a valid filename ...
-      if (!tmp.IsEmpty())
+      if ((ind == 2) && (strcmp(arguments[ind],"-no-utf16") == 0))
       {
+         global_use_utf16_conversion = 0;
+      }
+      else
+      {
+         UString tmp = MultiByteToUnicodeString(arguments[ind]);
+         // tmp.Trim(); " " is a valid filename ...
+         if (!tmp.IsEmpty())
+         {
            // converting "/" to "\\"
            tmp.Replace(L'/',L'\\');
            parts.Add(tmp);
+         }
       }
    }
 }
@@ -154,7 +183,12 @@ int Main2(int numArguments, const char *arguments[])
 
   if(commandStrings.Size() == 1)
   {
-    g_StdErr << kCopyrightString;
+    g_StdErr << kCopyrightString << " (locale=" << setlocale(LC_CTYPE,0) <<",Utf16=";
+    if (global_use_utf16_conversion) g_StdErr << "on";
+    else                             g_StdErr << "off";
+    g_StdErr << ",HugeFiles=";
+    if (sizeof(off_t) >= 8) g_StdErr << "on)\n";
+    else                    g_StdErr << "off)\n";
     PrintHelp();
     return 0;
   }
@@ -166,11 +200,12 @@ int Main2(int numArguments, const char *arguments[])
     return result;
 
   if (options.EnableHeaders) {
-    g_StdErr << kCopyrightString;
-    g_StdErr << "Support for files larger than 2GiB : ";
-
-    if (sizeof(off_t) >= 8) g_StdErr << "Enabled\n";
-    else                    g_StdErr << "Disabled\n";
+    g_StdErr << kCopyrightString << " (locale=" << setlocale(LC_CTYPE,0) <<",Utf16=";
+    if (global_use_utf16_conversion) g_StdErr << "on";
+    else                             g_StdErr << "off";
+    g_StdErr << ",HugeFiles=";
+    if (sizeof(off_t) >= 8) g_StdErr << "on)\n";
+    else                    g_StdErr << "off)\n";
   }
 
   if(options.HelpMode)
