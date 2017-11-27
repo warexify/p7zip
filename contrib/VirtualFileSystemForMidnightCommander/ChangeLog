@@ -1,0 +1,23 @@
+=-=-=-= 4.12.2beta
+* incorrect show small text files in internal (mc) viewer = fixed
+
+=-=-=-= 4.12.1beta
+Aligned with p7zip 4.12 beta (may work with v 4.10) Not work with oldest versions!
+* many workarounds to aligning with 4.12
+
+=-=-=-= 0.3.2beta
+Aligned with p7zip 0.91 cause version 4.10beta is buggy
+* incorrect handle files inside subdirs of archive without prefix "./" = fixed
+
+=-=-=-= 0.3.1beta
+Aligned with p7zip 0.91 cause version 4.10beta is buggy
+* incorrect handle filenames inside archive with length little than 12 symbols = fixed
+* p7zip trying extract all files with same name in top dir and other dirs of archive = workaround
+* some workarounds to align with version 0.91
+
+=-=-=-= 0.3beta
+Aligned with p7zip 0.90 cause version 4.10beta is buggy
+* incorrect handle filenames with spaces = fixed
+
+=-=-=-= 0.2beta
+first version, full of bugs...

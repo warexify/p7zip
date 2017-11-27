@@ -2,9 +2,6 @@
 
 #include "StdAfx.h"
 
-#include <locale.h>
-
-#include "Windows/COM.h"
 #include "Windows/Error.h"
 
 #include "Common/StdOutStream.h"
@@ -17,7 +14,11 @@
 
 using namespace NWindows;
 
-extern int Main2(int numArguments, const char *arguments[]);
+extern int Main2(
+  #ifndef _WIN32  
+  int numArguments, const char *arguments[]
+  #endif
+);
 
 static const char *kExceptionErrorMessage = "\n\nError:\n";
 static const char *kUserBreak  = "\nBreak signaled\n";
@@ -26,7 +27,7 @@ static const char *kMemoryExceptionMessage = "\n\nERROR: Can't allocate required
 static const char *kUnknownExceptionMessage = "\n\nUnknown Error\n";
 static const char *kInternalExceptionMessage = "\n\nInternal Error #";
 
-#ifdef UNICODE // FIXED 
+#ifdef UNICODE
 static inline bool IsItWindowsNT()
 {
   OSVERSIONINFO versionInfo;
@@ -40,8 +41,13 @@ static inline bool IsItWindowsNT()
 int 
 #ifdef _MSC_VER
 __cdecl 
-  #endif
-main(int numArguments, const char *arguments[])
+#endif
+main
+(
+#ifndef _WIN32  
+int numArguments, const char *arguments[]
+#endif
+)
 {
   #ifdef UNICODE
   if (!IsItWindowsNT())
@@ -50,16 +56,15 @@ main(int numArguments, const char *arguments[])
     return NExitCode::kFatalError;
   }
   #endif
-#ifdef WIN32  
-  NCOM::CComInitializer comInitializer;
-#else
-	setlocale(LC_ALL,""); // FIXED
-	mySetModuleFileName_resolve_link(arguments[0]);
-#endif
+  // setlocale(LC_COLLATE, ".OCP");
   NConsoleClose::CCtrlHandlerSetter ctrlHandlerSetter;
   try
   {
-    return Main2(numArguments, arguments);
+    return Main2(
+#ifndef _WIN32
+                 numArguments, arguments
+#endif
+                );
   }
   catch(const CNewException &)
   {

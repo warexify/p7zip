@@ -5,9 +5,9 @@
 #ifdef WIN32
 #include "StringConvert.h"
 #else
-#include "ctype.h"
+#include <ctype.h>
 #ifndef ENV_MACOSX
-#include "wctype.h"
+#include <wctype.h>
 #endif
 #include "StringConvert.h" // FIXED
 #endif
@@ -134,7 +134,13 @@ inline wchar_t MyCharUpper(wchar_t c)
 */
 wchar_t MyCharUpper(wchar_t c)
 {
-  return toupper(c);
+#ifdef ENV_MACOSX
+   int ret = c;
+   if ((ret >= 1) && (ret <256)) ret = toupper(ret);
+   return (wchar_t)ret;
+#else
+   return towupper(c);
+#endif
 }
 
 wchar_t * MyStringUpper(wchar_t *s)
@@ -144,11 +150,7 @@ wchar_t * MyStringUpper(wchar_t *s)
   wchar_t *ret = s;
   while (*s)
   {
-#ifdef ENV_MACOSX
-   if ((*s >= 'a') && (*s <= 'z')) *s += 'A' - 'a';
-#else
-   *s = towupper(*s);
-#endif
+   *s = MyCharUpper(*s);
     s++;
   }
   return ret;

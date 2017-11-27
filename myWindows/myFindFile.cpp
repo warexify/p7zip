@@ -190,4 +190,3 @@ extern "C" BOOL WINAPI FindClose( HANDLE handle ) {
   return FALSE;
 }
 
-

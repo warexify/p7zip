@@ -1,7 +1,6 @@
 
 
 extern "C" void mySetModuleFileNameA(const char * moduleFileName);
-void mySetModuleFileName_resolve_link(const char * moduleName);
 
 /************************* FILES *************************/
 
@@ -61,5 +60,6 @@ BOOL WINAPI myResetEvent(HANDLE hEvent);
 BOOL WINAPI myCloseEvent(HANDLE hFile);
 
 /************************* OTHERS *************************/
-char * _ui64toa(unsigned long long int, char *, int);
+extern int global_use_utf16_conversion;
+const char *my_getlocale(void);
 

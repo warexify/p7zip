@@ -1,13 +1,14 @@
 
+# LITTLE_ENDIAN : already defined by /usr/include/endian.h, line 46
 ALLFLAGS=-Wall -O2 -s -fPIC \
     	-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE \
 	-DNDEBUG -D_REENTRANT -DENV_UNIX \
-	-DLITTLE_ENDIAN \
 	$(LOCAL_FLAGS)
 
 CXX=g++ $(ALLFLAGS)
 CC=gcc $(ALLFLAGS)
 LINK_SHARED=-shared
 
-LOCAL_LIBS=-lpthread -ldl
+LOCAL_LIBS=-lpthread
+LOCAL_LIBS_DLL=$(LOCAL_LIBS) -ldl
 

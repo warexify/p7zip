@@ -131,13 +131,6 @@ DECLARE_INTERFACE_(ISequentialStream,IUnknown)
 /* END #include <ole2.h> */
 
 #include <stddef.h>
-#ifdef __cplusplus
-extern "C" {
-#endif
-char*  _ui64toa(unsigned __int64, char *, int);
-#ifdef __cplusplus
-}
-#endif
 
 #endif
 

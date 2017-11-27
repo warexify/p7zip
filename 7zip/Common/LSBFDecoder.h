@@ -35,8 +35,8 @@ public:
   {
     m_Stream.Init();
     m_BitPos = kNumBigValueBits; 
-    m_Value = 0; // FIXED for valgrind : Use of uninitialised value of size in "void Normalize()", "m_Value = (m_Value << 8) | kInvertTable[b];"
     m_NormalValue = 0;
+    m_Value = 0; // to disable "uninitialised value" warning
     NumExtraBytes = 0;
   }
   UInt64 GetProcessedSize() const 
@@ -48,9 +48,12 @@ public:
   {
     for (;m_BitPos >= 8; m_BitPos -= 8)
     {
-      Byte b = 0; // FIXED for valgrind
+      Byte b;
       if (!m_Stream.ReadByte(b))
+      {
+        b = 0xFF; // check it
         NumExtraBytes++;
+      }
       m_NormalValue = (b << (kNumBigValueBits - m_BitPos)) | m_NormalValue;
       m_Value = (m_Value << 8) | kInvertTable[b];
     }

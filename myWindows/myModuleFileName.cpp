@@ -63,6 +63,7 @@ extern "C" void mySetModuleFileNameA(const char * moduleFileName)
 	TRACEN((printf("mySetModuleFileNameA(%s) &myModuleFileName=%p\n",myModuleFileName,&myModuleFileName)))
 }
 
+#if 0 // not needed any more
 void mySetModuleFileName_resolve_link(const char * moduleName)
 {
 	char new_path[2048];
@@ -85,6 +86,7 @@ void mySetModuleFileName_resolve_link(const char * moduleName)
 
 	mySetModuleFileNameA(filename.c_str());
 }
+#endif
 
 DWORD GetModuleFileNameA( HMODULE hModule, LPSTR lpFilename, DWORD nSize)
 {

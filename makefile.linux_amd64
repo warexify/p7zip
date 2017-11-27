@@ -10,5 +10,6 @@ CXX=g++ $(ALLFLAGS)
 CC=gcc $(ALLFLAGS)
 LINK_SHARED=-shared
 
-LOCAL_LIBS=-lpthread -ldl
+LOCAL_LIBS=-lpthread
+LOCAL_LIBS_DLL=$(LOCAL_LIBS) -ldl
 

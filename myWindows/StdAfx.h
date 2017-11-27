@@ -40,10 +40,6 @@ typedef void * HMODULE; // FIXME
 #define lstrcpy strcpy
 #define lstrcat strcat
 
-// FIXME
-wchar_t *_itow (int, wchar_t *, int);
-
-
 typedef int (WINAPI *FARPROC)();
 #define CLASS_E_CLASSNOTAVAILABLE        ((HRESULT)0x80040111L)
 #define DLL_PROCESS_ATTACH   1

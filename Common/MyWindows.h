@@ -9,7 +9,7 @@
 
 #else
 
-#include <stddef.h> /* FIXED - for wchar_t */
+#include <stddef.h> // for wchar_t
 #include <string.h>
 
 #include "Types.h"
@@ -28,13 +28,7 @@ typedef int INT;
 typedef Int32 INT32;
 typedef unsigned int UINT;
 typedef UInt32 UINT32;
-/* FIXED : LONG, ULONG and DWORD must be 32bits
-   (needed for alpha CPU)
-typedef long LONG;
-typedef unsigned long ULONG;
-typedef unsigned long DWORD;
-*/
-typedef  INT32 LONG;
+typedef INT32 LONG;   // LONG, ULONG and DWORD must be 32-bit
 typedef UINT32 ULONG;
 typedef UINT32 DWORD;
 
@@ -165,22 +159,16 @@ typedef PROPVARIANT tagVARIANT;
 typedef tagVARIANT VARIANT;
 typedef VARIANT VARIANTARG;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-BSTR SysAllocStringByteLen(LPCSTR psz, unsigned int len);
-BSTR SysAllocString(const OLECHAR *sz);
-void SysFreeString(BSTR bstr);
-UINT SysStringByteLen(BSTR bstr);
-UINT SysStringLen(BSTR bstr);
+MY_EXTERN_C BSTR SysAllocStringByteLen(LPCSTR psz, UINT len);
+MY_EXTERN_C BSTR SysAllocString(const OLECHAR *sz);
+MY_EXTERN_C void SysFreeString(BSTR bstr);
+MY_EXTERN_C UINT SysStringByteLen(BSTR bstr);
+MY_EXTERN_C UINT SysStringLen(BSTR bstr);
 
-DWORD GetLastError();
-HRESULT VariantClear(VARIANTARG *prop);
-HRESULT VariantCopy(VARIANTARG *dest, VARIANTARG *src);
-LONG CompareFileTime(const FILETIME* ft1, const FILETIME* ft2);
-#ifdef __cplusplus
-}
-#endif
+MY_EXTERN_C DWORD GetLastError();
+MY_EXTERN_C HRESULT VariantClear(VARIANTARG *prop);
+MY_EXTERN_C HRESULT VariantCopy(VARIANTARG *dest, VARIANTARG *src);
+MY_EXTERN_C LONG CompareFileTime(const FILETIME* ft1, const FILETIME* ft2);
 
 #define CP_ACP    0
 #define CP_OEMCP  1

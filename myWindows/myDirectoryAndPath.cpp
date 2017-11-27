@@ -297,3 +297,4 @@ BOOL WINAPI SetFileAttributesA(LPCSTR lpFileName, DWORD attributes)  // FIXME
   TRACEN((printf("SetFileAttributesW(%s,%d) : FALSE\n",name,attributes)))
   return FALSE;
 }
+

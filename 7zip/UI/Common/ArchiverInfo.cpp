@@ -10,7 +10,7 @@
 #include "Windows/FileFind.h"
 #include "Windows/FileName.h"
 #include "Windows/DLL.h"
-#ifdef WIN32 // FIXED
+#ifdef _WIN32
 #include "Windows/Registry.h"
 #endif
 #include "Windows/PropVariant.h"
@@ -77,13 +77,12 @@ static LPCTSTR kProgramPathValue = TEXT("Path");
 static UString GetBaseFolderPrefixFromRegistry()
 {
   UString moduleFolderPrefix = GetModuleFolderPrefix();
-#ifdef WIN32 // FIXED  
   NFind::CFileInfoW fileInfo;
   if (NFind::FindFile(moduleFolderPrefix + kFormatFolderName, fileInfo))
-	  
     if (fileInfo.IsDirectory())
       return moduleFolderPrefix;
   CSysString pathSys;
+  #ifdef _WIN32
   {
     NRegistry::CKey key;
     if(key.Open(HKEY_CURRENT_USER, kRegistryPath, KEY_READ) == ERROR_SUCCESS)
@@ -104,7 +103,7 @@ static UString GetBaseFolderPrefixFromRegistry()
         return path;
       }
   }
-#endif  
+  #endif
   return moduleFolderPrefix;
 }
 

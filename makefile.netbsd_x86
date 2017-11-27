@@ -1,0 +1,16 @@
+#
+# makefile.netbsd - for NetBSD >= 1.5.2 (which has no libc_r -- use libpthread)
+#
+ALLFLAGS=-w -O2 -s -fPIC \
+    	-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE \
+	-DNDEBUG -D_REENTRANT -DENV_UNIX \
+	-DLITTLE_ENDIAN \
+	$(LOCAL_FLAGS)
+
+CXX=g++ $(ALLFLAGS)
+CC=gcc $(ALLFLAGS)
+LINK_SHARED=-shared
+
+LOCAL_LIBS=-lpthread
+LOCAL_LIBS_DLL=$(LOCAL_LIBS)
+

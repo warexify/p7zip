@@ -5,11 +5,10 @@
 # Copyright (C) 2004 Sergiy Niskorodov (sgh at ukrpost dot net)
 
 # Written by Sergiy Niskorodov aka SGh
-# Fixed by myspace (7za instead of 7z)
 #
-# beta version 0.2 (27 Jul 2004)
+# beta version 4.12.2 (09 Dec 2004)
 #
-# 7za for linux can be found on http://sourceforge.net/projects/p7zip/
+# 7z for linux can be found on http://sourceforge.net/projects/p7zip/
 
 
 # Thanks to urar VFS authors andrey joukov 2:5020/337.13@fidonet.org, 
@@ -37,7 +36,7 @@ SEVENZ=`which 7za`
 
 mc7zfs_list ()
 {
-    $SEVENZ l "$1" 2>/dev/null | gawk -v uid=${UID-0} '
+    $SEVENZ l "$1" 2> /dev/null | gawk -v uid=${UID-0} '
 BEGIN { flag=0 }
  /^-------/ { flag++; if (flag > 1) exit 0; next }
 {
@@ -50,15 +49,23 @@ date=month "-" day "-" year
 
 time=substr($2, 1, 5)
 
-gsub(/\\/, "/", $6)
-
 if (index($3, "D") != 0)
-    $3="drwxr-xr-x"
+    attr="drwxr-xr-x"
 else
 if (index($3, ".") != 0)
-    $3="-rw-r--r--"
+    attr="-rw-r--r--"
 
-printf "%s   1 %-8d %-8d %8d %s %s %s\n", $3, uid, 0, $4, date, time, $6
+size=$4
+
+$0=substr($0, 54)
+if (NF > 1)
+    name=$0
+else
+    name=$1
+
+gsub(/\\/, "/", name)
+
+printf "%s   1 %-8d %-8d %8d %s %s %s\n", attr, uid, 0, size, date, time, name
 }'
 }
 
@@ -67,15 +74,23 @@ mc7zfs_copyin ()
 # preserve pwd.
     pwd=`pwd`
 # Create a directory and copy in it the tmp file with the random name
-    mkdir "$3.dir"
-    cd "$3.dir"
+    dir="$3".dir
+    mkdir "$dir"
+    cd "$dir"
+    mv "$1" .
+    arname=`basename "$1"`
     di="${2%/*}"
 # if file is to be written upper in the archive tree, make fake dir
     if test "$di" != "${2##*/}" ; then
+#	echo asdsad 1>&2
         mkdir -p "$di" 
     fi
-    cp -fp "$3" "$3.dir/$2" 
-    $SEVENZ a "$1" "$2" >/dev/null 2>&1
+#    pwd > /tmp/cdir
+#    echo "$arname $2" > /tmp/ters
+    cp -fp "$3" "$dir/$2"
+#    cp -f "$1" "$3.dir"
+    $SEVENZ a "$arname" "$2" -w >/dev/null 2> /dev/null
+    mv "$arname" "$1"
     cd $pwd
     rm -rf "$3.dir"
 }
@@ -84,7 +99,16 @@ mc7zfs_copyout ()
 {
     dir=tmpdir.${RANDOM}
     mkdir /tmp/"$dir"
-    $SEVENZ e "$1" "$2" -o/tmp/"$dir" > /dev/null 2>&1
+#    echo "$1 $2 $3" > hers
+#	p7zip 0.91 don't understand filename in subdir without "./"
+#	but in top dir it understand only without "./"
+    $SEVENZ l "$1" 2> /dev/null | grep "[.][\\]" > /dev/null 2>&1 && echo "$2" | grep "\/" > /dev/null 2>&1 && EXFNAME=*./"$2" || EXFNAME="$2"
+#    echo "$EXFNAME" > 11111
+#    echo Q is a workaround of p7zip bug, if the same file is in top dir of archive and in some
+#	subdir of archive, when we try to extract file from top level dir then after extracting,
+#	7za try to extract same file from subdirs, echo Q say it Quit.
+#    echo Q | $SEVENZ e "$1" "$EXFNAME" -so > "$3" 2> /dev/null
+    echo Q | $SEVENZ e "$1" "$EXFNAME" -o/tmp/"$dir" > /dev/null 2> /dev/null
     EXFN=`basename "$2"`
     cat /tmp/"$dir"/"$EXFN" > "$3"
     rm -rf /tmp/"$dir"
@@ -99,18 +123,23 @@ mc7zfs_mkdir ()
     dir=tmpdir.${RANDOM}
     mkdir $dir
     cd $dir
-    mkdir -p "$2"  
+    mv "$1" .
+    arname=`basename "$1"`
+    mkdir -p "$2"
 # 7z cannot create an empty directory    
-#    touch "$2"/.7zfs
-    $SEVENZ a -r "$pwd"/"$1" "$2" >/dev/null 2>&1
-#    $SEVENZ d "$pwd"/"$1" "$2/.7zfs" >/dev/null
+#    touch "$2"/.emptydir
+    $SEVENZ a -r "$arname" "$2" >/dev/null 2>/dev/null
+#    echo "$1" "$2" >error34
+#    $SEVENZ d ../"$1" "$2/.7zfs" >/dev/null
+    mv "$arname" "$1"
     cd $pwd
     rm -rf $dir
 }
 
 mc7zfs_rm ()
 {
-    $SEVENZ d "$1" "$2" >/dev/null 2>&1
+    $SEVENZ l "$1" 2> /dev/null | grep "[.][\\]" > /dev/null 2>&1 && echo "$2" | grep "\/" > /dev/null 2>&1 && EXFNAME=*./"$2" || EXFNAME="$2"
+    $SEVENZ d "$1" "$EXFNAME" >/dev/null 2> /dev/null
 }
 
 umask 077

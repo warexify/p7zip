@@ -5,6 +5,7 @@ LOCAL_FLAGS=
 include ../../../makefile.machine
 
 LOCAL_SHARED=$(LINK_SHARED)
+LIBS=$(LOCAL_LIBS)
 
 MY_WINDOWS=
 

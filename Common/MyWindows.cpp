@@ -2,7 +2,7 @@
 
 #include "StdAfx.h"
 
-#ifndef WIN32
+#ifndef _WIN32
 
 #include "MyWindows.h"
 #include "Types.h"
@@ -11,67 +11,61 @@
 static inline void *AllocateForBSTR(size_t cb) { return ::malloc(cb); }
 static inline void FreeForBSTR(void *pv) { ::free(pv);}
 
-static int MyStringLen(const wchar_t *s)
+static UINT MyStringLen(const wchar_t *s)
 { 
-  int i;
+  UINT i;
   for (i = 0; s[i] != '\0'; i++);
   return i;
 }
 
-BSTR SysAllocStringByteLen(LPCSTR psz, unsigned int len)
+BSTR SysAllocStringByteLen(LPCSTR psz, UINT len)
 {
-  // FIXED int realLen = len + sizeof(UInt32) + 3;
+  // FIXED int realLen = len + sizeof(UINT) + 3;
   const int LEN_ADDON = sizeof(wchar_t) - 1;
-  int realLen = len + sizeof(UInt32) + sizeof(wchar_t) + LEN_ADDON;
+  int realLen = len + sizeof(UINT) + sizeof(wchar_t) + LEN_ADDON;
   void *p = AllocateForBSTR(realLen);
   if (p == 0)
     return 0;
-  *(UInt32 *)p = len;
-  BSTR bstr = (BSTR)((UInt32 *)p + 1);
+  *(UINT *)p = len;
+  void * bstr = (void *)((UINT *)p + 1);
   memmove(bstr, psz, len);
-/* FIXED
-  Byte *pb = ((Byte *)bstr) + len;
-  pb[0] = pb[1] = pb[2] = 0;
-*/
-  wchar_t *pb = (wchar_t *)(((Byte *)bstr) + len);
-  // *pb =  L'\0';
+  void *pb = (void *)(((Byte *)bstr) + len);
   memset(pb,0,sizeof(wchar_t) + LEN_ADDON);
-  return bstr;
+  return (BSTR)bstr;
 }
 
 BSTR SysAllocString(const OLECHAR *sz)
 {
   if (sz == 0)
     return 0;
-  UInt32 strLen = MyStringLen(sz);
-  UInt32 len = (strLen + 1) * sizeof(OLECHAR);
-  void *p = AllocateForBSTR(len + sizeof(UInt32));
+  UINT strLen = MyStringLen(sz);
+  UINT len = (strLen + 1) * sizeof(OLECHAR);
+  void *p = AllocateForBSTR(len + sizeof(UINT));
   if (p == 0)
     return 0;
-  *(UInt32 *)p = strLen * sizeof(OLECHAR); // FIXED
-  BSTR bstr = (BSTR)((UInt32 *)p + 1);
+  *(UINT *)p = strLen * sizeof(OLECHAR); // FIXED
+  void * bstr = (void *)((UINT *)p + 1);
   memmove(bstr, sz, len);
-  return bstr;
+  return (BSTR)bstr;
 }
 
 void SysFreeString(BSTR bstr)
 {
   if (bstr != 0)
-    FreeForBSTR((UInt32 *)bstr - 1);
+    FreeForBSTR((UINT *)bstr - 1);
 }
 
 UINT SysStringByteLen(BSTR bstr)
 {
   if (bstr == 0)
     return 0;
-  return *((UInt32 *)bstr - 1);
+  return *((UINT *)bstr - 1);
 
 }
 
 UINT SysStringLen(BSTR bstr)
 {
-  // FIXED return SysStringByteLen(bstr) >> 1;
-  return SysStringByteLen(bstr) / sizeof(wchar_t);
+  return SysStringByteLen(bstr) / sizeof(OLECHAR);
 }
 
 HRESULT VariantClear(VARIANTARG *prop)

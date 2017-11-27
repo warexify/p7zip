@@ -14,6 +14,7 @@ MY_WINDOWS= \
 include ../../../makefile.machine
 
 LOCAL_SHARED=$(LINK_SHARED)
+LIBS=$(LOCAL_LIBS_DLL)
 
 OBJS = \
 ../../../BUILD/Common/MyWindows.o \

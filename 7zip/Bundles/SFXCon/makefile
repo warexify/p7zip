@@ -7,6 +7,8 @@ LOCAL_FLAGS= \
 
 include ../../../makefile.machine
 
+LIBS=$(LOCAL_LIBS)
+
 MY_WINDOWS= \
 	$(MY_HOME)/myEvents.o \
 	$(MY_HOME)/myDirectoryAndPath.o \
@@ -16,6 +18,7 @@ MY_WINDOWS= \
 	$(MY_HOME)/wine_date_and_time.o \
 	$(MY_HOME)/myFindFile.o \
 	$(MY_HOME)/myFiles.o \
+	$(MY_HOME)/mySplitCommandLine.o \
 	$(MY_HOME)/myModuleFileName.o
 
 OBJS=\

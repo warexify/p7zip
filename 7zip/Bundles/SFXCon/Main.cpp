@@ -2,8 +2,6 @@
 
 #include "StdAfx.h"
 
-#include <locale.h> // FIXED
-
 #include <initguid.h>
 
 #include "Common/CommandLineParser.h"
@@ -37,8 +35,8 @@ using namespace NFile;
 using namespace NCommandLineParser;
 
 static const char *kCopyrightString = 
-"\n7-Zip SFX 4.12 beta  Copyright (c) 1999-2004 Igor Pavlov  2004-11-18\n"
-"p7zip Version 4.12";
+"\n7-Zip SFX 4.13 beta  Copyright (c) 1999-2004 Igor Pavlov  2004-12-14\n"
+"p7zip Version 4.13";
 
 static const int kNumSwitches = 6;
 
@@ -148,8 +146,8 @@ static const char *kUserErrorMessage  = "Incorrect command line"; // NExitCode::
 static const char *kIncorrectListFile = "Incorrect wildcard in listfile";
 static const char *kIncorrectWildCardInCommandLine  = "Incorrect wildcard in command line";
 
-static const CSysString kFileIsNotArchiveMessageBefore = "File \"";
-static const CSysString kFileIsNotArchiveMessageAfter = "\" is not archive";
+// static const CSysString kFileIsNotArchiveMessageBefore = "File \"";
+// static const CSysString kFileIsNotArchiveMessageAfter = "\" is not archive";
 
 static const char *kProcessArchiveMessage = " archive: ";
 
@@ -311,68 +309,27 @@ static void ThrowPrintFileIsNotArchiveException(const CSysString &fileName)
   ShowMessageAndThrowException(message, NExitCode::kFileIsNotArchive);
 }
 */
-#ifdef ENV_UNIX
-extern int global_use_utf16_conversion;
 
-static void mySplitCommandLine(int numArguments,const char *arguments[],UStringVector &parts)
+int Main2(
+  #ifndef _WIN32  
+  int numArguments, const char *arguments[]
+  #endif
+)
 {
-   parts.Clear();
-
-   char *locale = setlocale(LC_CTYPE,0);
-   if (locale)
-   {
-      size_t len = strlen(locale);
-      char *locale_upper = (char *)malloc(len+1);
-      if (locale_upper)
-      {
-         strcpy(locale_upper,locale);
-
-         for(size_t i=0;i<len;i++) locale_upper[i] = toupper(locale_upper[i] & 255);
-
-         char * str = strstr(locale_upper,"UTF");
-         if (str) global_use_utf16_conversion = 1;
-
-         free(locale_upper);
-      }
-   }
-
-   for(int ind=0;ind < numArguments; ind++)
-   {
-      if ((ind == 2) && (strcmp(arguments[ind],"-no-utf16") == 0))
-      {
-         global_use_utf16_conversion = 0;
-      }
-      else
-      {
-         UString tmp = MultiByteToUnicodeString(arguments[ind]);
-         // tmp.Trim(); " " is a valid filename ...
-         if (!tmp.IsEmpty())
-         {
-           // converting "/" to "\\"
-           tmp.Replace(L'/',L'\\');
-           parts.Add(tmp);
-         }
-      }
-   }
-}
-#endif
-
-// int Main2()
-int Main2(int numArguments, const char *arguments[])
-{
-#ifdef WIN32 // FIXED
+  #ifdef _WIN32  
   SetFileApisToOEM();
-#endif
+  #endif
   
   UStringVector commandStrings;
-#ifdef ENV_UNIX
+  #ifdef _WIN32  
+  NCommandLineParser::SplitCommandLine(GetCommandLineW(), commandStrings);
+  #else
+  extern void mySplitCommandLine(int numArguments,const char *arguments[],UStringVector &parts);
   mySplitCommandLine(numArguments,arguments,commandStrings);
-#else  
-  SplitCommandLine(GetCommandLineW(), commandStrings);
-#endif
+  #endif
 
   // After mySplitCommandLine
-  g_StdOut << kCopyrightString << " (locale=" << setlocale(LC_CTYPE,0) <<",Utf16=";
+  g_StdOut << kCopyrightString << " (locale=" << my_getlocale() <<",Utf16=";
   if (global_use_utf16_conversion) g_StdOut << "on";
   else                             g_StdOut << "off";
   g_StdOut << ",HugeFiles=";
@@ -479,6 +436,7 @@ int Main2(int numArguments, const char *arguments[])
           NExtract::NOverwriteMode::kAskBefore;
       eo.OutputDir = outputDir;
       eo.YesToAll = yesToAll;
+
       HRESULT result = DecompressArchives(
           v1, v2,
           wildcardCensorHead, 

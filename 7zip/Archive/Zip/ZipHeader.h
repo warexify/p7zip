@@ -20,7 +20,7 @@ namespace NSignature
   static const UInt32 kMarkerSize = 4;
 }
 
-const UInt32 kZip64EndOfCentralDirRecordSize = 44; // FIXED
+const UInt32 kZip64EndOfCentralDirRecordSize = 44;
 
 /*
 struct CEndOfCentralDirectoryRecord

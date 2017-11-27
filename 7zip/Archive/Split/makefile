@@ -9,6 +9,7 @@ MY_WINDOWS= \
 include ../../../makefile.machine
 
 LOCAL_SHARED=$(LINK_SHARED)
+LIBS=$(LOCAL_LIBS)
 
 OBJS = \
 ../../../BUILD/Common/Alloc.o \

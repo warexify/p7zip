@@ -1,7 +1,6 @@
 
 MY_HOME=../../../myWindows
 
-LIBS=$(LOCAL_LIBS)
 RM=rm -f
 CFLAGS=-c \
 -I../../../myWindows \

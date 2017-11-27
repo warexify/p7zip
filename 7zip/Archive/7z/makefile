@@ -5,6 +5,7 @@ LOCAL_FLAGS=
 include ../../../makefile.machine
 
 LOCAL_SHARED=$(LINK_SHARED)
+LIBS=$(LOCAL_LIBS_DLL)
 
 MY_WINDOWS= \
 	$(MY_HOME)/myEvents.o \

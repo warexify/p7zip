@@ -15,6 +15,6 @@ LINK_SHARED=-shared
 #CC=/opt/SUNWspro/bin/cc $(ALLFLAGS)
 #LINK_SHARED=-G
 
-LOCAL_LIBS=-lpthread -lrt -ldl
-
+LOCAL_LIBS=-lpthread -lrt
+LOCAL_LIBS_DLL=$(LOCAL_LIBS) -ldl
 

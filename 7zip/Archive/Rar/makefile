@@ -5,13 +5,13 @@ LOCAL_FLAGS=
 include ../../../makefile.machine
 
 LOCAL_SHARED=$(LINK_SHARED)
+LIBS=$(LOCAL_LIBS_DLL)
 
 MY_WINDOWS=$(MY_HOME)/myEvents.o \
 	$(MY_HOME)/myFindFile.o \
 	$(MY_HOME)/myModuleFileName.o \
 	$(MY_HOME)/myLastError.o \
 	$(MY_HOME)/wine_date_and_time.o \
-	$(MY_HOME)/my_ui64toa.o \
 	$(MY_HOME)/wine_strings.o
 
 OBJS = \
@@ -21,6 +21,7 @@ OBJS = \
 ../../../BUILD/Common/StringConvert.o\
 ../../../BUILD/Common/String.o\
 ../../../BUILD/Common/CRC.o\
+../../../BUILD/Common/IntToString.o\
 DllExports.o\
 CodecsPath.o\
 FilterCoder.o\

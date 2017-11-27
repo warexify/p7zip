@@ -7,6 +7,7 @@ MY_WINDOWS= $(MY_HOME)/myEvents.o
 include ../../../makefile.machine
 
 LOCAL_SHARED=$(LINK_SHARED)
+LIBS=$(LOCAL_LIBS)
 
 OBJS = \
 ../../../BUILD/Common/MyWindows.o \

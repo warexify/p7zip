@@ -1,4 +1,33 @@
 
+Version 4.13
+============
+  - new port of 7za from the source of 7za 4.13Beta for Windows
+
+  - From Windows version of 7-zip 4.13 :
+    - Switch "--" stops switches parsing
+    - Some bugs were fixed
+    - User's manual updated (DOCS/MANUAL/index.htm)
+
+  - makefile.netbsd_x86 added [Bug #1069055].
+
+  - new method to install 7z and its plugins (the "link" method do no work)
+
+  - installer added (install.sh).
+
+  - makefile.macosx_with_fink becomes makefile.macosx
+    and makefile.macosx uses c++ instead of CC
+    (on some MacOSX, CC is a link to gcc instead of g++)
+
+  - new flag "-utf16" to enable "utf16" conversion [Bug #1075229].
+
+  - new logic to automatically enable or disable "utf16" conversion :
+    no locale, locale=="C" or locale=="POSIX" implies utf16=off
+    else  utf16=on
+    uses "-utf16" or "-no-utf16" to change this behaviour.
+    [Bug #1075229]
+
+  - 7z (compiled with -O2) works now on Sparc Solaris. 
+
 Version 4.12
 ============
   - new port of 7za from the source of 7za 4.12Beta for Windows

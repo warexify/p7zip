@@ -9,10 +9,10 @@
 
 #ifndef __APPLE_CC__
 #include <wchar.h>
-#endif
-#include <windows.h>
 #include <locale.h>
+#endif
 
+#include <windows.h>
 #include "myPrivate.h"
 
 #include "StdAfx.h"
@@ -102,27 +102,25 @@ void test_mbs(void)
   }
 
    UString ustr(wstr1);
-   assert(ustr.Length() == len1);
+   assert(ustr.Length() == (int)len1);
 
    AString  ansistr(astr);
-   assert(ansistr.Length() == len0);
+   assert(ansistr.Length() == (int)len0);
 
    ansistr = UnicodeStringToMultiByte(ustr);
-   assert(ansistr.Length() == len0);
+   assert(ansistr.Length() == (int)len0);
 
    assert(strcmp(ansistr,astr) == 0);
    assert(wcscmp(ustr,wstr1) == 0);
 
    UString ustr2 = MultiByteToUnicodeString(astr);
-   assert(ustr2.Length() == len1);
+   assert(ustr2.Length() == (int)len1);
    assert(wcscmp(ustr2,wstr1) == 0);
 }
 #endif
 
 int main()
 {
-	setlocale(LC_ALL,"");
-
 	printf("sizeof(Byte)   : %d\n",(int)sizeof(Byte));
 	printf("sizeof(UInt16) : %d\n",(int)sizeof(UInt16));
 	printf("sizeof(UInt32) : %d\n",(int)sizeof(UInt32));
@@ -134,6 +132,7 @@ int main()
 	test_path();
 
 #ifndef __APPLE_CC__
+	setlocale(LC_ALL,"");
 	test_mbs();
 #endif
 
