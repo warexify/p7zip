@@ -43,7 +43,8 @@ static const char *kCopyrightString =
 static const int kNumSwitches = 6;
 
 #ifdef _WIN32
-const wchar_t *defaultExt = L".exe";
+static const wchar_t *kDefaultExt = L".exe";
+static const int kDefaultExtLength = 4;
 #endif
 
 namespace NKey {
@@ -385,10 +386,10 @@ int Main2(
 
   bool yesToAll = parser[NKey::kYes].ThereIs;
 
-#ifdef _WIN32
-  if (archiveName.Right(4).CompareNoCase(defaultExt) != 0)
-    archiveName += defaultExt;
-#endif
+  #ifdef _WIN32
+  if (archiveName.Right(kDefaultExtLength).CompareNoCase(kDefaultExt) != 0)
+    archiveName += kDefaultExt;
+  #endif
 
   // NExtractMode::EEnum extractMode;
   // bool isExtractGroupCommand = command.IsFromExtractGroup(extractMode);

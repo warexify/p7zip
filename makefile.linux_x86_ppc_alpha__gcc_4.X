@@ -4,7 +4,6 @@
 #
 ALLFLAGS=-O1 -s -fPIC \
 	-DHAVE_GCCVISIBILITYPATCH -fvisibility=hidden -fvisibility-inlines-hidden \
-	-DHAVE_TIMEGM \
     	-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE \
 	-DNDEBUG -D_REENTRANT -DENV_UNIX \
 	$(LOCAL_FLAGS)

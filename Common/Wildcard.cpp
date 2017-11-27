@@ -25,11 +25,11 @@ static const UString kIllegalFileNameChars = kIllegalWildCardFileNameChars +
 
 static inline bool IsCharDirLimiter(wchar_t c)
 {
-#ifdef _WIN32
-  return (c == kDirDelimiter1 || c == kDirDelimiter2);
-#else
-  return (c == kDirDelimiter2);
-#endif
+  return (
+    #ifdef _WIN32
+    c == kDirDelimiter1 || 
+    #endif
+    c == kDirDelimiter2);
 }
 
 // -----------------------------------------

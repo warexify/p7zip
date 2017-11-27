@@ -1,3 +1,29 @@
+Version 4.39
+============
+
+  - From Windows version of 7-zip 4.39 :
+    - Bug in versions 4.33:4.38 was fixed:
+      7-Zip could not correctly compress files larger than 2 GB 
+      to 7z archive in fast/fastest modes (HC4 match finder).
+
+Version 4.38
+============
+
+  - From Windows version of 7-zip 4.38 :
+    - Some bugs were fixed.
+
+  - new manpage : 7zr.1
+  - update manpages : 7z.1 and 7za.1
+  - new switch : --help
+
+  - patch #1465026 - Patch for install.sh for packagers
+
+  - DosDateTimeToFileTime fixed (rar format)
+
+  - contrib/VirtualFileSystemForMidnightCommander/u7z updated
+    (thanks sgh_punk)
+
+
 Version 4.37
 ============
   - From Windows version of 7-zip 4.37 :

@@ -115,11 +115,7 @@ STDMETHODIMP CHandler::GetProperty(UInt32 index, PROPID propID, PROPVARIANT *val
       {
         // wchar_t name[32];
         // ConvertUInt64ToString(index + 1, name);
-#ifdef _WIN32
-        UString s = L"[BOOT]\\";
-#else
-        UString s = L"[BOOT]/";
-#endif
+        UString s = L"[BOOT]" WSTRING_PATH_SEPARATOR;
         // s += name;
         // s += L"-";
         s += be.GetName();

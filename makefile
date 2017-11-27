@@ -150,10 +150,12 @@ ARCHIVE=$(shell basename $(REP))
 
 tar_all : clean
 	rm -f  ../$(ARCHIVE)_src_all.tar.bz2
+	cp makefile.linux_x86_ppc_alpha makefile.machine
 	cd .. ; (tar cf - $(ARCHIVE) | bzip2 -9 > $(ARCHIVE)_src_all.tar.bz2)
 
 tar_all2 : clean
 	rm -f  ../$(ARCHIVE)_src_all_7z.tar.bz2
+	cp makefile.linux_x86_ppc_alpha makefile.machine
 	cd .. ; ( 7za a -ttar -so tt $(ARCHIVE) | 7za a -mx=9 -tbzip2 -si $(ARCHIVE)_src_all_7z.tar.bz2 )
 
 src_7z : clean

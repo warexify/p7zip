@@ -18,8 +18,10 @@
 #include "Windows/FileName.h"
 #include "Windows/Defs.h"
 #include "Windows/Error.h"
-#include "Windows/Error.h"
 #include "Windows/System.h"
+#ifdef _WIN32
+#include "Windows/MemoryLock.h"
+#endif
 
 #include "../../IPassword.h"
 #include "../../ICoder.h"
@@ -63,7 +65,9 @@ static const char *kCopyrightString = "\n7-Zip"
 
 static const char *kHelpString = 
     "\nUsage: 7z"
-#ifdef EXCLUDE_COM
+#ifdef _NO_CRYPTO
+    "r"
+#elif EXCLUDE_COM
     "a"
 #endif
     " <command> [<switches>...] <archive_name> [<file_names>...]\n"
@@ -91,18 +95,19 @@ static const char *kHelpString =
     "  CAUTION : the scanning stage can never end because of symlinks like '..'\n"
     "            (ex:  ln -s .. ldir)\n"
 #endif
-    "  -m{Parameters}: set compression Method\n"
+    "  -m{Parameters}: set compression Method (see the manual)\n"
     "  -o{Directory}: set Output directory\n"
     "  -p{Password}: set Password\n"
     "  -r[-|0]: Recurse subdirectories\n"
     "  (CAUTION: this flag does not do what you think, avoid using it)\n"
     "  -sfx[{name}]: Create SFX archive\n"
     "  -si[{name}]: read data from stdin\n"
-    "  -so: write data to stdout\n"
+    "  -so: write data to stdout (eg: % 7z a dummy -tgzip Doc.txt > archive.gz)\n"
+    "  -slt: sets technical mode for l (list) command\n"
     "  -t{Type}: Set type of archive\n"
     "  -v{Size}[b|k|m|g]: Create volumes\n"
     "  -u[-][p#][q#][r#][x#][y#][z#][!newArchiveName]: Update options\n"
-    "  -w[{path}]: assign Work directory. Empty path means a temporary directory\n"
+    "  -w[path]: assign Work directory. Empty path means a temporary directory\n"
     "  -x[r[-|0]]]{@listfile|!wildcard}: eXclude filenames\n"
     "  -y: assume Yes on all queries\n";
 
@@ -115,11 +120,6 @@ static const char *kUserErrorMessage  = "Incorrect command line"; // NExitCode::
 
 static const wchar_t *kDefaultSfxModule = L"7zCon.sfx";
 
-static void PrintHelp(CStdOutStream &s)
-{
-  s << kHelpString;
-}
-
 static void ShowMessageAndThrowException(CStdOutStream &s, LPCSTR message, NExitCode::EEnum code)
 {
   s << message << endl;
@@ -128,7 +128,7 @@ static void ShowMessageAndThrowException(CStdOutStream &s, LPCSTR message, NExit
 
 static void PrintHelpAndExit(CStdOutStream &s) // yyy
 {
-  PrintHelp(s);
+  s << kHelpString;
   ShowMessageAndThrowException(s, kUserErrorMessage, NExitCode::kUserError);
 }
 
@@ -149,18 +149,18 @@ static void GetArguments(int numArguments, const char *arguments[], UStringVecto
 }
 #endif
 
-static void showCopyrightAndHelp(CStdOutStream &out,bool needHelp)
+static void ShowCopyrightAndHelp(CStdOutStream &s, bool needHelp)
 {
-    out << kCopyrightString << " (locale=" << my_getlocale() <<",Utf16=";
-    if (global_use_utf16_conversion) out << "on";
-    else                             out << "off";
-    out << ",HugeFiles=";
-    if (sizeof(off_t) >= 8) out << "on,";
-    else                    out << "off,";
+    s << kCopyrightString << " (locale=" << my_getlocale() <<",Utf16=";
+    if (global_use_utf16_conversion) s << "on";
+    else                             s << "off";
+    s << ",HugeFiles=";
+    if (sizeof(off_t) >= 8) s << "on,";
+    else                    s << "off,";
     int nbcpu = NWindows::NSystem::GetNumberOfProcessors();
-    if (nbcpu > 1) out << nbcpu << " CPUs)\n";
-    else           out << nbcpu << " CPU)\n";
-    if (needHelp) out << kHelpString;
+    if (nbcpu > 1) s << nbcpu << " CPUs)\n";
+    else           s << nbcpu << " CPU)\n";
+    if (needHelp) s << kHelpString;
 }
 
 int Main2(
@@ -184,7 +184,7 @@ int Main2(
 
   if(commandStrings.Size() == 1)
   {
-    showCopyrightAndHelp(g_StdOut,true);
+    ShowCopyrightAndHelp(g_StdOut, true);
     return 0;
   }
   commandStrings.Delete(0);
@@ -197,7 +197,7 @@ int Main2(
 
   if(options.HelpMode)
   {
-    showCopyrightAndHelp(g_StdOut,true);
+    ShowCopyrightAndHelp(g_StdOut, true);
     return 0;
   }
 
@@ -210,7 +210,7 @@ int Main2(
   g_StdStream = &stdStream;
 
   if (options.EnableHeaders)
-    showCopyrightAndHelp(stdStream,false);
+    ShowCopyrightAndHelp(stdStream, false);
 
   parser.Parse2(options);
 
