@@ -1,6 +1,6 @@
 PROG=../../../../bin/Codecs/Rar29.so
 
-LOCAL_FLAGS=
+LOCAL_FLAGS=$(CC_SHARED)
 
 MY_WINDOWS=
 
@@ -25,7 +25,7 @@ $(OBJ_CRC32) \
 InBuffer.o \
 OutBuffer.o \
 StreamUtils.o \
-LZOutWindow.o
+LzOutWindow.o
 
 include ../../../../makefile.glb
 

@@ -1,4 +1,4 @@
-// PPMDAlone.cpp
+// PpmdAlone.cpp
 
 #include "StdAfx.h"
 
@@ -22,8 +22,8 @@
 #include "../../Common/FileStreams.h"
 #include "../../Common/StreamUtils.h"
 
-#include "../PPMD/PPMDDecoder.h"
-#include "../PPMD/PPMDEncoder.h"
+#include "../PpmdDecoder.h"
+#include "../PpmdEncoder.h"
 
 using namespace NCommandLineParser;
 
@@ -234,7 +234,7 @@ int main2(int n, const char *args[])
   if (encodeMode)
   {
     // NCompress::NLZMA::CEncoder *encoderSpec = new NCompress::NLZMA::CEncoder;
-    NCompress::NPPMD::CEncoder *encoderSpec = new NCompress::NPPMD::CEncoder;
+    NCompress::NPpmd::CEncoder *encoderSpec = new NCompress::NPpmd::CEncoder;
     CMyComPtr<ICompressCoder> encoder = encoderSpec;
 
     if (stdInMode)
@@ -305,7 +305,7 @@ int main2(int n, const char *args[])
   else
   {
     // NCompress::NLZMA::CDecoder *decoderSpec = new NCompress::NLZMA::CDecoder;
-    NCompress::NPPMD::CDecoder *decoderSpec = new NCompress::NPPMD::CDecoder;
+    NCompress::NPpmd::CDecoder *decoderSpec = new NCompress::NPpmd::CDecoder;
     CMyComPtr<ICompressCoder> decoder = decoderSpec;
     const UInt32 kPropertiesSize = 5;
     Byte header[kPropertiesSize + 8];
