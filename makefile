@@ -3,7 +3,7 @@ DEST_BIN=/usr/local/bin
 DEST_SHARE=/usr/local/lib/p7zip
 DEST_MAN=/usr/local/man
 
-.PHONY: all all2 7za sfx 7z common clean tar_src tar_bin depend
+.PHONY: all all2 7za sfx 7z common clean tar_src tar_bin depend test test_7z
 
 all::7za
 
@@ -116,11 +116,18 @@ clean:
 	cd 7zip/Compress/Rar29    ; $(MAKE) clean
 	cd 7zip/Crypto/7zAES      ; $(MAKE) clean
 	cd 7zip/Crypto/AES        ; $(MAKE) clean
+	chmod +x install.sh contrib/VirtualFileSystemForMidnightCommander/u7z check/check.sh check/clean_all.sh
+	cd check                  ; ./clean_all.sh
 	find . -name "*~" -exec rm -f {} \;
 	find . -name "*.orig" -exec rm -f {} \;
 	find . -name ".*.swp" -exec rm -f {} \;
 	rm -fr bin
-	chmod +x install.sh contrib/VirtualFileSystemForMidnightCommander/u7z
+
+test: all
+	cd check ; ./check.sh ../bin/7za
+
+test_7z: all2
+	cd check ; ./check.sh ../bin/7z
 
 install:
 	./install.sh $(DEST_BIN) $(DEST_SHARE) $(DEST_MAN)
