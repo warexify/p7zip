@@ -739,7 +739,7 @@ int Main2(int numArguments, const char *arguments[])
   
   g_StdOut << kCopyrightString;
 
-  g_StdOut << "p7zip Version 0.90\n";
+  g_StdOut << "p7zip Version 0.91\n";
   g_StdOut << "Support for files larger than 2GiB : ";
 
   if (sizeof(off_t) >= 8) g_StdOut << "Enabled\n";

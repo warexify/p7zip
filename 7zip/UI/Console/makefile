@@ -2,14 +2,7 @@ PROG=../../../bin/7z
 
 LOCAL_FLAGS=
 
-OPERATING_SYSTEM=$(shell uname -o)
-
-ifeq ($(OPERATING_SYSTEM),Cygwin)
-# Cygwin does not support -ldl
-LOCAL_LIBS=-lpthread
-else
-LOCAL_LIBS=-lpthread -ldl -lm
-endif
+include ../../../makefile.machine
 
 MY_WINDOWS=$(MY_HOME)/myDirectoryAndPath.o \
 	$(MY_HOME)/myLastError.o \
@@ -69,10 +62,6 @@ OBJS = \
 	FilePathAutoRename.o \
 	FileStreams.o \
 	CopyCoder.o
-
-# Registry.o \
-# WorkDir.o \
-# NewHandler.o
 
 include ../../../makefile.glb
 

@@ -1,0 +1,3 @@
+
+LOCAL_LIBS=-lc_r
+

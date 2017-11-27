@@ -8,6 +8,8 @@ LOCAL_FLAGS=-D_FILE_OFFSET_BITS=64 -DENV_UNIX -DNDEBUG \
 -DCOMPRESS_MF_MT -DCOMPRESS_PPMD -DCOMPRESS_DEFLATE -DCOMPRESS_DEFLATE64 \
 -DCOMPRESS_IMPLODE -DCOMPRESS_BZIP2 -DCRYPTO_ZIP -DCRYPTO_7ZAES -DCRYPTO_AES
 
+include ../../../makefile.machine
+
 MY_WINDOWS=$(MY_HOME)/myEvents.o \
 	$(MY_HOME)/myFiles.o \
 	$(MY_HOME)/myFindFile.o \
@@ -20,9 +22,6 @@ MY_WINDOWS=$(MY_HOME)/myEvents.o \
 	$(MY_HOME)/wine_variant.o \
 	$(MY_HOME)/wine_strings.o \
 	$(MY_HOME)/stuff_for_cygwin.o
-
-LOCAL_SHARED=-lpthread -lm
-
 
 OBJS=\
 7zAES.o 7zCompressionMode.o 7zDecode.o 7zEncode.o 7zExtract.o 7zFolderInStream.o \

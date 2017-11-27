@@ -1,7 +1,7 @@
-	p7zip 0.90
+	p7zip 0.91
 	==========
 
-Homepage : http://sourceforge.net/projects/p7zip/
+Homepage : http://p7zip.sourceforge.net/
 
 p7zip is a port of the Windows programs 7z.exe and 7za.exe provide by 7-zip.
 
@@ -14,14 +14,27 @@ Homepage : www.7-zip.org
 
 BUILD :
 -------
+
+  If you have downloaded the "bin" package,
+	use directly the program bin/7za.
+	(tested on Redhat 9.0, Fedora 2, Mandrake 10.0,
+	Debian 3.0)
+	As the program is statically linked, its should
+	run on many x86 linux.
+
+  If you have downloaded the "source" package,
+	According to your OS, copy makefile.linux,
+	makefile.freebsd or makefile.cygwin over makefile.machine
+
 	make clean : to clean all directories
 	make       : to build bin/7za, bin/7z and its plugins.
 
   this procedure has been tested on :
-	Redhat 9.0 Standart (x86)
-	Fedora 2 (Redhat) (x86)
-	Mandrake 10.0 Official (x86)
-	Debian 3.0 Stable (x86)
+	Linux - Redhat 9.0 Standart (x86)
+	Linux - Fedora 2 (Redhat) (x86)
+	Linux - Mandrake 10.0 Official (x86)
+	Linux - Debian 3.0 Stable (x86)
+	FreeBSD 5.2.1 (x86)
 	CYGWIN_NT-5.1 1.5.9(0.112/4/2) 2004-03-18 23:05 i686 Cygwin
 
 INSTALL :

@@ -1,0 +1,16 @@
+./myWindows/myFindFile.cpp
+./7zip/UI/Console/ExtractCallback.cpp
+./7zip/UI/Console/Main.cpp
+./7zip/UI/Console/Update.cpp
+./7zip/UI/Common/SortUtils.cpp
+./7zip/UI/Common/DefaultName.cpp
+./7zip/UI/Common/OpenArchive.cpp
+./7zip/UI/Common/UpdatePair.cpp
+./7zip/Archive/Deb/DebIn.cpp
+./7zip/Archive/Rar/RarHandler.cpp
+./7zip/Archive/7z/7zUpdate.cpp
+./7zip/Archive/7z/7zMethods.cpp
+./7zip/Archive/7z/7zHandlerOut.cpp
+./Common/CommandLineParser.cpp
+./Common/String.cpp
+./Common/Wildcard.cpp

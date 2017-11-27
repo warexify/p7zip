@@ -2,7 +2,7 @@ PROG=all.so
 
 LOCAL_FLAGS=-I. -I.. -I../include_windows
 
-LOCAL_SHARED=-lpthread -lm
+include ../makefile.machine
 
 OBJS=myEvents.o myFiles.o myFindFile.o myDirectoryAndPath.o \
 	myLastError.o myModuleFileName.o my_itow.o \

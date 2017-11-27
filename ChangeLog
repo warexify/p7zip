@@ -1,4 +1,19 @@
 
+Version 0.91
+============
+  - add support for FreeBSD 5.2.1
+    In Windows/Time.h add "#include <time.h>"
+    and prototype change for FileTimeToUnixTime()
+
+  - bug 990684 Corrected : support of filesystem
+    that support case sensitive filenames.
+    Example, since version 0.91 : 
+    "7z a glibc -r glibc-2.3.2"
+    does not terminate with error :
+      Duplicate filename:
+      glibc-2.3.2\sysdeps\m88k\m88100\add_n.S
+      glibc-2.3.2\sysdeps\m88k\m88100\add_n.s 
+
 Version 0.90
 ============
   - build of 7z.exe and its DLL.

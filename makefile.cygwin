@@ -1,0 +1,4 @@
+
+# Cygwin does not support -ldl
+LOCAL_LIBS=-lpthread
+

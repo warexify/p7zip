@@ -41,5 +41,6 @@ tar2 : clean
 	cd .. ; (tar cf - $(ARCHIVE) | bzip2 -9 > $(ARCHIVE).tar.bz2)
 
 tar_bin:
-	tar cf - bin html LGPL.txt README TODO | bzip2 -9 > ../p7zip_bin.tar.bz2
+	rm -f  $(ARCHIVE)_x86_linux_bin.tar.bz2
+	cd .. ; (tar cf - $(ARCHIVE)/bin $(ARCHIVE)/ChangeLog $(ARCHIVE)/html $(ARCHIVE)/LGPL.txt $(ARCHIVE)/README $(ARCHIVE)/TODO | bzip2 -9 > $(ARCHIVE)_x86_linux_bin.tar.bz2)
 

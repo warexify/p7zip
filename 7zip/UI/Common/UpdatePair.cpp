@@ -55,7 +55,12 @@ static void TestDuplicateString(const UStringVector &strings,
     const CIntVector &indices)
 {
   for(int i = 0; i + 1 < indices.Size(); i++)
+#ifdef ENV_UNIX
+    // Unix Filesystem are case sensitive.
+    if (strings[indices[i]].Compare(strings[indices[i + 1]]) == 0)
+#else
     if (strings[indices[i]].CollateNoCase(strings[indices[i + 1]]) == 0)
+#endif
     {
       UString message = kDuplicateFileNameMessage;
       message += L"\n";
@@ -96,7 +101,12 @@ void GetUpdatePairInfoList(
         archiveItemIndex2 = archiveIndices[archiveItemIndex]; 
     const CDirItem &dirItem = dirItems[dirItemIndex2];
     const CArchiveItem &archiveItem = archiveItems[archiveItemIndex2];
+#ifdef ENV_UNIX
+    // Unix Filesystem are case sensitive.
+    int compareResult = dirItem.Name.Compare(archiveItem.Name);
+#else
     int compareResult = dirItem.Name.CollateNoCase(archiveItem.Name);
+#endif
     if (compareResult < 0)
     {
         pair.State = NUpdateArchive::NPairState::kOnlyOnDisk;

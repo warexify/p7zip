@@ -779,7 +779,6 @@ STDMETHODIMP CHandler::Extract(const UINT32* indices, UINT32 numItems,
         RINOK(cryptoSetPassword->CryptoSetPassword(0, 0));
       }
     }
- // DEBUG printf("\nRAR-3 method=%c  (%d , %x)\n",(char)item.Method,(int)item.Method,(unsigned)item.Method);
     switch(item.Method)
     {
       case '0':
@@ -859,15 +858,6 @@ STDMETHODIMP CHandler::Extract(const UINT32* indices, UINT32 numItems,
             myID = 3;
           methodID.ID[2] = myID;
           N7z::CMethodInfo methodInfo;
-/* DEBUG
-printf("\nRAR-3.2.1\n");
-{
-	printf("methodID %d :",(int)methodID.IDSize);
-    for (UINT32 i = 0; i < methodID.IDSize; i++)
-    printf(" %x",methodID.ID[i]);
-	printf("\n");
-}
-*/
           if (!N7z::GetMethodInfo(methodID, methodInfo))
           {
             RINOK(extractCallback->SetOperationResult(

@@ -7,7 +7,7 @@
 
 #include "Common/Types.h"
 // #include <windows.h>
-// #include <time.h>
+#include <time.h> // FIXED
 #include "Windows/Defs.h"
 
 namespace NWindows {
@@ -41,7 +41,7 @@ inline void UnixTimeToFileTime(long unixTime, FILETIME &fileTime)
   fileTime.dwHighDateTime = DWORD(ll >> 32);
 }
 
-inline bool FileTimeToUnixTime(const FILETIME &fileTime, long &unixTime)
+inline bool FileTimeToUnixTime(const FILETIME &fileTime, time_t &unixTime) // FIXED
 {
   UINT64 winTime = (((UINT64)fileTime.dwHighDateTime) << 32) + fileTime.dwLowDateTime;
   if (winTime < kUnixTimeStartValue)
