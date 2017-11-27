@@ -1,4 +1,7 @@
 SRCS=\
+ ../../../Common/CRC.cpp \
+ ../../../Common/MyWindows.cpp \
+ ../../../Common/MyVector.cpp \
  ../../Common/InBuffer.cpp \
  ../../Common/StreamUtils.cpp \
  ../../Common/OutBuffer.cpp \
@@ -13,25 +16,37 @@ RarCodecsRegister.cpp
 
 SRCS_C=
 
+CRC.o : ../../../Common/CRC.cpp
+	$(CXX) $(CC_SHARED) $(CFLAGS) ../../../Common/CRC.cpp
+MyWindows.o : ../../../Common/MyWindows.cpp
+	$(CXX) $(CC_SHARED) $(CFLAGS) ../../../Common/MyWindows.cpp
+MyVector.o : ../../../Common/MyVector.cpp
+	$(CXX) $(CC_SHARED) $(CFLAGS) ../../../Common/MyVector.cpp
 DllExports.o : ../DllExports.cpp
-	$(CXX) $(CFLAGS) ../DllExports.cpp
+	$(CXX) $(CC_SHARED) $(CFLAGS) ../DllExports.cpp
 CodecExports.o : ../CodecExports.cpp
-	$(CXX) $(CFLAGS) ../CodecExports.cpp
+	$(CXX) $(CC_SHARED) $(CFLAGS) ../CodecExports.cpp
 InBuffer.o : ../../Common/InBuffer.cpp
-	$(CXX) $(CFLAGS) ../../Common/InBuffer.cpp
+	$(CXX) $(CC_SHARED) $(CFLAGS) ../../Common/InBuffer.cpp
 LZOutWindow.o : ../LZ/LZOutWindow.cpp
-	$(CXX) $(CFLAGS) ../LZ/LZOutWindow.cpp
+	$(CXX) $(CC_SHARED) $(CFLAGS) ../LZ/LZOutWindow.cpp
 StreamUtils.o : ../../Common/StreamUtils.cpp
-	$(CXX) $(CFLAGS) ../../Common/StreamUtils.cpp
+	$(CXX) $(CC_SHARED) $(CFLAGS) ../../Common/StreamUtils.cpp
 OutBuffer.o : ../../Common/OutBuffer.cpp
-	$(CXX) $(CFLAGS) ../../Common/OutBuffer.cpp
+	$(CXX) $(CC_SHARED) $(CFLAGS) ../../Common/OutBuffer.cpp
 Rar1Decoder.o : ./Rar1Decoder.cpp
-	$(CXX) $(CFLAGS) ./Rar1Decoder.cpp
+	$(CXX) $(CC_SHARED) $(CFLAGS) ./Rar1Decoder.cpp
 Rar2Decoder.o : ./Rar2Decoder.cpp
-	$(CXX) $(CFLAGS) ./Rar2Decoder.cpp
+	$(CXX) $(CC_SHARED) $(CFLAGS) ./Rar2Decoder.cpp
 Rar3Decoder.o : ./Rar3Decoder.cpp
-	$(CXX) $(CFLAGS) ./Rar3Decoder.cpp
+	$(CXX) $(CC_SHARED) $(CFLAGS) ./Rar3Decoder.cpp
 Rar3Vm.o : ./Rar3Vm.cpp
-	$(CXX) $(CFLAGS) ./Rar3Vm.cpp
+	$(CXX) $(CC_SHARED) $(CFLAGS) ./Rar3Vm.cpp
 RarCodecsRegister.o : ./RarCodecsRegister.cpp
-	$(CXX) $(CFLAGS) ./RarCodecsRegister.cpp
+	$(CXX) $(CC_SHARED) $(CFLAGS) ./RarCodecsRegister.cpp
+# CRC32, C version
+7zCrc.o : ../../../../C/7zCrc.c
+	$(CC) $(CC_SHARED) $(CFLAGS) ../../../../C/7zCrc.c
+# CRC32, ASM version
+7zCrcT8.o : ../../../../C/7zCrcT8.c
+	$(CC) $(CC_SHARED) $(CFLAGS) ../../../../C/7zCrcT8.c

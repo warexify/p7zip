@@ -11,9 +11,9 @@ LOCAL_SHARED=$(LINK_SHARED)
 LIBS=$(LOCAL_LIBS)
 
 OBJS = \
-../../../Common/MyWindows.o \
-../../../Common/CRC.o\
-../../../Common/Vector.o\
+MyWindows.o \
+CRC.o\
+MyVector.o\
 CodecExports.o \
 DllExports.o \
 Rar1Decoder.o \

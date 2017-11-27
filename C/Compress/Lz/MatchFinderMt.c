@@ -150,9 +150,9 @@ sometimes they use signed extending: (size_t)pos was compiled to "movsxd	r10, ed
 */
 
 #define DEF_GetHeads(name, v) \
-static void GetHeads ## name(const Byte *buffer, size_t pos, \
+static void GetHeads ## name(MF_BUF_PARAMS_DECL, size_t pos, \
 UInt32 *hash, UInt32 hashMask, UInt32 *heads, UInt32 numHeads) { \
-for (; numHeads != 0; numHeads--) { const Byte *p = buffer + (size_t)pos; \
+for (; numHeads != 0; numHeads--) { const Byte *p = MF_BUF_POS(pos); \
 const UInt32 value = (v); *heads++ = (UInt32)pos - hash[value]; hash[value] = (UInt32)(pos++);  } }
 
 DEF_GetHeads(2,  (p[0] | ((UInt32)p[1] << 8)) & hashMask)
@@ -192,7 +192,12 @@ void HashThreadFunc(CMatchFinderMt *mt)
             MatchFinder_MoveBlock(mf);
             afterPtr = MatchFinder_GetPointerToCurrentPos(mf);
             mt->pointerToCurPos -= beforePtr - afterPtr;
-            mt->buffer -= beforePtr - afterPtr;
+            #ifdef STRICT_POINTERS
+            mt->bufferOffset -=
+            #else
+            mt->buffer -=
+            #endif
+                beforePtr - afterPtr;
           }
           CriticalSection_Leave(&mt->btSync.cs);
           CriticalSection_Leave(&mt->hashSync.cs);
@@ -218,7 +223,13 @@ void HashThreadFunc(CMatchFinderMt *mt)
             num = num - mf->numHashBytes + 1;
             if (num > kMtHashBlockSize - 2)
               num = kMtHashBlockSize - 2;
-            mt->GetHeadsFunc(mf->buffer, mf->pos, mf->hash + mf->fixedHashSize, mf->hashMask, heads + 2, num);
+            mt->GetHeadsFunc(
+              #ifdef STRICT_POINTERS
+              mf->bufferBase, mf->bufferOffset,
+              #else
+              mf->buffer, 
+              #endif
+              mf->pos, mf->hash + mf->fixedHashSize, mf->hashMask, heads + 2, num);
             heads[0] += num;
           }
           mf->pos += num;
@@ -366,7 +377,13 @@ void BtGetMatches(CMatchFinderMt *p, UInt32 *distances)
       {
         UInt32 *startDistances = distances + curPos;
         UInt32 num = (UInt32)(GetMatchesSpec1(lenLimit, pos - p->hashBuf[p->hashBufPos++], 
-          pos, p->buffer, p->son, cyclicBufferPos, p->cyclicBufferSize, p->cutValue, 
+          pos, 
+          #ifdef STRICT_POINTERS
+          p->bufferBase, p->bufferOffset, 
+          #else
+          p->buffer,
+          #endif
+          p->son, cyclicBufferPos, p->cyclicBufferSize, p->cutValue, 
           startDistances + 1, p->numHashBytes - 1) - startDistances);
         *startDistances = num - 1;
         curPos += num;
@@ -411,7 +428,11 @@ void BtFillBlock(CMatchFinderMt *p, UInt32 globalBlockIndex)
     UInt32 subValue = p->pos - p->cyclicBufferSize;
     MatchFinder_Normalize3(subValue, p->son, p->cyclicBufferSize * 2);
     p->pos -= subValue;
+    #ifdef STRICT_POINTERS
+    p->bufferOffset += subValue;
+    #else
     p->buffer += subValue;
+    #endif
   }
 
   if (!sync->needStart)
@@ -522,7 +543,12 @@ void MatchFinderMt_Init(CMatchFinderMt *p)
   p->matchMaxLen = mf->matchMaxLen;
   p->numHashBytes = mf->numHashBytes;
   p->pos = mf->pos;
+  #ifdef STRICT_POINTERS
+  p->bufferBase = mf->bufferBase;
+  p->bufferOffset = mf->bufferOffset;
+  #else
   p->buffer = mf->buffer;
+  #endif
   p->cyclicBufferPos = mf->cyclicBufferPos;
   p->cyclicBufferSize = mf->cyclicBufferSize;
   p->cutValue = mf->cutValue;

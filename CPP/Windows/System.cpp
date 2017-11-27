@@ -17,7 +17,7 @@ namespace NWindows
 		/************************ GetNumberOfProcessors ************************/
 
 		#if defined (__NetBSD__) || defined(__OpenBSD__)
-		int GetNumberOfProcessors() {
+		UInt32 GetNumberOfProcessors() {
 			int mib[2], value;
         		int nbcpu = 1;
 
@@ -30,7 +30,7 @@ namespace NWindows
 			return nbcpu;
 		}
 		#elif defined (__FreeBSD__)
-		int GetNumberOfProcessors() {
+		UInt32 GetNumberOfProcessors() {
         		int nbcpu = 1;
 			size_t value;
 			size_t len = sizeof(value);
@@ -39,7 +39,7 @@ namespace NWindows
 			return nbcpu;
 		}
 		#elif defined (__APPLE__)
-		int GetNumberOfProcessors() {
+		UInt32 GetNumberOfProcessors() {
         		int nbcpu = 1,value;
 			size_t valSize = sizeof(value);
 			if (sysctlbyname ("hw.ncpu", &value, &valSize, NULL, 0) == 0)
@@ -48,14 +48,14 @@ namespace NWindows
 		}
 
 		#elif defined(__linux__) || defined(__CYGWIN__) || defined(sun)
-		int GetNumberOfProcessors() {
+		UInt32 GetNumberOfProcessors() {
         		int nbcpu = sysconf (_SC_NPROCESSORS_CONF);
 			if (nbcpu < 1) nbcpu = 1;
 			return nbcpu;
 		}
 		#else
 		#warning Generic GetNumberOfProcessors
-		int GetNumberOfProcessors() {
+		UInt32 GetNumberOfProcessors() {
 			return 1;
 		}
 		#endif
