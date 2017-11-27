@@ -1,0 +1,29 @@
+SRCS=\
+ ../../Common/InBuffer.cpp \
+ ../../Common/StreamUtils.cpp \
+ ../../Common/OutBuffer.cpp \
+../LZ/LZOutWindow.cpp \
+DllExports.cpp \
+Rar1Decoder.cpp \
+Rar2Decoder.cpp \
+Rar3Decoder.cpp \
+Rar3Vm.cpp
+
+DllExports.o : ./DllExports.cpp
+	$(CXX) $(CFLAGS) ./DllExports.cpp
+InBuffer.o : ../../Common/InBuffer.cpp
+	$(CXX) $(CFLAGS) ../../Common/InBuffer.cpp
+LZOutWindow.o : ../LZ/LZOutWindow.cpp
+	$(CXX) $(CFLAGS) ../LZ/LZOutWindow.cpp
+StreamUtils.o : ../../Common/StreamUtils.cpp
+	$(CXX) $(CFLAGS) ../../Common/StreamUtils.cpp
+OutBuffer.o : ../../Common/OutBuffer.cpp
+	$(CXX) $(CFLAGS) ../../Common/OutBuffer.cpp
+Rar1Decoder.o : ./Rar1Decoder.cpp
+	$(CXX) $(CFLAGS) ./Rar1Decoder.cpp
+Rar2Decoder.o : ./Rar2Decoder.cpp
+	$(CXX) $(CFLAGS) ./Rar2Decoder.cpp
+Rar3Decoder.o : ./Rar3Decoder.cpp
+	$(CXX) $(CFLAGS) ./Rar3Decoder.cpp
+Rar3Vm.o : ./Rar3Vm.cpp
+	$(CXX) $(CFLAGS) ./Rar3Vm.cpp
