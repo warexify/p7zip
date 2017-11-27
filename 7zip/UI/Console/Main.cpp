@@ -18,6 +18,8 @@
 #include "Windows/FileName.h"
 #include "Windows/Defs.h"
 #include "Windows/Error.h"
+#include "Windows/Error.h"
+#include "Windows/System.h"
 
 #include "../../IPassword.h"
 #include "../../ICoder.h"
@@ -153,8 +155,11 @@ static void showCopyrightAndHelp(CStdOutStream &out,bool needHelp)
     if (global_use_utf16_conversion) out << "on";
     else                             out << "off";
     out << ",HugeFiles=";
-    if (sizeof(off_t) >= 8) out << "on)\n";
-    else                    out << "off)\n";
+    if (sizeof(off_t) >= 8) out << "on,";
+    else                    out << "off,";
+    int nbcpu = NWindows::NSystem::GetNumberOfProcessors();
+    if (nbcpu > 1) out << nbcpu << " CPUs)\n";
+    else           out << nbcpu << " CPU)\n";
     if (needHelp) out << kHelpString;
 }
 
@@ -235,6 +240,9 @@ int Main2(
       eo.OverwriteMode = options.OverwriteMode;
       eo.OutputDir = options.OutputDir;
       eo.YesToAll = options.YesToAll;
+      #ifdef COMPRESS_MT
+      eo.Properties = options.ExtractProperties;
+      #endif
       HRESULT result = DecompressArchives(
           options.ArchivePathsSorted, 
           options.ArchivePathsFullSorted,
@@ -269,6 +277,7 @@ int Main2(
           options.ArchivePathsFullSorted,
           options.WildcardCensor.Pairs.Front().Head, 
           options.EnableHeaders, 
+          options.TechMode,
           options.PasswordEnabled, 
           options.Password);
       if (result != S_OK)

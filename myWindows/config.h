@@ -33,10 +33,12 @@
   /* wcstombs */
   #define HAVE_WCSTOMBS
 
+/*
   #if !defined(__CYGWIN__) && !defined(sparc) && !defined(sun) && !defined(__APPLE_CC__) && !defined(ENV_BEOS)
-  /* timegm */
+  * timegm *
   #define HAVE_TIMEGM
   #endif
+*/
 
 #endif /* !__DJGPP__ */
 

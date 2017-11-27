@@ -31,7 +31,7 @@ using namespace NCommandLineParser;
 using namespace NWindows;
 using namespace NFile;
 
-static const int kNumSwitches = 25;
+static const int kNumSwitches = 26;
 
 namespace NKey {
 enum Enum
@@ -60,7 +60,8 @@ enum Enum
   kOverwrite,
   kEmail,
   kShowDialog,
-  kUseLStat
+  kUseLStat,
+  kTechMode
 };
 
 }
@@ -127,7 +128,8 @@ static const CSwitchForm kSwitchForms[kNumSwitches] =
     { L"AO",  NSwitchType::kPostChar, false, 1, 1, kOverwritePostCharSet},
     { L"SEML", NSwitchType::kUnLimitedPostString, false, 0},
     { L"AD",  NSwitchType::kSimple, false },
-    { L"L",  NSwitchType::kSimple, false }
+    { L"L",  NSwitchType::kSimple, false },
+    { L"SLT", NSwitchType::kSimple, false }
   };
 
 static const int kNumCommandForms = 7;
@@ -246,11 +248,10 @@ static inline UINT GetCurrentCodePage()
   { return AreFileApisANSI() ? CP_ACP : CP_OEMCP; } 
 
 static void AddToCensorFromListFile(NWildcard::CCensor &wildcardCensor, 
-    LPCWSTR fileName, bool include, NRecursedType::EEnum type)
+    LPCWSTR fileName, bool include, NRecursedType::EEnum type, UINT codePage)
 {
   UStringVector names;
-  if (!ReadNamesFromListFile(GetSystemString(fileName, 
-        GetCurrentCodePage()), names))
+  if (!ReadNamesFromListFile(GetSystemString(fileName, GetCurrentCodePage()), names, codePage))
     throw kIncorrectListFile;
   for (int i = 0; i < names.Size(); i++)
     if (!AddNameToCensor(wildcardCensor, names[i], include, type))
@@ -268,7 +269,7 @@ static void AddToCensorFromNonSwitchesStrings(
     int startIndex,
     NWildcard::CCensor &wildcardCensor, 
     const UStringVector &nonSwitchStrings, NRecursedType::EEnum type, 
-    bool thereAreSwitchIncludes)
+    bool thereAreSwitchIncludes, UINT codePage)
 {
   if(nonSwitchStrings.Size() == startIndex && (!thereAreSwitchIncludes)) 
     AddCommandLineWildCardToCensr(wildcardCensor, kUniversalWildcard, true, type);
@@ -276,7 +277,7 @@ static void AddToCensorFromNonSwitchesStrings(
   {
     const UString &s = nonSwitchStrings[i];
     if (s[0] == kFileListID)
-      AddToCensorFromListFile(wildcardCensor, s.Mid(1), true, type);
+      AddToCensorFromListFile(wildcardCensor, s.Mid(1), true, type, codePage);
     else
       AddCommandLineWildCardToCensr(wildcardCensor, s, true, type);
   }
@@ -349,7 +350,7 @@ static void ParseMapWithPaths(NWildcard::CCensor &wildcardCensor,
 
 static void AddSwitchWildCardsToCensor(NWildcard::CCensor &wildcardCensor, 
     const UStringVector &strings, bool include, 
-    NRecursedType::EEnum commonRecursedType)
+    NRecursedType::EEnum commonRecursedType, UINT codePage)
 {
   for(int i = 0; i < strings.Size(); i++)
   {
@@ -374,7 +375,7 @@ static void AddSwitchWildCardsToCensor(NWildcard::CCensor &wildcardCensor,
     if (name[pos] == kImmediateNameID)
       AddCommandLineWildCardToCensr(wildcardCensor, tail, include, recursedType);
     else if (name[pos] == kFileListID)
-      AddToCensorFromListFile(wildcardCensor, tail, include, recursedType);
+      AddToCensorFromListFile(wildcardCensor, tail, include, recursedType, codePage);
     #ifdef _WIN32
     else if (name[pos] == kMapNameID)
       ParseMapWithPaths(wildcardCensor, tail, include, recursedType);
@@ -640,8 +641,7 @@ static void SetAddCommandOptions(
   }
 }
 
-static void SetMethodOptions(const CParser &parser, 
-    CUpdateOptions &options)
+static void SetMethodOptions(const CParser &parser, CObjectVector<CProperty> &properties)
 {
   if (parser[NKey::kProperty].ThereIs)
   {
@@ -658,7 +658,7 @@ static void SetMethodOptions(const CParser &parser,
         property.Name = postString.Left(index);
         property.Value = postString.Mid(index + 1);
       }
-      options.MethodMode.Properties.Add(property);
+      properties.Add(property);
     }
   }
 }
@@ -719,6 +719,16 @@ void CArchiveCommandLineParser::Parse1(const UStringVector &commandStrings,
   options.StdOutMode = parser[NKey::kStdOut].ThereIs;
   options.EnableHeaders = !parser[NKey::kDisableHeaders].ThereIs;
   options.HelpMode = parser[NKey::kHelp1].ThereIs || parser[NKey::kHelp2].ThereIs;
+
+  #ifdef _WIN32
+  options.LargePages = false;
+  if (parser[NKey::kLargePages].ThereIs)
+  {
+    const UString &postString = parser[NKey::kLargePages].PostStrings.Front();
+    if (postString.IsEmpty())
+      options.LargePages = true;
+  }
+  #endif
 }
 
 void CArchiveCommandLineParser::Parse2(CArchiveCommandLineOptions &options)
@@ -731,22 +741,26 @@ void CArchiveCommandLineParser::Parse2(CArchiveCommandLineOptions &options)
   if (!ParseArchiveCommand(nonSwitchStrings[kCommandIndex], options.Command))
     throw kUserErrorMessage;
 
+  options.TechMode = parser[NKey::kTechMode].ThereIs;
+
   NRecursedType::EEnum recursedType;
   if (parser[NKey::kRecursed].ThereIs)
     recursedType = GetRecursedTypeFromIndex(parser[NKey::kRecursed].PostCharIndex);
   else
     recursedType = NRecursedType::kNonRecursed;
 
+   UINT codePage = CP_ACP;
+
   bool thereAreSwitchIncludes = false;
   if (parser[NKey::kInclude].ThereIs)
   {
     thereAreSwitchIncludes = true;
     AddSwitchWildCardsToCensor(options.WildcardCensor, 
-        parser[NKey::kInclude].PostStrings, true, recursedType);
+        parser[NKey::kInclude].PostStrings, true, recursedType, codePage);
   }
   if (parser[NKey::kExclude].ThereIs)
     AddSwitchWildCardsToCensor(options.WildcardCensor, 
-        parser[NKey::kExclude].PostStrings, false, recursedType);
+        parser[NKey::kExclude].PostStrings, false, recursedType, codePage);
  
   int curCommandIndex = kCommandIndex + 1;
   bool thereIsArchiveName = !parser[NKey::kNoArName].ThereIs;
@@ -759,7 +773,7 @@ void CArchiveCommandLineParser::Parse2(CArchiveCommandLineOptions &options)
 
   AddToCensorFromNonSwitchesStrings(
       curCommandIndex, options.WildcardCensor, 
-      nonSwitchStrings, recursedType, thereAreSwitchIncludes);
+      nonSwitchStrings, recursedType, thereAreSwitchIncludes, codePage);
 
   options.YesToAll = parser[NKey::kYes].ThereIs;
 
@@ -789,11 +803,11 @@ void CArchiveCommandLineParser::Parse2(CArchiveCommandLineOptions &options)
     if (parser[NKey::kArInclude].ThereIs)
     {
       AddSwitchWildCardsToCensor(archiveWildcardCensor, 
-        parser[NKey::kArInclude].PostStrings, true, NRecursedType::kNonRecursed);
+        parser[NKey::kArInclude].PostStrings, true, NRecursedType::kNonRecursed, codePage);
     }
     if (parser[NKey::kArExclude].ThereIs)
       AddSwitchWildCardsToCensor(archiveWildcardCensor, 
-      parser[NKey::kArExclude].PostStrings, false, NRecursedType::kNonRecursed);
+      parser[NKey::kArExclude].PostStrings, false, NRecursedType::kNonRecursed, codePage);
 
     bool directlyAddArchiveName = false;
     if (thereIsArchiveName) {
@@ -808,6 +822,8 @@ void CArchiveCommandLineParser::Parse2(CArchiveCommandLineOptions &options)
     #ifdef _WIN32
     ConvertToLongNames(archiveWildcardCensor);
     #endif
+
+    archiveWildcardCensor.ExtendExclude();
 
     CObjectVector<CDirItem> dirItems;
     {
@@ -850,6 +866,7 @@ void CArchiveCommandLineParser::Parse2(CArchiveCommandLineOptions &options)
 
     if(isExtractGroupCommand)
     {
+      SetMethodOptions(parser, options.ExtractProperties); 
       if (options.StdOutMode && options.IsStdOutTerminal)
         throw kTerminalOutError;
       if(parser[NKey::kOutputDir].ThereIs)
@@ -892,10 +909,9 @@ void CArchiveCommandLineParser::Parse2(CArchiveCommandLineOptions &options)
     updateOptions.ArchivePath.BaseExtension = extension;
     updateOptions.ArchivePath.VolExtension = typeExtension;
     updateOptions.ArchivePath.ParseFromPath(options.ArchiveName);
-    SetAddCommandOptions(options.Command.CommandType, parser, 
-        updateOptions); 
+    SetAddCommandOptions(options.Command.CommandType, parser, updateOptions); 
     
-    SetMethodOptions(parser, updateOptions); 
+    SetMethodOptions(parser, updateOptions.MethodMode.Properties); 
 
     options.EnablePercents = !parser[NKey::kDisablePercents].ThereIs;
 
@@ -933,4 +949,5 @@ void CArchiveCommandLineParser::Parse2(CArchiveCommandLineOptions &options)
   }
   else 
     throw kUserErrorMessage;
+  options.WildcardCensor.ExtendExclude();
 }

@@ -2,6 +2,8 @@
 
 #include "rarvmtbl.cpp"
 
+#undef SP /* fix for Solaris 9 x86 */
+
 RarVM::RarVM()
 {
   Mem=NULL;

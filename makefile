@@ -3,11 +3,13 @@ DEST_BIN=/usr/local/bin
 DEST_SHARE=/usr/local/lib/p7zip
 DEST_MAN=/usr/local/man
 
-.PHONY: all all2 7za sfx 7z common clean tar_src tar_bin depend test test_7z
+.PHONY: all all2 7za sfx 7z 7zr common clean tar_src tar_bin depend test test_7z test_7zr
 
 all::7za
 
 all2: 7za sfx 7z
+
+all3: 7za sfx 7z 7zr
 
 common:
 	mkdir -p  bin
@@ -17,6 +19,8 @@ common:
 7za: common
 	cd 7zip/Bundles/Alone ; $(MAKE) all
 
+7zr: common
+	cd 7zip/Bundles/Alone7z ; $(MAKE) all
 depend:
 	cd Common                 ; $(MAKE) depend
 	cd myWindows              ; $(MAKE) depend
@@ -31,6 +35,7 @@ depend:
 	cd 7zip/Archive/Cpio      ; $(MAKE) depend
 	cd 7zip/Archive/Deb       ; $(MAKE) depend
 	cd 7zip/Archive/GZip      ; $(MAKE) depend
+	cd 7zip/Archive/Iso       ; $(MAKE) depend
 	cd 7zip/Archive/Lzh       ; $(MAKE) depend
 	cd 7zip/Archive/Rar       ; $(MAKE) depend
 	cd 7zip/Archive/RPM       ; $(MAKE) depend
@@ -49,6 +54,7 @@ depend:
 	cd 7zip/Compress/Rar29    ; $(MAKE) depend
 	cd 7zip/Crypto/7zAES      ; $(MAKE) depend
 	cd 7zip/Crypto/AES        ; $(MAKE) depend
+	cd 7zip/Bundles/Alone7z   ; $(MAKE) depend
 
 sfx: common
 	mkdir -p  bin
@@ -65,6 +71,7 @@ sfx: common
 	cd 7zip/Archive/Cpio      ; $(MAKE) all
 	cd 7zip/Archive/Deb       ; $(MAKE) all
 	cd 7zip/Archive/GZip      ; $(MAKE) all
+	cd 7zip/Archive/Iso       ; $(MAKE) all
 	cd 7zip/Archive/Lzh       ; $(MAKE) all
 	cd 7zip/Archive/Rar       ; $(MAKE) all
 	cd 7zip/Archive/RPM       ; $(MAKE) all
@@ -98,6 +105,7 @@ clean:
 	cd 7zip/Archive/Cpio      ; $(MAKE) clean
 	cd 7zip/Archive/Deb       ; $(MAKE) clean
 	cd 7zip/Archive/GZip      ; $(MAKE) clean
+	cd 7zip/Archive/Iso       ; $(MAKE) clean
 	cd 7zip/Archive/Lzh       ; $(MAKE) clean
 	cd 7zip/Archive/Rar       ; $(MAKE) clean
 	cd 7zip/Archive/RPM       ; $(MAKE) clean
@@ -116,7 +124,8 @@ clean:
 	cd 7zip/Compress/Rar29    ; $(MAKE) clean
 	cd 7zip/Crypto/7zAES      ; $(MAKE) clean
 	cd 7zip/Crypto/AES        ; $(MAKE) clean
-	chmod +x install.sh contrib/VirtualFileSystemForMidnightCommander/u7z check/check.sh check/clean_all.sh
+	cd 7zip/Bundles/Alone7z   ; $(MAKE) clean
+	chmod +x install.sh contrib/VirtualFileSystemForMidnightCommander/u7z check/check.sh check/clean_all.sh check/check_7zr.sh
 	cd check                  ; ./clean_all.sh
 	find . -name "*~" -exec rm -f {} \;
 	find . -name "*.orig" -exec rm -f {} \;
@@ -129,6 +138,8 @@ test: all
 test_7z: all2
 	cd check ; ./check.sh ../bin/7z
 
+test_7zr: 7zr
+	cd check ; ./check_7zr.sh ../bin/7zr
 install:
 	./install.sh $(DEST_BIN) $(DEST_SHARE) $(DEST_MAN)
 

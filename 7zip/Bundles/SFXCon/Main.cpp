@@ -14,6 +14,7 @@
 #include "Windows/FileDir.h"
 #include "Windows/FileName.h"
 #include "Windows/Defs.h"
+#include "Windows/System.h"
 
 #include "../../IPassword.h"
 #include "../../ICoder.h"
@@ -331,8 +332,11 @@ int Main2(
   if (global_use_utf16_conversion) g_StdOut << "on";
   else                             g_StdOut << "off";
   g_StdOut << ",HugeFiles=";
-  if (sizeof(off_t) >= 8) g_StdOut << "on)\n";
-  else                    g_StdOut << "off)\n";
+  if (sizeof(off_t) >= 8) g_StdOut << "on,";
+  else                    g_StdOut << "off,";
+  int nbcpu = NWindows::NSystem::GetNumberOfProcessors();
+  if (nbcpu > 1) g_StdOut << nbcpu << " CPUs)\n";
+  else           g_StdOut << nbcpu << " CPU)\n";
  
   UString archiveName = commandStrings.Front();
 
@@ -459,7 +463,7 @@ int Main2(
       HRESULT result = ListArchives(
           v1, v2,
           wildcardCensorHead, 
-          true, 
+          true, false, 
           passwordEnabled, 
           password);
       if (result != S_OK)
