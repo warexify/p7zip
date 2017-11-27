@@ -48,7 +48,7 @@ class CCoder:
   bool _deflate64Mode;
   bool _keepHistory;
   bool _needFinishInput;
-  
+
   bool _needInitInStream;
   bool _needReadTable;
   Int32 _remainLen;
@@ -58,7 +58,7 @@ class CCoder:
 
   bool DecodeLevels(Byte *levels, unsigned numSymbols);
   bool ReadTables();
-  
+
   HRESULT Flush() { return m_OutWindowStream.Flush(); }
   class CCoderReleaser
   {
@@ -79,8 +79,10 @@ public:
   bool ZlibMode;
   Byte ZlibFooter[4];
 
-  CCoder(bool deflate64Mode, bool deflateNSIS = false);
+  CCoder(bool deflate64Mode);
   virtual ~CCoder() {};
+
+  void SetNsisMode(bool nsisMode) { _deflateNSIS = nsisMode; }
 
   void Set_KeepHistory(bool keepHistory) { _keepHistory = keepHistory; }
   void Set_NeedFinishInput(bool needFinishInput) { _needFinishInput = needFinishInput; }
@@ -111,7 +113,7 @@ public:
   STDMETHOD(SetInStream)(ISequentialInStream *inStream);
   STDMETHOD(ReleaseInStream)();
   STDMETHOD(SetOutStreamSize)(const UInt64 *outSize);
-  
+
   #ifndef NO_READ_FROM_CODER
   STDMETHOD(Read)(void *data, UInt32 size, UInt32 *processedSize);
   #endif
@@ -147,7 +149,6 @@ public:
 };
 
 class CCOMCoder     : public CCoder { public: CCOMCoder(): CCoder(false) {} };
-class CNsisCOMCoder : public CCoder { public: CNsisCOMCoder(): CCoder(false, true) {} };
 class CCOMCoder64   : public CCoder { public: CCOMCoder64(): CCoder(true) {} };
 
 }}}

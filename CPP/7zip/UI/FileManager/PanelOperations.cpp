@@ -47,13 +47,13 @@ public:
   CMyComPtr<IFolderOperations> FolderOperations;
   CMyComPtr<IProgress> UpdateCallback;
   CUpdateCallback100Imp *UpdateCallbackSpec;
-  
+
   HRESULT Result;
 
   CThreadFolderOperations(EFolderOpType opType): OpType(opType), Result(E_FAIL) {}
   HRESULT DoOperation(CPanel &panel, const UString &progressTitle, const UString &titleError);
 };
-  
+
 HRESULT CThreadFolderOperations::ProcessVirt()
 {
   // FIXME NCOM::CComInitializer comInitializer;
@@ -224,7 +224,7 @@ void CPanel::DeleteItems(bool NON_CE_VAR(toRecycleBin))
     }
   }
   #endif
- 
+
   // DeleteItemsInternal
 
   if (!CheckBeforeUpdate(IDS_ERROR_DELETING))
@@ -356,7 +356,7 @@ BOOL CPanel::OnEndLabelEdit(LV_DISPINFOW * lpnmh)
 
   // We need clear all items to disable GetText before Reload:
   // number of items can change.
-  // _listView.DeleteAllItems();
+  // DeleteListItems();
   // But seems it can still call GetText (maybe for current item)
   // so we can't delete items.
 
@@ -381,7 +381,7 @@ void CPanel::CreateFolder()
   UString newName;
   if (!Dlg_CreateFolder(GetParent(), newName))
     return;
-  
+
   if (!IsCorrectFsName(newName))
   {
     MessageBoxError(E_INVALIDARG);
@@ -398,7 +398,7 @@ void CPanel::CreateFolder()
     }
     newName = correctName;
   }
-  
+
   HRESULT res;
   CDisableNotify disableNotify(*this);
   {
@@ -445,7 +445,7 @@ void CPanel::CreateFile()
     return;
 
   CDisableNotify disableNotify(*this);
-  
+
   UString newName = dlg.Value;
 
   if (IsFSFolder())

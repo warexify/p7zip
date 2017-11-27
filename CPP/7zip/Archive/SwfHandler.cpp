@@ -341,7 +341,7 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
   lps->InSize = _item.HeaderSize;
   lps->OutSize = outStreamSpec->GetSize();
   RINOK(lps->SetCur());
-  
+
   CItem item = _item;
   item.MakeUncompressed();
   if (_stream)
@@ -365,7 +365,7 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
        in uncompressed stream.
        What does that data mean ???
        We don't decompress these additional 8 bytes */
-    
+
     // unpackSize = _item.GetSize();
     // SetUi32(item.Buf + 4, (UInt32)(unpackSize + 8));
     CLimitedSequentialInStream *limitedStreamSpec = new CLimitedSequentialInStream;
@@ -473,7 +473,7 @@ static HRESULT UpdateArchive(ISequentialOutStream *outStream, UInt64 size,
   CLocalProgress *lps = new CLocalProgress;
   CMyComPtr<ICompressProgressInfo> progress = lps;
   lps->Init(updateCallback, true);
-  
+
   RINOK(encoder->Code(fileInStream, outStream, NULL, NULL, progress));
   UInt64 inputProcessed;
   if (lzmaMode)
@@ -542,7 +542,7 @@ STDMETHODIMP CHandler::UpdateItems(ISequentialOutStream *outStream, UInt32 numIt
     }
     return UpdateArchive(outStream, size, _lzmaMode, _props, updateCallback);
   }
-    
+
   if (indexInArchive != 0)
     return E_INVALIDARG;
 
@@ -646,7 +646,7 @@ STDMETHODIMP CHandler::GetNumberOfItems(UInt32 *numItems)
   return S_OK;
 }
 
-static const char *g_TagDesc[92] =
+static const char * const g_TagDesc[92] =
 {
     "End"
   , "ShowFrame"
@@ -854,7 +854,7 @@ HRESULT CHandler::OpenSeq3(ISequentialInStream *stream, IArchiveOpenCallback *ca
   if (uncompressedSize > kFileSizeMax)
     return S_FALSE;
 
-  
+
   CInBuffer s;
   if (!s.Create(1 << 20))
     return E_OUTOFMEMORY;
@@ -962,7 +962,7 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
     RINOK(extractCallback->GetStream(index, &outStream, askMode));
     if (!testMode && !outStream)
       continue;
-      
+
     RINOK(extractCallback->PrepareOperation(askMode));
     if (outStream)
       RINOK(WriteStream(outStream, buf, buf.Size()));

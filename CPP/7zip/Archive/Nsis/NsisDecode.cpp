@@ -12,7 +12,6 @@
 
 #include "../../Compress/BcjCoder.h"
 #include "../../Compress/BZip2Decoder.h"
-#include "../../Compress/DeflateDecoder.h"
 
 #define Get32(p) GetUi32(p)
 
@@ -27,12 +26,16 @@ HRESULT CDecoder::Init(ISequentialInStream *inStream, bool &useFilter)
     if (Method != _curMethod)
       Release();
   _curMethod = Method;
+
   if (!_codecInStream)
   {
     switch (Method)
     {
       // case NMethodType::kCopy: return E_NOTIMPL;
-      case NMethodType::kDeflate: _codecInStream = new NCompress::NDeflate::NDecoder::CNsisCOMCoder(); break;
+      case NMethodType::kDeflate:
+        _deflateDecoder = new NCompress::NDeflate::NDecoder::CCOMCoder();
+        _codecInStream = _deflateDecoder;
+        break;
       case NMethodType::kBZip2: _codecInStream = new NCompress::NBZip2::CNsisDecoder(); break;
       case NMethodType::kLZMA:
         _lzmaDecoder = new NCompress::NLzma::CDecoder();
@@ -42,6 +45,9 @@ HRESULT CDecoder::Init(ISequentialInStream *inStream, bool &useFilter)
     }
   }
 
+  if (Method == NMethodType::kDeflate)
+    _deflateDecoder->SetNsisMode(IsNsisDeflate);
+
   if (FilterFlag)
   {
     Byte flag;
@@ -50,7 +56,7 @@ HRESULT CDecoder::Init(ISequentialInStream *inStream, bool &useFilter)
       return E_NOTIMPL;
     useFilter = (flag != 0);
   }
-  
+
   if (!useFilter)
     _decoderInStream = _codecInStream;
   else
@@ -163,7 +169,7 @@ HRESULT CDecoder::Decode(CByteBuffer *outBuf, bool unpackSizeDefined, UInt32 unp
         outBuf->Alloc(size);
 
       UInt64 offset = 0;
-      
+
       while (size > 0)
       {
         UInt32 curSize = (UInt32)MyMin((size_t)size, Buffer.Size());
@@ -184,7 +190,7 @@ HRESULT CDecoder::Decode(CByteBuffer *outBuf, bool unpackSizeDefined, UInt32 unp
 
       return S_OK;
     }
-    
+
     size &= ~kMask_IsCompressed;
     packSizeRes = size;
     limitedStreamSpec = new CLimitedSequentialInStream;
@@ -196,12 +202,11 @@ HRESULT CDecoder::Decode(CByteBuffer *outBuf, bool unpackSizeDefined, UInt32 unp
       RINOK(Init(limitedStream, useFilter));
     }
   }
-  
+
   if (outBuf)
   {
-    if (!unpackSizeDefined)
-      return S_FALSE;
-    outBuf->Alloc(unpackSize);
+    if (unpackSizeDefined)
+      outBuf->Alloc(unpackSize);
   }
 
   UInt64 inSizeStart = 0;
@@ -212,6 +217,8 @@ HRESULT CDecoder::Decode(CByteBuffer *outBuf, bool unpackSizeDefined, UInt32 unp
   if (!unpackSizeDefined)
     unpackSize = 0xFFFFFFFF;
   UInt32 offset = 0;
+
+  HRESULT res = S_OK;
 
   for (;;)
   {
@@ -225,11 +232,25 @@ HRESULT CDecoder::Decode(CByteBuffer *outBuf, bool unpackSizeDefined, UInt32 unp
     if (size == 0)
     {
       if (unpackSizeDefined)
-        return S_FALSE;
+        res = S_FALSE;
       break;
     }
+
     if (outBuf)
+    {
+      size_t nextSize = offset + size;
+      if (outBuf->Size() < nextSize)
+      {
+        {
+          const size_t nextSize2 = outBuf->Size() * 2;
+          if (nextSize < nextSize2)
+            nextSize = nextSize2;
+        }
+        outBuf->ChangeSize_KeepData(nextSize, offset);
+      }
       memcpy((Byte *)*outBuf + (size_t)offset, Buffer, size);
+    }
+
     StreamPos += size;
     offset += (UInt32)size;
 
@@ -239,13 +260,21 @@ HRESULT CDecoder::Decode(CByteBuffer *outBuf, bool unpackSizeDefined, UInt32 unp
     if (Solid)
       packSizeRes = (UInt32)inSize;
     unpackSizeRes += (UInt32)size;
-    
+
     UInt64 outSize = offset;
     RINOK(progress->SetRatioInfo(&inSize, &outSize));
     if (realOutStream)
-      RINOK(WriteStream(realOutStream, Buffer, size));
+    {
+      res = WriteStream(realOutStream, Buffer, size);
+      if (res != S_OK)
+        break;
+    }
   }
-  return S_OK;
+
+  if (outBuf && offset != outBuf->Size())
+    outBuf->ChangeSize_KeepData(offset, offset);
+
+  return res;
 }
 
 }}

@@ -72,6 +72,13 @@ STDMETHODIMP CHandler::GetArchiveProperty(PROPID propID, PROPVARIANT *value)
       break;
     }
 
+    case kpidWarningFlags:
+    {
+      if (_warning)
+        prop = kpv_ErrorFlags_HeadersError;
+      break;
+    }
+
     case kpidCodePage:
     {
       const char *name = NULL;
@@ -98,7 +105,13 @@ STDMETHODIMP CHandler::GetArchiveProperty(PROPID propID, PROPVARIANT *value)
 HRESULT CHandler::ReadItem2(ISequentialInStream *stream, bool &filled, CItemEx &item)
 {
   item.HeaderPos = _phySize;
-  RINOK(ReadItem(stream, filled, item, _error));
+  EErrorType error;
+  HRESULT res = ReadItem(stream, filled, item, error);
+  if (error == k_ErrorType_Warning)
+    _warning = true;
+  else if (error != k_ErrorType_OK)
+    _error = error;
+  RINOK(res);
   if (filled)
   {
     /*
@@ -120,9 +133,9 @@ HRESULT CHandler::Open2(IInStream *stream, IArchiveOpenCallback *callback)
     RINOK(stream->Seek(0, STREAM_SEEK_END, &endPos));
     RINOK(stream->Seek(0, STREAM_SEEK_SET, NULL));
   }
-  
+
   _phySizeDefined = true;
-  
+
   bool utf8_OK = true;
   if (!_forceCodePage)
   {
@@ -148,7 +161,7 @@ HRESULT CHandler::Open2(IInStream *stream, IArchiveOpenCallback *callback)
       if (utf8_OK) utf8_OK = CheckUTF8(item.User);
       if (utf8_OK) utf8_OK = CheckUTF8(item.Group);
     }
-    
+
     RINOK(stream->Seek(item.GetPackSizeAligned(), STREAM_SEEK_CUR, &_phySize));
     if (_phySize > endPos)
     {
@@ -233,6 +246,7 @@ STDMETHODIMP CHandler::OpenSeq(ISequentialInStream *stream)
 STDMETHODIMP CHandler::Close()
 {
   _isArc = false;
+  _warning = false;
   _error = k_ErrorType_OK;
 
   _phySizeDefined = false;
@@ -373,7 +387,7 @@ HRESULT CHandler::Extract(const UInt32 *indices, UInt32 numItems,
 
   UInt64 totalPackSize;
   totalSize = totalPackSize = 0;
-  
+
   CLocalProgress *lps = new CLocalProgress;
   CMyComPtr<ICompressProgressInfo> progress = lps;
   lps->Init(extractCallback, false);
@@ -523,7 +537,7 @@ STDMETHODIMP CSparseStream::Read(void *data, UInt32 size, UInt32 *processedSize)
     if (size > rem)
       size = (UInt32)rem;
   }
-  
+
   HRESULT res = S_OK;
 
   if (item.SparseBlocks.IsEmpty())
@@ -541,10 +555,10 @@ STDMETHODIMP CSparseStream::Read(void *data, UInt32 size, UInt32 *processedSize)
       else
         left = mid;
     }
-    
+
     const CSparseBlock &sb = item.SparseBlocks[left];
     UInt64 relat = _virtPos - sb.Offset;
-    
+
     if (_virtPos >= sb.Offset && relat < sb.Size)
     {
       UInt64 rem = sb.Size - relat;
@@ -573,7 +587,7 @@ STDMETHODIMP CSparseStream::Read(void *data, UInt32 size, UInt32 *processedSize)
       memset(data, 0, size);
     }
   }
-  
+
   _virtPos += size;
   if (processedSize)
     *processedSize = size;
@@ -600,7 +614,7 @@ STDMETHODIMP CSparseStream::Seek(Int64 offset, UInt32 seekOrigin, UInt64 *newPos
 STDMETHODIMP CHandler::GetStream(UInt32 index, ISequentialInStream **stream)
 {
   COM_TRY_BEGIN
-  
+
   const CItemEx &item = _items[index];
 
   if (item.IsSparse())
@@ -622,15 +636,15 @@ STDMETHODIMP CHandler::GetStream(UInt32 index, ISequentialInStream **stream)
     *stream = streamTemp.Detach();
     return S_OK;
   }
-  
+
   if (item.IsSymLink())
   {
     Create_BufInStream_WithReference((const Byte *)(const char *)item.LinkName, item.LinkName.Len(), (IInArchive *)this, stream);
     return S_OK;
   }
-  
+
   return CreateLimitedInStream(_stream, item.GetDataPosition(), item.PackSize, stream);
-  
+
   COM_TRY_END
 }
 

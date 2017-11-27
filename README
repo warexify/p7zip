@@ -82,12 +82,12 @@ BUILD :
    - x86 CPU :
     Linux - Debian 3.0 Stable
     Linux - Ubuntu 14.10
-    Linux - Ubuntu 15.10    
+    Linux - Ubuntu 15.10
     MacOS 10.6.6
 
    - AMD64 CPU :
     Linux - Ubuntu 14.10
-    Linux - Ubuntu 15.10     
+    Linux - Ubuntu 15.10
     MacOS 10.6.6
 
    - powerpc CPU :
@@ -159,19 +159,19 @@ BUILD with cmake
   cd CPP/7zip/CMAKE
 
   ./generate.sh  (or ./generate_xcode.sh for MacOSX)
-  
+
   In CPP/7zip, you now have directories like :
    - P7ZIP.codeblocks/
    - P7ZIP.EclipseCDT4/
    - P7ZIP.Unix/
    (or P7ZIP.Xcode/  for MacOSX)
-   
-   
+
+
   For the target "Unix Makefiles" :
 	- cd CPP/7zip/P7ZIP.Unix
 	- make
-	
-  Remark : these targets use only C/C++ code. To build targets with ASM code you must read the previous paragraph.	
+
+  Remark : these targets use only C/C++ code. To build targets with ASM code you must read the previous paragraph.
 
   For others target, use the IDE (CodeBlocks, KDevelop3, Eclipse CDT4)
 
@@ -369,7 +369,7 @@ DEVELOPPER CORNER:
   - dynamic analysis : valgrind
     cp makefile.linux_valgrind makefile.machine
     make test
-    
+
   - dynamic analysis : gcc sanitize
     cp makefile.linux_amd64_sanitizer makefile.machine
     make test

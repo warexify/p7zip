@@ -43,7 +43,7 @@ static const Byte kProps[] =
   kpidLinks,
   kpidIsAltStream,
   kpidNumAltStreams,
-  
+
   #ifdef WIM_DETAILS
   , kpidVolume
   , kpidOffset
@@ -122,7 +122,7 @@ STDMETHODIMP CHandler::GetArchiveProperty(PROPID propID, PROPVARIANT *value)
     case kpidPhySize:  prop = _phySize; break;
     case kpidSize: prop = _db.GetUnpackSize(); break;
     case kpidPackSize: prop = _db.GetPackSize(); break;
-    
+
     case kpidCTime:
       if (_xmls.Size() == 1)
       {
@@ -210,7 +210,7 @@ STDMETHODIMP CHandler::GetArchiveProperty(PROPID propID, PROPVARIANT *value)
       }
       break;
     case kpidNumVolumes: if (_volumes.Size() > 0) prop = (UInt32)(_volumes.Size() - 1); break;
-    
+
     case kpidClusterSize:
       if (_xmls.Size() > 0)
       {
@@ -275,13 +275,13 @@ STDMETHODIMP CHandler::GetArchiveProperty(PROPID propID, PROPVARIANT *value)
 
     case kpidNumImages: prop = (UInt32)_db.Images.Size(); break;
     case kpidBootImage: if (_bootIndex != 0) prop = (UInt32)_bootIndex; break;
-    
+
     case kpidMethod:
     {
       UInt32 methodUnknown = 0;
       UInt32 methodMask = 0;
       unsigned chunkSizeBits = 0;
-      
+
       {
         FOR_VECTOR (i, _xmls)
         {
@@ -298,7 +298,8 @@ STDMETHODIMP CHandler::GetArchiveProperty(PROPID propID, PROPVARIANT *value)
 
       AString res;
 
-      bool numMethods = 0;
+      unsigned numMethods = 0;
+
       for (unsigned i = 0; i < ARRAY_SIZE(k_Methods); i++)
       {
         if (methodMask & ((UInt32)1 << i))
@@ -329,7 +330,7 @@ STDMETHODIMP CHandler::GetArchiveProperty(PROPID propID, PROPVARIANT *value)
       prop = res;
       break;
     }
-    
+
     case kpidIsTree: prop = true; break;
     case kpidIsAltStream: prop = _db.ThereAreAltStreams; break;
     case kpidIsAux: prop = true; break;
@@ -386,19 +387,19 @@ static void MethodToProp(int method, int chunksSizeBits, NCOM::CPropVariant &pro
   if (method >= 0)
   {
     char temp[32];
-    
+
     if ((unsigned)method < ARRAY_SIZE(k_Methods))
       strcpy(temp, k_Methods[(unsigned)method]);
     else
       ConvertUInt32ToString((unsigned)method, temp);
-    
+
     if (chunksSizeBits >= 0)
     {
       size_t pos = strlen(temp);
       temp[pos++] = ':';
       ConvertUInt32ToString((unsigned)chunksSizeBits, temp + pos);
     }
-    
+
     prop = temp;
   }
 }
@@ -451,7 +452,7 @@ STDMETHODIMP CHandler::GetProperty(UInt32 index, PROPID propID, PROPVARIANT *val
           prop = s;
         }
         break;
-      
+
       case kpidName:
         if (item.ImageIndex >= 0)
           _db.GetItemName(realIndex, prop);
@@ -520,7 +521,7 @@ STDMETHODIMP CHandler::GetProperty(UInt32 index, PROPID propID, PROPVARIANT *val
 
         break;
       }
-      
+
       case kpidIsDir: prop = item.IsDir; break;
       case kpidIsAltStream: prop = item.IsAltStream; break;
       case kpidNumAltStreams:
@@ -739,7 +740,7 @@ STDMETHODIMP CHandler::GetParent(UInt32 index, UInt32 *parent, UInt32 *parentTyp
     return S_OK;
 
   const CItem &item = _db.Items[_db.SortedItems[index]];
-  
+
   if (item.ImageIndex >= 0)
   {
     *parentType = item.IsAltStream ? NParentType::kAltStream : NParentType::kDir;
@@ -809,12 +810,12 @@ STDMETHODIMP CHandler::GetRawProp(UInt32 index, PROPID propID, const void **data
     return S_OK;
 
   unsigned index2 = _db.SortedItems[index];
-  
+
   if (propID == kpidNtSecure)
   {
     return GetSecurity(index2, data, dataSize, propType);
   }
-  
+
   const CItem &item = _db.Items[index2];
   if (propID == kpidSha1)
   {
@@ -833,7 +834,7 @@ STDMETHODIMP CHandler::GetRawProp(UInt32 index, PROPID propID, const void **data
     *propType = NPropDataType::kRaw;
     return S_OK;
   }
-  
+
   if (propID == kpidNtReparse && !_isOldVersion)
   {
     // we don't know about Reparse field in OLD WIM format
@@ -886,17 +887,17 @@ STDMETHODIMP CHandler::Open(IInStream *inStream, const UInt64 *, IArchiveOpenCal
   Close();
   {
     CMyComPtr<IArchiveOpenVolumeCallback> openVolumeCallback;
-    
+
     CVolumeName seqName;
     if (callback)
       callback->QueryInterface(IID_IArchiveOpenVolumeCallback, (void **)&openVolumeCallback);
 
     UInt32 numVolumes = 1;
-    
+
     for (UInt32 i = 1; i <= numVolumes; i++)
     {
       CMyComPtr<IInStream> curStream;
-      
+
       if (i == 1)
         curStream = inStream;
       else
@@ -910,17 +911,17 @@ STDMETHODIMP CHandler::Open(IInStream *inStream, const UInt64 *, IArchiveOpenCal
         if (!curStream)
           break;
       }
-      
+
       CHeader header;
       HRESULT res = NWim::ReadHeader(curStream, header, _phySize);
-      
+
       if (res != S_OK)
       {
         if (i != 1 && res == S_FALSE)
           continue;
         return res;
       }
-      
+
       _isArc = true;
       _bootIndex = header.BootIndex;
       _version = header.Version;
@@ -933,7 +934,7 @@ STDMETHODIMP CHandler::Open(IInStream *inStream, const UInt64 *, IArchiveOpenCal
       CWimXml xml;
       xml.VolIndex = header.PartNumber;
       res = _db.OpenXml(curStream, header, xml.Data);
-      
+
       if (res == S_OK)
       {
         if (!xml.Parse())
@@ -951,22 +952,22 @@ STDMETHODIMP CHandler::Open(IInStream *inStream, const UInt64 *, IArchiveOpenCal
           totalFiles = 0;
         res = _db.Open(curStream, header, (unsigned)totalFiles, callback);
       }
-      
+
       if (res != S_OK)
       {
         if (i != 1 && res == S_FALSE)
           continue;
         return res;
       }
-      
+
       while (_volumes.Size() <= header.PartNumber)
         _volumes.AddNew();
       CVolume &volume = _volumes[header.PartNumber];
       volume.Header = header;
       volume.Stream = curStream;
-      
+
       _firstVolumeIndex = header.PartNumber;
-      
+
       if (_xmls.IsEmpty() || xml.Data != _xmls[0].Data)
       {
         char sz[16];
@@ -976,7 +977,7 @@ STDMETHODIMP CHandler::Open(IInStream *inStream, const UInt64 *, IArchiveOpenCal
         xml.FileName.AddAscii("].xml");
         _xmls.Add(xml);
       }
-      
+
       if (i == 1)
       {
         if (header.PartNumber != 1)
@@ -996,7 +997,7 @@ STDMETHODIMP CHandler::Open(IInStream *inStream, const UInt64 *, IArchiveOpenCal
 
     RINOK(_db.FillAndCheck(_volumes));
     int defaultImageIndex = (int)_defaultImageNumber - 1;
-    
+
     bool showImageNumber = (_db.Images.Size() != 1 && defaultImageIndex < 0);
     if (!showImageNumber && _set_use_ShowImageNumber)
       showImageNumber = _set_showImageNumber;
@@ -1080,7 +1081,7 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
 
   UInt64 currentTotalUnPacked = 0;
   UInt64 currentItemUnPacked;
-  
+
   int prevSuccessStreamIndex = -1;
 
   CUnpacker unpacker;
@@ -1153,16 +1154,16 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
       continue;
     RINOK(extractCallback->PrepareOperation(askMode));
     Int32 opRes = NExtract::NOperationResult::kOK;
-    
+
     if (streamIndex != prevSuccessStreamIndex || realOutStream)
     {
       Byte digest[kHashSize];
       const CVolume &vol = _volumes[si.PartNumber];
       bool needDigest = !si.IsEmptyHash();
-      
+
       HRESULT res = unpacker.Unpack(vol.Stream, si.Resource, vol.Header, &_db,
           realOutStream, progress, needDigest ? digest : NULL);
-      
+
       if (res == S_OK)
       {
         if (!needDigest || memcmp(digest, si.Hash, kHashSize) == 0)
@@ -1177,11 +1178,11 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
       else
         return res;
     }
-    
+
     realOutStream.Release();
     RINOK(extractCallback->SetOperationResult(opRes));
   }
-  
+
   return S_OK;
   COM_TRY_END
 }

@@ -156,7 +156,7 @@ bool CHeader::Parse(const Byte *p)
 
 #define PT_PHDR 6
 
-static const char *g_SegnmentTypes[] =
+static const char * const g_SegnmentTypes[] =
 {
   "Unused",
   "Loadable segment",
@@ -469,7 +469,7 @@ static const CUInt32PCharPair g_Machines[] =
   { 118, "Microchip Technology dsPIC30F" },
   { 119, "Freescale CE" },
   { 120, "Renesas M32C" },
-  
+
   { 131, "Altium TSK3000" },
   { 132, "Freescale RS08" },
   { 133, "Analog Devices SHARC" },
@@ -482,7 +482,7 @@ static const CUInt32PCharPair g_Machines[] =
   { 140, "TI TMS320C6000" },
   { 141, "TI TMS320C2000" },
   { 142, "TI TMS320C55x" },
-  
+
   { 160, "STM 64bit VLIW Data Signal" },
   { 161, "Cypress M8C" },
   { 162, "Renesas R32C" },
@@ -505,9 +505,9 @@ static const CUInt32PCharPair g_Machines[] =
   { 179, "Infineon SLE9X" },
   { 180, "Intel L10M" },
   { 181, "Intel K10M" },
-  
+
   { 183, "ARM64" },
-  
+
   { 185, "Atmel AVR32" },
   { 186, "STM8" },
   { 187, "Tilera TILE64" },
@@ -554,13 +554,31 @@ static const CUInt32PCharPair g_OS[] =
   { 255, "Standalone" }
 };
 
+#define k_Machine_ARM 40
+
+/*
+#define EF_ARM_ABIMASK        0xFF000000
+#define EF_ARM_BE8            0x00800000
+#define EF_ARM_GCCMASK        0x00400FFF
+#define EF_ARM_ABI_FLOAT_SOFT 0x00000200
+#define EF_ARM_ABI_FLOAT_HARD 0x00000400
+*/
+
+static const CUInt32PCharPair g_ARM_Flags[] =
+{
+  { 9, "SF" },
+  { 10, "HF" },
+  { 23, "BE8" }
+};
+
+
 #define ET_NONE 0
 #define ET_REL  1
 #define ET_EXEC 2
 #define ET_DYN  3
 #define ET_CORE 4
 
-static const char *g_Types[] =
+static const char * const g_Types[] =
 {
   "None",
   "Relocatable file",
@@ -568,6 +586,9 @@ static const char *g_Types[] =
   "Shared object file",
   "Core file"
 };
+
+
+
 
 class CHandler:
   public IInArchive,
@@ -659,7 +680,29 @@ STDMETHODIMP CHandler::GetArchiveProperty(PROPID propID, PROPVARIANT *value)
     case kpidBit64: if (_header.Mode64) prop = _header.Mode64; break;
     case kpidBigEndian: if (_header.Be) prop = _header.Be; break;
     case kpidShortComment:
-    case kpidCpu: PAIR_TO_PROP(g_Machines, _header.Machine, prop); break;
+
+    case kpidCpu:
+    {
+      AString s = TypePairToString(g_Machines, ARRAY_SIZE(g_Machines), _header.Machine);
+      UInt32 flags = _header.Flags;
+      if (flags != 0)
+      {
+        char sz[16];
+        s.Add_Space();
+        if (_header.Machine == k_Machine_ARM)
+        {
+          s += FlagsToString(g_ARM_Flags, ARRAY_SIZE(g_ARM_Flags), flags & (((UInt32)1 << 24) - 1));
+          s += " ABI:";
+          ConvertUInt32ToString(flags >> 24, sz);
+        }
+        else
+          ConvertUInt32ToHex(flags, sz);
+        s += sz;
+      }
+      prop = s;
+      break;
+    }
+
     case kpidHostOS: PAIR_TO_PROP(g_OS, _header.Os, prop); break;
     case kpidCharacts: TYPE_TO_PROP(g_Types, _header.Type, prop); break;
     case kpidExtension:
@@ -711,7 +754,7 @@ STDMETHODIMP CHandler::GetProperty(UInt32 index, PROPID propID, PROPVARIANT *val
       case kpidVirtualSize: prop = (UInt64)item.VSize; break;
       case kpidType: TYPE_TO_PROP(g_SegnmentTypes, item.Type, prop); break;
       case kpidCharacts: FLAGS_TO_PROP(g_SegmentFlags, item.Flags, prop); break;
-        
+
     }
   }
   else
@@ -762,17 +805,17 @@ HRESULT CHandler::Open2(IInStream *stream)
     if (_header.ProgOffset > (UInt64)1 << 60) return S_FALSE;
     RINOK(stream->Seek(_header.ProgOffset, STREAM_SEEK_SET, NULL));
     size_t size = (size_t)_header.SegmentEntrySize * _header.NumSegments;
-    
+
     CByteArr buf(size);
-    
+
     RINOK(ReadStream_FALSE(stream, buf, size));
-    
+
     UInt64 total = _header.ProgOffset + size;
     if (_totalSize < total)
       _totalSize = total;
 
     const Byte *p = buf;
-    
+
     if (addSegments)
       _segments.ClearAndReserve(_header.NumSegments);
     for (unsigned i = 0; i < _header.NumSegments; i++, p += _header.SegmentEntrySize)
@@ -791,9 +834,9 @@ HRESULT CHandler::Open2(IInStream *stream)
     if (_header.SectOffset > (UInt64)1 << 60) return S_FALSE;
     RINOK(stream->Seek(_header.SectOffset, STREAM_SEEK_SET, NULL));
     size_t size = (size_t)_header.SectionEntrySize * _header.NumSections;
-    
+
     CByteArr buf(size);
-    
+
     RINOK(ReadStream_FALSE(stream, buf, size));
 
     UInt64 total = _header.SectOffset + size;
@@ -801,7 +844,7 @@ HRESULT CHandler::Open2(IInStream *stream)
       _totalSize = total;
 
     const Byte *p = buf;
-    
+
     if (addSections)
       _sections.ClearAndReserve(_header.NumSections);
     for (unsigned i = 0; i < _header.NumSections; i++, p += _header.SectionEntrySize)
@@ -833,7 +876,7 @@ HRESULT CHandler::Open2(IInStream *stream)
         RINOK(ReadStream_FALSE(stream, _namesData, (size_t)size));
       }
     }
-    
+
     /*
     // we will not delete NULL sections, since we have links to section via indexes
     for (int i = _sections.Size() - 1; i >= 0; i--)
@@ -905,7 +948,7 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
 
   UInt64 currentTotalSize = 0;
   UInt64 currentItemSize;
-  
+
   NCompress::CCopyCoder *copyCoderSpec = new NCompress::CCopyCoder();
   CMyComPtr<ICompressCoder> copyCoder = copyCoderSpec;
 
@@ -938,12 +981,12 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
       currentItemSize = item.GetSize();
       offset = item.Offset;
     }
-    
+
     CMyComPtr<ISequentialOutStream> outStream;
     RINOK(extractCallback->GetStream(index, &outStream, askMode));
     if (!testMode && !outStream)
       continue;
-      
+
     RINOK(extractCallback->PrepareOperation(askMode));
     RINOK(_inStream->Seek(offset, STREAM_SEEK_SET, NULL));
     streamSpec->Init(currentItemSize);

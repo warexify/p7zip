@@ -175,7 +175,7 @@ static void ConvertWIN32_FIND_DATA_To_FileInfo(const WIN32_FIND_DATA &fd, CFileI
   fi.Name = fas2fs(fd.cFileName);
 }
 #endif
-  
+
 ////////////////////////////////
 // CFindFile
 
@@ -303,9 +303,9 @@ bool CFindFile::FindFirst(CFSTR cfWildcard, CFileInfo &fi, bool ignoreLink)
     SetLastError(ERROR_PATH_NOT_FOUND);
     return false;
   }
- 
+
   my_windows_split_path(nameWindowToUnix(wildcard),_directory,_pattern);
-  
+
   TRACEN((printf("CFindFile::FindFirst : %s (dirname=%s,pattern=%s)\n",wildcard,(const char *)_directory,(const char *)_pattern)))
 
   _dirp = ::opendir((const char *)_directory);
@@ -388,7 +388,7 @@ void CFileInfoBase::ClearBase() throw()
   IsAltStream = false;
   IsDevice = false;
 }
-  
+
 bool CFileInfo::Find(CFSTR wildcard, bool ignoreLink)
 {
   #ifdef SUPPORT_DEVICE_FILE
@@ -405,9 +405,7 @@ bool CFileInfo::Find(CFSTR wildcard, bool ignoreLink)
     return true;
   }
   #endif
-  CFindFile finder;
-  if (finder.FindFirst(wildcard, *this,ignoreLink))
-    return true;
+
   #ifdef _WIN32
   {
     DWORD lastError = GetLastError();
@@ -510,7 +508,7 @@ bool CFindChangeNotification::Close()
   _handle = INVALID_HANDLE_VALUE;
   return true;
 }
-           
+
 HANDLE CFindChangeNotification::FindFirst(CFSTR pathName, bool watchSubtree, DWORD notifyFilter)
 {
   #ifndef _UNICODE

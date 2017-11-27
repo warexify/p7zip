@@ -16,12 +16,12 @@ API_FUNC_IsArc IsArc_Zip(const Byte *p, size_t size);
 
 namespace NArchive {
 namespace NZip {
-  
+
 class CItemEx: public CItem
 {
 public:
   UInt32 LocalFullHeaderSize; // including Name and Extra
-  
+
   UInt64 GetLocalFullSize() const
     { return LocalFullHeaderSize + PackSize + (HasDescriptor() ? kDataDescriptorSize : 0); }
   UInt64 GetDataPosition() const
@@ -73,7 +73,7 @@ struct CInArchiveInfo
       ThereIsTail(false)
       // BaseVolIndex(0)
       {}
-  
+
   void Clear()
   {
     // BaseVolIndex = 0;
@@ -128,7 +128,7 @@ public:
 
     CSubStreamInfo(): Size(0) {}
   };
-  
+
   CObjectVector<CSubStreamInfo> Streams;
   int StreamIndex;
   bool NeedSeek;
@@ -139,6 +139,7 @@ public:
   bool StartIsZ;    // is .zip or .zNN
   bool StartIsZip;  // is .zip
   bool IsUpperCase;
+  bool MissingZip;
   Int32 StartVolIndex; // = (NN - 1), if StartStream is .zNN
 
   Int32 StartParsingVol; // if we need local parsing, we must use that stream
@@ -173,6 +174,7 @@ public:
     BaseName.Empty();
     MissingName.Empty();
 
+    MissingZip = false;
     ecd_wasRead = false;
 
     Streams.Clear();
@@ -182,7 +184,7 @@ public:
   HRESULT ParseArcName(IArchiveOpenVolumeCallback *volCallback);
 
   HRESULT Read(void *data, UInt32 size, UInt32 *processedSize);
-  
+
   UInt64 GetTotalSize() const
   {
     UInt64 total = 0;
@@ -199,7 +201,7 @@ class CVolStream:
 {
 public:
   CVols *Vols;
-  
+
   MY_UNKNOWN_IMP1(ISequentialInStream)
 
   STDMETHOD(Read)(void *data, UInt32 size, UInt32 *processedSize);
@@ -214,7 +216,7 @@ class CInArchive
   UInt64 m_Position;
 
   UInt64 _processedCnt;
-  
+
   bool CanStartNewVol;
 
   CMyComPtr<IInStream> StreamRef;
@@ -258,7 +260,7 @@ class CInArchive
   HRESULT GetVolStream(unsigned vol, UInt64 pos, CMyComPtr<ISequentialInStream> &stream);
 public:
   CInArchiveInfo ArcInfo;
-  
+
   bool IsArc;
   bool IsZip64;
   bool HeadersError;
@@ -274,7 +276,7 @@ public:
   UInt32 EcdVolIndex;
 
   CVols Vols;
- 
+
   IArchiveOpenCallback *Callback;
 
   CInArchive(): Stream(NULL), Callback(NULL), IsArcOpen(false) {}
@@ -295,14 +297,14 @@ public:
       return ArcInfo.Base;
   }
 
-  
+
   void ClearRefs();
   void Close();
   HRESULT Open(IInStream *stream, const UInt64 *searchLimit, IArchiveOpenCallback *callback, CObjectVector<CItemEx> &items);
   HRESULT ReadHeaders(CObjectVector<CItemEx> &items);
 
   bool IsOpen() const { return IsArcOpen; }
-  
+
   bool AreThereErrors() const
   {
     return HeadersError
@@ -343,14 +345,14 @@ public:
        || ArcInfo.ThereIsTail
        || GetEmbeddedStubSize() != 0)
       return false;
-   
+
     // 7-zip probably can update archives with embedded stubs.
     // we just disable that feature for more safety.
 
     return true;
   }
 };
-  
+
 }}
-  
+
 #endif

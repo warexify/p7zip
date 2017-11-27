@@ -67,7 +67,7 @@ STDMETHODIMP CHandler::UpdateItems(ISequentialOutStream *outStream, UInt32 numIt
     IArchiveUpdateCallback *callback)
 {
   COM_TRY_BEGIN2
-  
+
   if (m_Archive.IsOpen())
   {
     if (!m_Archive.CanUpdate())
@@ -282,8 +282,8 @@ STDMETHODIMP CHandler::UpdateItems(ISequentialOutStream *outStream, UInt32 numIt
       EXTERNAL_CODECS_VARS
       m_Items, updateItems, outStream,
       m_Archive.IsOpen() ? &m_Archive : NULL, _removeSfxBlock,
-      &options, callback);
- 
+      options, callback);
+
   COM_TRY_END2
 }
 
@@ -309,7 +309,7 @@ STDMETHODIMP CHandler::SetProperties(const wchar_t * const *names, const PROPVAR
   #ifndef _7ZIP_ST
   const UInt32 numProcessors = _props.NumThreads;
   #endif
-  
+
   for (UInt32 i = 0; i < numProps; i++)
   {
     UString name = names[i];

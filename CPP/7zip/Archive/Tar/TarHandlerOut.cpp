@@ -30,7 +30,7 @@ HRESULT GetPropString(IArchiveUpdateCallback *callback, UInt32 index, PROPID pro
 {
   NCOM::CPropVariant prop;
   RINOK(callback->GetProperty(index, propId, &prop));
-  
+
   if (prop.vt == VT_BSTR)
   {
     UString s = prop.bstrVal;
@@ -75,23 +75,23 @@ STDMETHODIMP CHandler::UpdateItems(ISequentialOutStream *outStream, UInt32 numIt
 {
   COM_TRY_BEGIN
 
-  if ((_stream && (_error != k_ErrorType_OK /* || _isSparse */)) || _seqStream)
+  if ((_stream && (_error != k_ErrorType_OK || _warning /* || _isSparse */)) || _seqStream)
     return E_NOTIMPL;
   CObjectVector<CUpdateItem> updateItems;
   UINT codePage = (_forceCodePage ? _specifiedCodePage : _openCodePage);
-  
+
   for (UInt32 i = 0; i < numItems; i++)
   {
     CUpdateItem ui;
     Int32 newData;
     Int32 newProps;
     UInt32 indexInArc;
-    
+
     if (!callback)
       return E_FAIL;
-    
+
     RINOK(callback->GetUpdateItemInfo(i, &newData, &newProps, &indexInArc));
-    
+
     ui.NewProps = IntToBool(newProps);
     ui.NewData = IntToBool(newData);
     ui.IndexInArc = indexInArc;
@@ -135,7 +135,7 @@ STDMETHODIMP CHandler::UpdateItems(ISequentialOutStream *outStream, UInt32 numIt
         else
           ui.MTime = NTime::FileTimeToUnixTime64(prop.filetime);
       }
-      
+
       RINOK(GetPropString(callback, i, kpidPath, ui.Name, codePage, true));
       if (ui.IsDir && !ui.Name.IsEmpty() && ui.Name.Back() != '/')
         ui.Name += '/';
@@ -156,18 +156,18 @@ STDMETHODIMP CHandler::UpdateItems(ISequentialOutStream *outStream, UInt32 numIt
         return E_INVALIDARG;
       */
     }
-    
+
     updateItems.Add(ui);
   }
-  
+
   if (_thereIsPaxExtendedHeader)
   {
     // we restore original order of files, if there is pax header block
     updateItems.Sort(CompareUpdateItems, NULL);
   }
-  
+
   return UpdateArchive(_stream, outStream, _items, updateItems, codePage, callback);
-  
+
   COM_TRY_END
 }
 

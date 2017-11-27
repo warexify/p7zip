@@ -149,7 +149,7 @@ bool CHeader::Parse(const Byte *p)
     return false;
   if (p[0x27] != 0) // reserved
     return false;
-  
+
   NumSectors = Get64(p + 0x28);
   if (NumSectors >= ((UInt64)1 << (62 - SectorSizeLog)))
     return false;
@@ -169,7 +169,7 @@ bool CHeader::Parse(const Byte *p)
 struct CMftRef
 {
   UInt64 Val;
-  
+
   UInt64 GetIndex() const { return Val & (((UInt64)1 << 48) - 1); }
   UInt16 GetNumber() const { return (UInt16)(Val >> 48); }
   bool IsBaseItself() const { return Val == 0; }
@@ -228,7 +228,7 @@ struct CFileNameAttr
   UString2 Name;
   UInt32 Attrib;
   Byte NameType;
-  
+
   bool IsDos() const { return NameType == kFileNameType_Dos; }
   bool IsWin32() const { return (NameType == kFileNameType_Win32); }
 
@@ -409,7 +409,7 @@ UInt32 CAttr::Parse(const Byte *p, unsigned size)
   if (size < 0x18)
     return 0;
   PRF(printf(" T=%2X", Type));
-  
+
   UInt32 len = Get32(p + 0x04);
   PRF(printf(" L=%3d", len));
   if (len > size)
@@ -576,7 +576,7 @@ class CInStream:
   UInt64 _physPos;
   UInt64 _curRem;
   bool _sparseMode;
-  
+
 
   unsigned _chunkSizeLog;
   UInt64 _tags[kNumCacheChunks];
@@ -748,11 +748,11 @@ STDMETHODIMP CInStream::Read(void *data, UInt32 size, UInt32 *processedSize)
     }
 
     PRF2(printf("\nVirtPos = %6d", _virtPos));
-    
+
     UInt32 comprUnitSize = (UInt32)1 << CompressionUnit;
     UInt64 virtBlock = _virtPos >> BlockSizeLog;
     UInt64 virtBlock2 = virtBlock & ~((UInt64)comprUnitSize - 1);
-    
+
     unsigned left = 0, right = Extents.Size();
     for (;;)
     {
@@ -764,7 +764,7 @@ STDMETHODIMP CInStream::Read(void *data, UInt32 size, UInt32 *processedSize)
       else
         left = mid;
     }
-    
+
     bool isCompressed = false;
     UInt64 virtBlock2End = virtBlock2 + comprUnitSize;
     if (CompressionUnit != 0)
@@ -782,7 +782,7 @@ STDMETHODIMP CInStream::Read(void *data, UInt32 size, UInt32 *processedSize)
 
     unsigned i;
     for (i = left; Extents[i + 1].Virt <= virtBlock; i++);
-    
+
     _sparseMode = false;
     if (!isCompressed)
     {
@@ -820,7 +820,7 @@ STDMETHODIMP CInStream::Read(void *data, UInt32 size, UInt32 *processedSize)
       _sparseMode = true;
       break;
     }
-    
+
     size_t offs = 0;
     UInt64 curVirt = virtBlock2;
     for (i = left; i < Extents.Size(); i++)
@@ -879,7 +879,7 @@ STDMETHODIMP CInStream::Read(void *data, UInt32 size, UInt32 *processedSize)
   _curRem -= size;
   return res;
 }
- 
+
 STDMETHODIMP CInStream::Seek(Int64 offset, UInt32 seekOrigin, UInt64 *newPosition)
 {
   switch (seekOrigin)
@@ -910,14 +910,14 @@ static HRESULT DataParseExtents(unsigned clusterSizeLog, const CObjectVector<CAt
     e.Phy = kEmptyExtent;
     Extents.Add(e);
   }
-  
+
   const CAttr &attr0 = attrs[attrIndex];
 
   if (attr0.AllocatedSize < attr0.Size ||
       (attrs[attrIndexLim - 1].HighVcn + 1) != (attr0.AllocatedSize >> clusterSizeLog) ||
       (attr0.AllocatedSize & ((1 << clusterSizeLog) - 1)) != 0)
     return S_FALSE;
-  
+
   for (unsigned i = attrIndex; i < attrIndexLim; i++)
     if (!attrs[i].ParseExtents(Extents, numPhysClusters, attr0.CompressionUnit))
       return S_FALSE;
@@ -931,7 +931,7 @@ static HRESULT DataParseExtents(unsigned clusterSizeLog, const CObjectVector<CAt
     PRF2(printf("\nSize = %4I64X", Extents[k + 1].Virt - e.Virt));
     PRF2(printf("  Pos = %4I64X", e.Phy));
   }
-  
+
   if (attr0.CompressionUnit != 0)
   {
     if (packSizeCalc != attr0.PackSize)
@@ -964,7 +964,7 @@ struct CMftRec
   // UInt16 NextAttrInstance;
   CMftRef BaseMftRef;
   // UInt32 ThisRecNumber;
-  
+
   UInt32 MyNumNameLinks;
   int MyItemIndex; // index in Items[] of main item  for that record, or -1 if there is no item for that record
 
@@ -974,7 +974,7 @@ struct CMftRec
   // CAttr SecurityAttr;
 
   CSiAttr SiAttr;
-  
+
   CByteBuffer ReparseData;
 
   int FindWin32Name_for_DosName(unsigned dosNameIndex) const
@@ -1082,7 +1082,7 @@ HRESULT CMftRec::GetStream(IInStream *mainStream, int dataIndex,
         numNonResident++;
 
     const CAttr &attr0 = DataAttrs[ref.Start];
-      
+
     if (numNonResident != 0 || ref.Num != 1)
     {
       if (numNonResident != ref.Num || !attr0.IsCompressionUnitSupported())
@@ -1099,7 +1099,7 @@ HRESULT CMftRec::GetStream(IInStream *mainStream, int dataIndex,
       *destStream = streamTemp2.Detach();
       return S_OK;
     }
-  
+
     streamSpec->Buf = attr0.Data;
   }
 
@@ -1121,7 +1121,7 @@ unsigned CMftRec::GetNumExtents(int dataIndex, unsigned clusterSizeLog, UInt64 n
         numNonResident++;
 
     const CAttr &attr0 = DataAttrs[ref.Start];
-      
+
     if (numNonResident != 0 || ref.Num != 1)
     {
       if (numNonResident != ref.Num || !attr0.IsCompressionUnitSupported())
@@ -1144,13 +1144,13 @@ bool CMftRec::Parse(Byte *p, unsigned sectorSizeLog, UInt32 numSectors, UInt32 r
   if (!IsFILE())
     return IsEmpty() || IsBAAD();
 
-  
+
   {
     UInt32 usaOffset;
     UInt32 numUsaItems;
     G16(p + 0x04, usaOffset);
     G16(p + 0x06, numUsaItems);
-      
+
     /* NTFS stores (usn) to 2 last bytes in each sector (before writing record to disk).
        Original values of these two bytes are stored in table.
        So we restore original data from table */
@@ -1172,7 +1172,7 @@ bool CMftRec::Parse(Byte *p, unsigned sectorSizeLog, UInt32 numSectors, UInt32 r
           return false;
       }
     }
-    
+
     UInt16 usn = Get16(p + usaOffset);
     // PRF(printf("\nusn = %d", usn));
     for (UInt32 i = 1; i < numUsaItems; i++)
@@ -1275,7 +1275,7 @@ bool CMftRec::Parse(Byte *p, unsigned sectorSizeLog, UInt32 numSectors, UInt32 r
     $Extend\$ObjId
     $Extend\$Reparse
 */
-  
+
 static const int k_Item_DataIndex_IsEmptyFile = -1; // file without unnamed data stream
 static const int k_Item_DataIndex_IsDir = -2;
 
@@ -1291,16 +1291,16 @@ struct CItem
   int DataIndex;      /* index in CMftRec::DataRefs
                          -1: file without unnamed data stream
                          -2: for directories */
-                         
+
   int ParentFolder;   /* index in Items array
                          -1: for root items
                          -2: [LOST] folder
                          -3: [UNKNOWN] folder (deleted lost) */
   int ParentHost;     /* index in Items array, if it's AltStream
                          -1: if it's not AltStream */
-  
+
   CItem(): DataIndex(k_Item_DataIndex_IsDir), ParentFolder(-1), ParentHost(-1) {}
-  
+
   bool IsAltStream() const { return ParentHost != -1; }
   bool IsDir() const { return DataIndex == k_Item_DataIndex_IsDir; }
         // check it !!!
@@ -1391,7 +1391,7 @@ struct CDatabase
   }
 
   bool FindSecurityDescritor(UInt32 id, UInt64 &offset, UInt32 &size) const;
-  
+
   HRESULT ParseSecuritySDS_2();
   void ParseSecuritySDS()
   {
@@ -1487,7 +1487,7 @@ void CDatabase::GetItemPath(unsigned index, NCOM::CPropVariant &path) const
   }
 
   wchar_t *s = path.AllocBstr(size);
-  
+
   item = &Items[index];
 
   bool needColon = false;
@@ -1628,29 +1628,29 @@ HRESULT CDatabase::Open()
      1) main part (as specified by NumClusters). Only that part is available, if we open "\\.\c:"
      2) additional empty sectors (as specified by NumSectors)
      3) the copy of first sector (boot sector)
-    
+
      We support both cases:
       - the file with only main part
       - full file (as raw data on partition), including the copy
         of first sector (boot sector) at the end of data
-     
+
      We don't support the case, when only the copy of boot sector
      at the end was detected as NTFS signature.
   */
-  
+
   {
     static const UInt32 kHeaderSize = 512;
     Byte buf[kHeaderSize];
     RINOK(ReadStream_FALSE(InStream, buf, kHeaderSize));
     if (!Header.Parse(buf))
       return S_FALSE;
-    
+
     UInt64 fileSize;
     RINOK(InStream->Seek(0, STREAM_SEEK_END, &fileSize));
     PhySize = Header.GetPhySize_Clusters();
     if (fileSize < PhySize)
       return S_FALSE;
-    
+
     UInt64 phySizeMax = Header.GetPhySize_Max();
     if (fileSize >= phySizeMax)
     {
@@ -1664,7 +1664,7 @@ HRESULT CDatabase::Open()
       }
     }
   }
- 
+
   SeekToCluster(Header.MftCluster);
 
   CMftRec mftRec;
@@ -1675,7 +1675,7 @@ HRESULT CDatabase::Open()
     UInt32 blockSize = 1 << 12;
     ByteBuf.Alloc(blockSize);
     RINOK(ReadStream_FALSE(InStream, ByteBuf, blockSize));
-    
+
     {
       UInt32 allocSize = Get32(ByteBuf + 0x1C);
       int t = GetLog(allocSize);
@@ -1718,11 +1718,11 @@ HRESULT CDatabase::Open()
     {
       RINOK(OpenCallback->SetTotal(&numFiles, &mftSize));
     }
-    
+
     ByteBuf.Alloc(kBufSize);
     Recs.ClearAndReserve((unsigned)numFiles);
   }
-  
+
   for (UInt64 pos64 = 0;;)
   {
     if (OpenCallback)
@@ -1748,7 +1748,7 @@ HRESULT CDatabase::Open()
     {
       PRF(printf("\n---------------------"));
       PRF(printf("\n%5d:", Recs.Size()));
-      
+
       Byte *p = ByteBuf + i;
       CMftRec rec;
 
@@ -1813,7 +1813,7 @@ HRESULT CDatabase::Open()
   */
 
   unsigned i;
-  
+
   for (i = 0; i < Recs.Size(); i++)
   {
     CMftRec &rec = Recs[i];
@@ -1838,7 +1838,7 @@ HRESULT CDatabase::Open()
 
   for (i = 0; i < Recs.Size(); i++)
     Recs[i].ParseDataNames();
-  
+
   for (i = 0; i < Recs.Size(); i++)
   {
     CMftRec &rec = Recs[i];
@@ -1850,9 +1850,9 @@ HRESULT CDatabase::Open()
       continue;
 
     rec.MyNumNameLinks = rec.FileNames.Size();
-    
+
     // printf("\n%4d: ", i);
-    
+
     /* Actually DataAttrs / DataRefs are sorted by name.
        It can not be more than one unnamed stream in DataRefs
        And indexOfUnnamedStream <= 0.
@@ -1911,7 +1911,7 @@ HRESULT CDatabase::Open()
         rec.MyNumNameLinks--;
         continue;
       }
-      
+
       CItem item;
       item.NameIndex = t;
       item.RecIndex = i;
@@ -1920,11 +1920,11 @@ HRESULT CDatabase::Open()
             (indexOfUnnamedStream < 0 ?
           k_Item_DataIndex_IsEmptyFile :
           indexOfUnnamedStream);
-      
+
       if (rec.MyItemIndex < 0)
         rec.MyItemIndex = Items.Size();
       item.ParentHost = Items.Add(item);
-      
+
       /* we can use that code to reduce the number of alt streams:
          it will not show how alt streams for hard links. */
       // if (!isMainName) continue; isMainName = false;
@@ -1937,7 +1937,7 @@ HRESULT CDatabase::Open()
           continue;
 
         const UString2 &subName = rec.DataAttrs[rec.DataRefs[di].Start].Name;
-        
+
         PRF(printf("\n alt stream: "));
         PRF_UTF16(subName);
 
@@ -1954,7 +1954,7 @@ HRESULT CDatabase::Open()
       }
     }
   }
-  
+
   if (Recs.Size() > kRecIndex_Security)
   {
     const CMftRec &rec = Recs[kRecIndex_Security];
@@ -2020,7 +2020,7 @@ HRESULT CDatabase::Open()
       item.ParentFolder = index;
     }
   }
-  
+
   unsigned virtIndex = Items.Size();
   if (_showSystemFiles)
   {
@@ -2082,7 +2082,7 @@ STDMETHODIMP CHandler::GetParent(UInt32 index, UInt32 *parent, UInt32 *parentTyp
   if (index < Items.Size())
   {
     const CItem &item = Items[index];
-    
+
     if (item.ParentHost >= 0)
     {
       *parentType = NParentType::kAltStream;
@@ -2157,7 +2157,7 @@ STDMETHODIMP CHandler::GetRawProp(UInt32 index, PROPID propID, const void **data
       return S_OK;
     const CItem &item = Items[index];
     const CMftRec &rec = Recs[item.RecIndex];
-    if (rec.SiAttr.SecurityId >= 0)
+    if (rec.SiAttr.SecurityId > 0)
     {
       UInt64 offset;
       UInt32 size;
@@ -2169,6 +2169,7 @@ STDMETHODIMP CHandler::GetRawProp(UInt32 index, PROPID propID, const void **data
       }
     }
   }
+
   return S_OK;
 }
 
@@ -2206,15 +2207,15 @@ static const CStatProp kProps[] =
   { NULL, kpidPackSize, VT_UI8},
 
   // { NULL, kpidLink, VT_BSTR},
-  
+
   // { "Link 2", kpidLink2, VT_BSTR},
   // { "Link Type", kpidLinkType, VT_UI2},
   { NULL, kpidINode, VT_UI8},
- 
+
   { NULL, kpidMTime, VT_FILETIME},
   { NULL, kpidCTime, VT_FILETIME},
   { NULL, kpidATime, VT_FILETIME},
-  
+
   // { "Record Modified", kpidRecMTime, VT_FILETIME},
 
   // { "Modified 2", kpidMTime2, VT_FILETIME},
@@ -2388,7 +2389,7 @@ STDMETHODIMP CHandler::GetArchiveProperty(PROPID propID, PROPVARIANT *value)
       break;
     }
     */
-      
+
     // case kpidMediaType: prop = Header.MediaType; break;
     // case kpidSectorsPerTrack: prop = Header.SectorsPerTrack; break;
     // case kpidNumHeads: prop = Header.NumHeads; break;
@@ -2462,7 +2463,7 @@ STDMETHODIMP CHandler::GetProperty(UInt32 index, PROPID propID, PROPVARIANT *val
       }
       break;
     */
-    
+
     case kpidINode:
     {
       // const CMftRec &rec = Recs[item.RecIndex];
@@ -2524,7 +2525,7 @@ STDMETHODIMP CHandler::GetProperty(UInt32 index, PROPID propID, PROPVARIANT *val
     case kpidATime2: if (fn) NtfsTimeToProp(fn->ATime, prop); break;
     case kpidRecMTime2: if (fn) NtfsTimeToProp(fn->ThisRecMTime, prop); break;
     */
-      
+
     case kpidAttrib:
     {
       UInt32 attrib;
@@ -2549,7 +2550,7 @@ STDMETHODIMP CHandler::GetProperty(UInt32 index, PROPID propID, PROPVARIANT *val
       break;
     }
     case kpidLinks: if (rec.MyNumNameLinks != 1) prop = rec.MyNumNameLinks; break;
-    
+
     case kpidNumAltStreams:
     {
       if (!item.IsAltStream())
@@ -2565,7 +2566,7 @@ STDMETHODIMP CHandler::GetProperty(UInt32 index, PROPID propID, PROPVARIANT *val
       }
       break;
     }
-    
+
     case kpidSize: if (data) prop = data->GetSize(); else if (!item.IsDir()) prop = (UInt64)0; break;
     case kpidPackSize: if (data) prop = data->GetPackSize(); else if (!item.IsDir()) prop = (UInt64)0; break;
     case kpidNumBlocks: if (data) prop = (UInt32)rec.GetNumExtents(item.DataIndex, Header.ClusterSizeLog, Header.NumClusters); break;
@@ -2630,7 +2631,7 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
 
   UInt64 totalPackSize;
   totalSize = totalPackSize = 0;
-  
+
   UInt32 clusterSize = Header.ClusterSize();
   CByteBuffer buf(clusterSize);
 

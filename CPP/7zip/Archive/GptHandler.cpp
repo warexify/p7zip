@@ -26,7 +26,7 @@ namespace NArchive {
 namespace NGpt {
 
 #define SIGNATURE { 'E', 'F', 'I', ' ', 'P', 'A', 'R', 'T', 0, 0, 1, 0 }
-  
+
 static const unsigned k_SignatureSize = 12;
 static const Byte k_Signature[k_SignatureSize] = SIGNATURE;
 
@@ -92,7 +92,7 @@ static const CPartType kPartTypes[] =
 
   { 0xC12A7328, 0, "EFI System" },
   { 0x024DEE41, 0, "MBR" },
-      
+
   { 0xE3C9E316, 0, "Windows MSR" },
   { 0xEBD0A0A2, 0, "Windows BDP" },
   { 0x5808C8AA, 0, "Windows LDM Metadata" },
@@ -180,11 +180,11 @@ HRESULT CHandler::Open2(IInStream *stream)
 {
   _buffer.Alloc(kSectorSize * 2);
   RINOK(ReadStream_FALSE(stream, _buffer, kSectorSize * 2));
-  
+
   const Byte *buf = _buffer;
   if (buf[0x1FE] != 0x55 || buf[0x1FF] != 0xAA)
     return S_FALSE;
-  
+
   buf += kSectorSize;
   if (memcmp(buf, k_Signature, k_SignatureSize) != 0)
     return S_FALSE;
@@ -212,26 +212,26 @@ HRESULT CHandler::Open2(IInStream *stream)
   UInt32 numEntries = Get32(buf + 0x50);
   UInt32 entrySize = Get32(buf + 0x54); // = 128 usually
   UInt32 entriesCrc = Get32(buf + 0x58);
-  
+
   if (entrySize < 128
       || entrySize > (1 << 12)
       || numEntries > (1 << 16)
       || tableLba < 2
       || tableLba >= ((UInt64)1 << (64 - 10)))
     return S_FALSE;
-  
+
   UInt32 tableSize = entrySize * numEntries;
   UInt32 tableSizeAligned = (tableSize + kSectorSize - 1) & ~(kSectorSize - 1);
   _buffer.Alloc(tableSizeAligned);
   UInt64 tableOffset = tableLba * kSectorSize;
   RINOK(stream->Seek(tableOffset, STREAM_SEEK_SET, NULL));
   RINOK(ReadStream_FALSE(stream, _buffer, tableSizeAligned));
-  
+
   if (CrcCalc(_buffer, tableSize) != entriesCrc)
     return S_FALSE;
-  
+
   _totalSize = tableOffset + tableSizeAligned;
-  
+
   for (UInt32 i = 0; i < numEntries; i++)
   {
     CPartition item;
@@ -243,10 +243,32 @@ HRESULT CHandler::Open2(IInStream *stream)
       _totalSize = endPos;
     _items.Add(item);
   }
-  
-  UInt64 end = (backupLba + 1) * kSectorSize;
-  if (_totalSize < end)
-    _totalSize = end;
+
+  {
+    const UInt64 end = (backupLba + 1) * kSectorSize;
+    if (_totalSize < end)
+      _totalSize = end;
+  }
+
+  {
+    UInt64 fileEnd;
+    RINOK(stream->Seek(0, STREAM_SEEK_END, &fileEnd));
+
+    if (_totalSize < fileEnd)
+    {
+      const UInt64 rem = fileEnd - _totalSize;
+      const UInt64 kRemMax = 1 << 22;
+      if (rem <= kRemMax)
+      {
+        RINOK(stream->Seek(_totalSize, STREAM_SEEK_SET, NULL));
+        bool areThereNonZeros = false;
+        UInt64 numZeros = 0;
+        if (ReadZeroTail(stream, areThereNonZeros, numZeros, kRemMax) == S_OK)
+          if (!areThereNonZeros)
+            _totalSize += numZeros;
+      }
+    }
+  }
 
   return S_OK;
 }
@@ -358,7 +380,7 @@ STDMETHODIMP CHandler::GetProperty(UInt32 index, PROPID propID, PROPVARIANT *val
       prop = s;
       break;
     }
-    
+
     case kpidSize:
     case kpidPackSize: prop = item.GetSize(); break;
     case kpidOffset: prop = item.GetPos(); break;

@@ -93,7 +93,7 @@ static const Byte kProps[] =
 IMP_IInArchive_Props
 IMP_IInArchive_ArcProps_NO_Table
 
-static const char *g_AudioTypes[16] =
+static const char * const g_AudioTypes[16] =
 {
     "pcm"
   , "adpcm"
@@ -113,7 +113,7 @@ static const char *g_AudioTypes[16] =
   , "audio15"
 };
 
-static const char *g_VideoTypes[16] =
+static const char * const g_VideoTypes[16] =
 {
     "video0"
   , "jpeg"
@@ -133,7 +133,7 @@ static const char *g_VideoTypes[16] =
   , "video15"
 };
 
-static const char *g_Rates[4] =
+static const char * const g_Rates[4] =
 {
     "5.5 kHz"
   , "11 kHz"
@@ -282,7 +282,7 @@ HRESULT CHandler::Open2(IInStream *stream, IArchiveOpenCallback *callback)
   if (offset != 9 || Get32(header + 9) != 0)
     return S_FALSE;
   offset = kHeaderSize;
- 
+
   CInBuffer inBuf;
   if (!inBuf.Create(1 << 15))
     return E_OUTOFMEMORY;
@@ -322,7 +322,7 @@ HRESULT CHandler::Open2(IInStream *stream, IArchiveOpenCallback *callback)
       break;
 
     offset += curSize;
-    
+
     // printf("\noffset = %6X type = %2d time = %6d size = %6d", (UInt32)offset, item.Type, item.Time, item.Size);
 
     if (item.Type == kType_Meta)
@@ -472,7 +472,7 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
   extractCallback->SetTotal(totalSize);
 
   totalSize = 0;
-  
+
   CLocalProgress *lps = new CLocalProgress;
   CMyComPtr<ICompressProgressInfo> progress = lps;
   lps->Init(extractCallback, false);

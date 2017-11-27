@@ -179,10 +179,10 @@ bool CBenchmarkDialog::OnInit()
 
   m_Dictionary.Attach(GetItem(IDC_BENCH_DICTIONARY));
   cur = 0;
-  
+
   UInt64 ramSize = (UInt64)(sizeof(size_t)) << 29;
   bool ramSize_Defined = NSystem::GetRamSize(ramSize);
-  
+
   #ifdef UNDER_CE
   const UInt32 kNormalizedCeSize = (16 << 20);
   if (ramSize > kNormalizedCeSize && ramSize < (33 << 20))
@@ -203,7 +203,7 @@ bool CBenchmarkDialog::OnInit()
         break;
     Sync.DictionarySize = (1 << dicSizeLog);
   }
-  
+
   if (Sync.DictionarySize < kMinDicSize) Sync.DictionarySize = kMinDicSize;
   if (Sync.DictionarySize > kMaxDicSize) Sync.DictionarySize = kMaxDicSize;
 
@@ -249,9 +249,9 @@ bool CBenchmarkDialog::OnSize(WPARAM /* wParam */, int xSize, int ySize)
   {
     int y = ySize - my - by;
     int x = xSize - mx - bx1;
-    
+
     InvalidateRect(NULL);
-    
+
     MoveItem(IDCANCEL, x, y, bx1, by);
     MoveItem(IDHELP, x - mx - bx2, y, bx2, by);
   }
@@ -302,7 +302,7 @@ static const UInt32 g_IDs[] =
   IDT_BENCH_COMPRESS_RATING2,
   IDT_BENCH_COMPRESS_RPU1,
   IDT_BENCH_COMPRESS_RPU2,
-  
+
   IDT_BENCH_DECOMPR_SPEED1,
   IDT_BENCH_DECOMPR_SPEED2,
   IDT_BENCH_DECOMPR_RATING1,
@@ -311,17 +311,17 @@ static const UInt32 g_IDs[] =
   IDT_BENCH_DECOMPR_USAGE2,
   IDT_BENCH_DECOMPR_RPU1,
   IDT_BENCH_DECOMPR_RPU2,
-  
+
   IDT_BENCH_TOTAL_USAGE_VAL,
   IDT_BENCH_TOTAL_RATING_VAL,
   IDT_BENCH_TOTAL_RPU_VAL
 };
-  
+
 void CBenchmarkDialog::OnChangeSettings()
 {
   EnableItem(IDB_STOP, true);
   UInt32 dict = OnChangeDictionary();
-  
+
   for (int i = 0; i < ARRAY_SIZE(g_IDs); i++)
     SetItemText(g_IDs[i], kProcessingString);
   _startTime = GetTickCount();
@@ -554,7 +554,7 @@ struct CBenchCallback: public IBenchCallback
 {
   UInt32 dictionarySize;
   CProgressSyncInfo *Sync;
-  
+
   // void AddCpuFreq(UInt64 cpuFreq);
   HRESULT SetFreq(bool showFreq, UInt64 cpuFreq);
   HRESULT SetEncodeResult(const CBenchInfo &info, bool final);
@@ -670,14 +670,14 @@ HRESULT CThreadBenchmark::Process()
         dictionarySize = sync.DictionarySize;
         numThreads = sync.NumThreads;
       }
-      
+
       CBenchCallback callback;
       callback.dictionarySize = dictionarySize;
       callback.Sync = &sync;
       CBenchCallback2 callback2;
       callback2.Sync = &sync;
       HRESULT result;
-     
+
       try
       {
         CObjectVector<CProperty> props;
@@ -771,7 +771,7 @@ static void ParseNumberString(const UString &s, NCOM::CPropVariant &prop)
 
 HRESULT Benchmark(
     DECL_EXTERNAL_CODECS_LOC_VARS
-    const CObjectVector<CProperty> props, HWND hwndParent)
+    const CObjectVector<CProperty> &props, HWND hwndParent)
 {
   CThreadBenchmark benchmarker;
   #ifdef EXTERNAL_CODECS

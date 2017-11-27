@@ -159,7 +159,7 @@ struct CArcErrorInfo
   /* if CArc is Open OK with some format:
         - ErrorFormatIndex shows error format index, if extension is incorrect
         - other variables show message and warnings of archive that is open */
-  
+
   UString ErrorMessage;
   UString WarningMessage;
 
@@ -275,7 +275,7 @@ public:
           // we use InStream in 2 cases (ArcStreamOffset != 0):
           // 1) if we use additional cache stream
           // 2) we reopen sfx archive with CTailInStream
-  
+
   CMyComPtr<IArchiveGetRawProps> GetRawProps;
   CMyComPtr<IArchiveGetRootProps> GetRootProps;
 
@@ -289,7 +289,7 @@ public:
   int SubfileIndex;
   FILETIME MTime;
   bool MTimeDefined;
-  
+
   Int64 Offset; // it's offset of start of archive inside stream that is open by Archive Handler
   UInt64 PhySize;
   // UInt64 OkPhySize;
@@ -310,7 +310,7 @@ public:
 
   bool IsTree;
   bool IsReadOnly;
-  
+
   bool Ask_Deleted;
   bool Ask_AltStream;
   bool Ask_Aux;
@@ -343,12 +343,12 @@ public:
 
   HRESULT GetItemPath(UInt32 index, UString &result) const;
   HRESULT GetDefaultItemPath(UInt32 index, UString &result) const;
-  
+
   // GetItemPath2 adds [DELETED] dir prefix for deleted items.
   HRESULT GetItemPath2(UInt32 index, UString &result) const;
 
   HRESULT GetItem(UInt32 index, CReadArcItem &item) const;
-  
+
   HRESULT GetItemSize(UInt32 index, UInt64 &size, bool &defined) const;
   HRESULT GetItemMTime(UInt32 index, FILETIME &ft, bool &defined) const;
   HRESULT IsItemAnti(UInt32 index, bool &result) const
@@ -359,7 +359,7 @@ public:
   HRESULT OpenStreamOrFile(COpenOptions &options);
 
   HRESULT ReOpen(const COpenOptions &options);
-  
+
   HRESULT CreateNewTailStream(CMyComPtr<IInStream> &stream);
 };
 
@@ -400,6 +400,14 @@ struct CArchiveLink
   HRESULT Open(COpenOptions &options);
   HRESULT Open2(COpenOptions &options, IOpenCallbackUI *callbackUI);
   HRESULT Open3(COpenOptions &options, IOpenCallbackUI *callbackUI);
+
+  HRESULT Open_Strict(COpenOptions &options, IOpenCallbackUI *callbackUI)
+  {
+    HRESULT result = Open3(options, callbackUI);
+    if (result == S_OK && NonOpen_ErrorInfo.ErrorFormatIndex >= 0)
+      result = S_FALSE;
+    return result;
+  }
 
   HRESULT ReOpen(COpenOptions &options);
 };

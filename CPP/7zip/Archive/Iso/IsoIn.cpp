@@ -49,7 +49,7 @@ AString CBootInitialEntry::GetName() const
 {
   AString s = (Bootable ? "Boot" : "NotBoot");
   s += '-';
-  
+
   if (BootMediaType < ARRAY_SIZE(kMediaTypes))
     s += kMediaTypes[BootMediaType];
   else
@@ -58,7 +58,7 @@ AString CBootInitialEntry::GetName() const
     ConvertUInt32ToString(BootMediaType, name);
     s += name;
   }
-  
+
   if (VendorSpec[0] == 1)
   {
     // "Language and Version Information (IBM)"
@@ -242,7 +242,7 @@ void CInArchive::ReadDirRecord2(CDirRecord &r, Byte len)
   r.FileId.Alloc(idLen);
   ReadBytes((Byte *)r.FileId, idLen);
   unsigned padSize = 1 - (idLen & 1);
-  
+
   // SkipZeros(padSize);
   Skip(padSize); // it's bug in some cd's. Must be zeros
 
@@ -362,7 +362,7 @@ void CInArchive::ReadDir(CDir &d, int level)
     ReadDirRecord2(subItem, len);
     if (firstItem && level == 0)
       IsSusp = subItem.CheckSusp(SuspSkipSize);
-      
+
     if (!subItem.IsSystemItem())
       d._subItems.Add(subItem);
 
@@ -419,10 +419,10 @@ void CInArchive::ReadBootInfo()
 
   if (memcmp(_bootDesc.BootSystemId, kElToritoSpec, sizeof(_bootDesc.BootSystemId)) != 0)
     return;
-  
+
   UInt32 blockIndex = GetUi32(_bootDesc.BootSystemUse);
   SeekToBlock(blockIndex);
-  
+
   Byte buf[32];
   ReadBytes(buf, 32);
 
@@ -456,7 +456,7 @@ void CInArchive::ReadBootInfo()
   }
 
   bool error = false;
-  
+
   for (;;)
   {
     ReadBytes(buf, 32);
@@ -469,7 +469,7 @@ void CInArchive::ReadBootInfo()
     // Byte platform = p[1];
     unsigned numEntries = GetUi16(buf + 2);
     // id[28]
-      
+
     for (unsigned i = 0; i < numEntries; i++)
     {
       ReadBytes(buf, 32);
@@ -497,11 +497,11 @@ void CInArchive::ReadBootInfo()
       }
       BootEntries.Add(e);
     }
-  
+
     if (headerIndicator != NBootEntryId::kMoreHeaders)
       break;
   }
-    
+
   HeadersError = error;
 }
 
@@ -516,13 +516,13 @@ HRESULT CInArchive::Open2()
   PhySize = _position;
   m_BufferPos = 0;
   // BlockSize = kBlockSize;
-  
+
   for (;;)
   {
     Byte sig[7];
     ReadBytes(sig, 7);
     Byte ver = sig[6];
-    
+
     if (!CheckSignature(kSig_CD001, sig + 1))
     {
       return S_FALSE;
@@ -545,7 +545,7 @@ HRESULT CInArchive::Open2()
       continue;
       */
     }
-    
+
     // version = 2 for ISO 9660:1999?
     if (ver > 2)
       return S_FALSE;
@@ -556,7 +556,7 @@ HRESULT CInArchive::Open2()
       // Skip(0x800 - 7);
       // continue;
     }
-    
+
     switch (sig[0])
     {
       case NVolDescType::kBootRecord:
@@ -583,7 +583,7 @@ HRESULT CInArchive::Open2()
         break;
     }
   }
-  
+
   if (VolDescs.IsEmpty())
     return S_FALSE;
   for (MainVolDescIndex = VolDescs.Size() - 1; MainVolDescIndex > 0; MainVolDescIndex--)
@@ -593,7 +593,7 @@ HRESULT CInArchive::Open2()
   const CVolumeDescriptor &vd = VolDescs[MainVolDescIndex];
   if (vd.LogicalBlockSize != kBlockSize)
     return S_FALSE;
-  
+
   IsArc = true;
 
   (CDirRecord &)_rootDir = vd.RootDirRecord;
@@ -608,7 +608,7 @@ HRESULT CInArchive::Open2()
       for (UInt32 j = 0; j < ref.NumExtents; j++)
       {
         const CDir &item = ref.Dir->_subItems[ref.Index + j];
-        if (!item.IsDir())
+        if (!item.IsDir() && item.Size != 0)
           UpdatePhySize(item.ExtentLocation, item.Size);
       }
     }

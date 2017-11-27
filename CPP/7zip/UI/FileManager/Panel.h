@@ -206,7 +206,7 @@ struct CCopyToOptions
 
   CVirtFileSystem *VirtFileSystemSpec;
   ISequentialOutStream *VirtFileSystem;
-  
+
   CCopyToOptions():
       streamMode(false),
       moveMode(false),
@@ -218,7 +218,7 @@ struct CCopyToOptions
       VirtFileSystem(NULL)
       {}
 };
-  
+
 
 class CPanel: public NWindows::NControl::CWindow2
 {
@@ -239,9 +239,9 @@ class CPanel: public NWindows::NControl::CWindow2
   void AddComboBoxItem(const UString &name, int iconIndex, int indent, bool addToList);
 
   bool OnComboBoxCommand(UINT code, LPARAM param, LRESULT &result);
-  
+
   #ifndef UNDER_CE
-  
+
   LRESULT OnNotifyComboBoxEnter(const UString &s);
   bool OnNotifyComboBoxEndEdit(PNMCBEENDEDITW info, LRESULT &result);
   #ifndef _UNICODE
@@ -280,7 +280,7 @@ public:
 private:
 
   void ChangeWindowSize(int xSize, int ySize);
- 
+
   HRESULT InitColumns();
   // void InitColumns2(PROPID sortID);
   void InsertColumn(unsigned index);
@@ -322,6 +322,7 @@ public:
   // CMyComboBox _headerComboBox;
   CMyComboBoxEdit _comboBoxEdit;
   CMyListView _listView;
+  bool _thereAre_ListView_Items;
   NWindows::NControl::CStatusBar _statusBar;
   bool _lastFocusedIsList;
   // NWindows::NControl::CStatusBar _statusBar2;
@@ -339,6 +340,18 @@ public:
   bool _thereAreDeletedItems;
   bool _markDeletedItems;
 
+  void DeleteListItems()
+  {
+    if (_thereAre_ListView_Items)
+    {
+      bool b = _enableItemChangeNotify;
+      _enableItemChangeNotify = false;
+      _listView.DeleteAllItems();
+      _thereAre_ListView_Items = false;
+      _enableItemChangeNotify = b;
+    }
+  }
+
   HWND GetParent();
 
   UInt32 GetRealIndex(const LVITEMW &item) const
@@ -349,7 +362,7 @@ public:
     */
     return (UInt32)item.lParam;
   }
-  
+
   int GetRealItemIndex(int indexInListView) const
   {
     /*
@@ -377,10 +390,10 @@ public:
 
 
   UString _currentFolderPrefix;
-  
+
   CObjectVector<CFolderLink> _parentFolders;
   NWindows::NDLL::CLibrary _library;
-  
+
   CMyComPtr<IFolderFolder> _folder;
   CMyComPtr<IFolderCompare> _folderCompare;
   CMyComPtr<IFolderGetItemName> _folderGetItemName;
@@ -421,10 +434,10 @@ public:
   HRESULT BindToPath(const UString &fullPath, const UString &arcFormat, bool &archiveIsOpened, bool &encrypted); // can be prefix
   HRESULT BindToPathAndRefresh(const UString &path);
   void OpenDrivesFolder();
-  
+
   void SetBookmark(int index);
   void OpenBookmark(int index);
-  
+
   void LoadFullPath();
   void LoadFullPathAndShow();
   void FoldersHistory();
@@ -459,6 +472,8 @@ public:
       _flatMode(false),
       _flatModeForDisk(false),
       _flatModeForArc(false),
+      //PanelCreated(false),
+      _thereAre_ListView_Items(false),
 
       // _showNtfsStrems_Mode(false),
       // _showNtfsStrems_ModeForDisk(false),
@@ -486,7 +501,7 @@ public:
   CListViewInfo _listViewInfo;
   CItemProperties _properties;
   CItemProperties _visibleProperties;
-  
+
   PROPID _sortID;
   // int _sortIndex;
   bool _ascending;
@@ -538,7 +553,7 @@ public:
   bool _selectMark;
   int _prevFocusedItem;
 
- 
+
   // void SortItems(int index);
   void SortItemsWithPropID(PROPID propID);
 
@@ -550,14 +565,14 @@ public:
   void KillSelection();
 
   UString GetFolderTypeID() const;
-  
+
   bool IsFolderTypeEqTo(const char *s) const;
   bool IsRootFolder() const;
   bool IsFSFolder() const;
   bool IsFSDrivesFolder() const;
   bool IsAltStreamsFolder() const;
   bool IsArcFolder() const;
-  
+
   /*
     c:\Dir
     Computer\
@@ -577,7 +592,7 @@ public:
   // bool IsFsOrDrivesFolder() const { return IsFSFolder() || IsFSDrivesFolder(); }
   bool IsDeviceDrivesPrefix() const { return _currentFolderPrefix == L"\\\\.\\"; }
   bool IsSuperDrivesPrefix() const { return _currentFolderPrefix == L"\\\\?\\"; }
-  
+
   /*
     c:\Dir
     Computer\
@@ -621,7 +636,7 @@ public:
     bool _processTimer;
 
     CPanel &_panel;
-    
+
     public:
 
     CDisableTimerProcessing(CPanel &panel): _panel(panel) { Disable(); }
@@ -734,7 +749,7 @@ public:
   {
     AutoRefresh_Mode = mode;
   }
-  
+
   void Post_Refresh_StatusBar();
   void Refresh_StatusBar();
 

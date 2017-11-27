@@ -14,7 +14,7 @@
 
 namespace NArchive {
 namespace NTar {
- 
+
 static void MyStrNCpy(char *dest, const char *src, unsigned size)
 {
   for (unsigned i = 0; i < size; i++)
@@ -177,7 +177,7 @@ static HRESULT GetNextItemReal(ISequentialInStream *stream, bool &filled, CItemE
     // error = "There are data after end of archive";
     return S_OK;
   }
-  
+
   error = k_ErrorType_Corrupted;
   ReadString(p, NFileHeader::kNameSize, item.Name); p += NFileHeader::kNameSize;
   item.NameCouldBeReduced =
@@ -193,7 +193,7 @@ static HRESULT GetNextItemReal(ISequentialInStream *stream, bool &filled, CItemE
   item.Size = item.PackSize;
   p += 12;
   RIF(ParseInt64(p, item.MTime)); p += 12;
-  
+
   UInt32 checkSum;
   RIF(OctalToNumber32(p, 8, checkSum));
   memset(p, ' ', 8); p += 8;
@@ -243,7 +243,7 @@ static HRESULT GetNextItemReal(ISequentialInStream *stream, bool &filled, CItemE
     checkSumReal_Signed += (signed char)c;
     checkSumReal += (Byte)buf[i];
   }
-  
+
   if (checkSumReal != checkSum)
   {
     if ((UInt32)checkSumReal_Signed != checkSum)
@@ -322,20 +322,70 @@ static HRESULT GetNextItemReal(ISequentialInStream *stream, bool &filled, CItemE
     if (min > item.Size)
       return S_OK;
   }
- 
+
   filled = true;
   error = k_ErrorType_OK;
   return S_OK;
 }
 
+
+static HRESULT ReadDataToString(ISequentialInStream *stream, CItemEx &item, AString &s, EErrorType &error)
+{
+  const unsigned packSize = (unsigned)item.GetPackSizeAligned();
+  size_t processedSize = packSize;
+  HRESULT res = ReadStream(stream, s.GetBuf(packSize), &processedSize);
+  item.HeaderSize += (unsigned)processedSize;
+  s.ReleaseBuf_CalcLen((unsigned)item.PackSize);
+  RINOK(res);
+  if (processedSize != packSize)
+    error = k_ErrorType_UnexpectedEnd;
+  return S_OK;
+}
+
+static bool ParsePaxLongName(const AString &src, AString &dest)
+{
+  dest.Empty();
+  for (unsigned pos = 0;;)
+  {
+    if (pos >= src.Len())
+      return false;
+    const char *start = src.Ptr(pos);
+    const char *end;
+    const UInt32 lineLen = ConvertStringToUInt32(start, &end);
+    if (end == start)
+      return false;
+    if (*end != ' ')
+      return false;
+    if (lineLen > src.Len() - pos)
+      return false;
+    unsigned offset = (unsigned)(end - start) + 1;
+    if (lineLen < offset)
+      return false;
+    if (IsString1PrefixedByString2(src.Ptr(pos + offset), "path="))
+    {
+      offset += 5; // "path="
+      dest = src.Mid(pos + offset, lineLen - offset);
+      if (dest.IsEmpty())
+        return false;
+      if (dest.Back() != '\n')
+        return false;
+      dest.DeleteBack();
+      return true;
+    }
+    pos += lineLen;
+  }
+}
+
 HRESULT ReadItem(ISequentialInStream *stream, bool &filled, CItemEx &item, EErrorType &error)
 {
   item.HeaderSize = 0;
+
   bool flagL = false;
   bool flagK = false;
   AString nameL;
   AString nameK;
-  
+  AString pax;
+
   for (;;)
   {
     RINOK(GetNextItemReal(stream, filled, item, error));
@@ -345,10 +395,10 @@ HRESULT ReadItem(ISequentialInStream *stream, bool &filled, CItemEx &item, EErro
         error = k_ErrorType_Corrupted;
       return S_OK;
     }
-    
+
     if (error != k_ErrorType_OK)
       return S_OK;
-    
+
     if (item.LinkFlag == NFileHeader::NLinkFlag::kGnu_LongName || // file contains a long name
         item.LinkFlag == NFileHeader::NLinkFlag::kGnu_LongLink)   // file contains a long linkname
     {
@@ -363,18 +413,11 @@ HRESULT ReadItem(ISequentialInStream *stream, bool &filled, CItemEx &item, EErro
         return S_OK;
       if (item.PackSize > (1 << 14))
         return S_OK;
-      unsigned packSize = (unsigned)item.GetPackSizeAligned();
-      char *buf = name->GetBuf(packSize);
-      size_t processedSize = packSize;
-      HRESULT res = ReadStream(stream, buf, &processedSize);
-      item.HeaderSize += (unsigned)processedSize;
-      name->ReleaseBuf_CalcLen((unsigned)item.PackSize);
-      RINOK(res);
-      if (processedSize != packSize)
-      {
-        error = k_ErrorType_UnexpectedEnd;
+
+      RINOK(ReadDataToString(stream, item, *name, error));
+      if (error != k_ErrorType_OK)
         return S_OK;
-      }
+
       continue;
     }
 
@@ -385,6 +428,14 @@ HRESULT ReadItem(ISequentialInStream *stream, bool &filled, CItemEx &item, EErro
       case 'X':
       {
         // pax Extended Header
+        if (item.Name.IsPrefixedBy("PaxHeader/"))
+        {
+          RINOK(ReadDataToString(stream, item, pax, error));
+          if (error != k_ErrorType_OK)
+            return S_OK;
+          continue;
+        }
+
         break;
       }
       case NFileHeader::NLinkFlag::kDumpDir:
@@ -401,13 +452,13 @@ HRESULT ReadItem(ISequentialInStream *stream, bool &filled, CItemEx &item, EErro
         if (item.LinkFlag > '7' || (item.LinkFlag < '0' && item.LinkFlag != 0))
           return S_OK;
     }
-    
+
     if (flagL)
     {
       item.Name = nameL;
       item.NameCouldBeReduced = false;
     }
-    
+
     if (flagK)
     {
       item.LinkName = nameK;
@@ -415,6 +466,16 @@ HRESULT ReadItem(ISequentialInStream *stream, bool &filled, CItemEx &item, EErro
     }
 
     error = k_ErrorType_OK;
+
+    if (!pax.IsEmpty())
+    {
+      AString name;
+      if (ParsePaxLongName(pax, name))
+        item.Name = name;
+      else
+        error = k_ErrorType_Warning;
+    }
+
     return S_OK;
   }
 }

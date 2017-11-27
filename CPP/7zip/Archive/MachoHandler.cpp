@@ -75,7 +75,7 @@ static const CUInt32PCharPair g_CpuPairs[] =
 
 #define SECT_ATTR_ZEROFILL 1
 
-static const char *g_SectTypes[] =
+static const char * const g_SectTypes[] =
 {
     "REGULAR"
   , "ZEROFILL"
@@ -108,7 +108,7 @@ enum EFileType
   kType_DSYM
 };
 
-static const char *g_FileTypes[] =
+static const char * const g_FileTypes[] =
 {
     "0"
   , "OBJECT"
@@ -124,7 +124,7 @@ static const char *g_FileTypes[] =
 };
 
 
-static const char *g_ArcFlags[] =
+static const char * const g_ArcFlags[] =
 {
     "NOUNDEFS"
   , "INCRLINK"
@@ -275,7 +275,7 @@ STDMETHODIMP CHandler::GetArchiveProperty(PROPID propID, PROPVARIANT *value)
           n = temp;
         }
         s = n;
-       
+
         if (_cpuType & CPU_ARCH_ABI64)
           s += " 64-bit";
         else if (_cpuSubType & CPU_SUBTYPE_LIB64)
@@ -401,7 +401,7 @@ HRESULT CHandler::Open2(ISequentialInStream *stream)
     case 0xFEEDFACF:  be = false; mode64 = true; break;
     default: return S_FALSE;
   }
-  
+
   UInt32 numCommands = Get32(header + 0x10, be);
   UInt32 commandsSize = Get32(header + 0x14, be);
 
@@ -479,7 +479,7 @@ HRESULT CHandler::Open2(ISequentialInStream *stream)
             _totalSize = totalSize;
         }
       }
-      
+
       CSegment seg;
       memcpy(seg.Name, buf + 8, kNameSize);
       _segments.Add(seg);
@@ -596,7 +596,7 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
 
   UInt64 currentTotalSize = 0;
   UInt64 currentItemSize;
-  
+
   NCompress::CCopyCoder *copyCoderSpec = new NCompress::CCopyCoder();
   CMyComPtr<ICompressCoder> copyCoder = copyCoderSpec;
 
@@ -623,7 +623,7 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
     RINOK(extractCallback->GetStream(index, &outStream, askMode));
     if (!testMode && !outStream)
       continue;
-    
+
     RINOK(extractCallback->PrepareOperation(askMode));
     RINOK(_inStream->Seek(item.Pa, STREAM_SEEK_SET, NULL));
     streamSpec->Init(currentItemSize);

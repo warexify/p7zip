@@ -35,12 +35,12 @@ static HRESULT DecompressArchive(
   stdInProcessed = 0;
   IInArchive *archive = arc.Archive;
   CRecordVector<UInt32> realIndices;
-  
+
   UStringVector removePathParts;
 
   FString outDir = options.OutputDir;
   UString replaceName = arc.DefaultName;
-  
+
   if (arcLink.Arcs.Size() > 1)
   {
     // Most "pe" archives have same name of archive subfile "[0]" or ".rsrc_1".
@@ -56,7 +56,7 @@ static HRESULT DecompressArchive(
   bool elimIsPossible = false;
   UString elimPrefix; // only pure name without dir delimiter
   FString outDirReduced = outDir;
-  
+
   if (options.ElimDup.Val && options.PathMode != NExtract::NPathMode::kAbsPaths)
   {
     UString dirPrefix;
@@ -79,7 +79,7 @@ static HRESULT DecompressArchive(
   {
     UInt32 numItems;
     RINOK(archive->GetNumberOfItems(&numItems));
-    
+
     CReadArcItem item;
 
     for (UInt32 i = 0; i < numItems; i++)
@@ -103,7 +103,7 @@ static HRESULT DecompressArchive(
       if (!options.NtOptions.AltStreams.Val && item.IsAltStream)
         continue;
       #endif
-      
+
       if (elimIsPossible)
       {
         const UString &s =
@@ -135,7 +135,7 @@ static HRESULT DecompressArchive(
 
       realIndices.Add(i);
     }
-    
+
     if (realIndices.Size() == 0)
     {
       callback->ThereAreNoFiles();
@@ -182,19 +182,19 @@ static HRESULT DecompressArchive(
       removePathParts, false,
       packSize);
 
-  
+
   #ifdef SUPPORT_LINKS
-  
+
   if (!options.StdInMode &&
       !options.TestMode &&
       options.NtOptions.HardLinks.Val)
   {
     RINOK(ecs->PrepareHardLinks(&realIndices));
   }
-    
+
   #endif
 
-  
+
   HRESULT result;
   Int32 testMode = (options.TestMode && !calcCrc) ? 1: 0;
   if (options.StdInMode)
@@ -255,7 +255,7 @@ HRESULT Extract(
   unsigned numArcs = options.StdInMode ? 1 : arcPaths.Size();
 
   unsigned i;
-  
+
   for (i = 0; i < numArcs; i++)
   {
     NFind::CFileInfo fi;
@@ -291,7 +291,7 @@ HRESULT Extract(
 
   UInt64 totalPackProcessed = 0;
   bool thereAreNotOpenArcs = false;
-  
+
   for (i = 0; i < numArcs; i++)
   {
     if (skipArcs[i])
@@ -359,13 +359,10 @@ HRESULT Extract(
     op.stream = NULL;
     op.filePath = arcPath;
 
-    HRESULT result = arcLink.Open3(op, openCallback);
+    HRESULT result = arcLink.Open_Strict(op, openCallback);
 
     if (result == E_ABORT)
       return result;
-
-    if (result == S_OK && arcLink.NonOpen_ErrorInfo.ErrorFormatIndex >= 0)
-      result = S_FALSE;
 
     // arcLink.Set_ErrorsText();
     RINOK(extractCallback->OpenResult(codecs, arcLink, arcPath, result));

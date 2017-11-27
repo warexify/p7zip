@@ -18,7 +18,7 @@ struct CUpdateRange
 {
   UInt64 Position;
   UInt64 Size;
-  
+
   // CUpdateRange() {};
   CUpdateRange(UInt64 position, UInt64 size): Position(position), Size(size) {};
 };
@@ -51,7 +51,7 @@ HRESULT Update(
     CObjectVector<CUpdateItem> &updateItems,
     ISequentialOutStream *seqOutStream,
     CInArchive *inArchive, bool removeSfx,
-    CCompressionMethodMode *compressionMethodMode,
+    const CCompressionMethodMode &compressionMethodMode,
     IArchiveUpdateCallback *updateCallback);
 
 }}

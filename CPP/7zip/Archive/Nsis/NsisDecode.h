@@ -8,6 +8,7 @@
 #include "../../Common/FilterCoder.h"
 #include "../../Common/StreamUtils.h"
 
+#include "../../Compress/DeflateDecoder.h"
 #include "../../Compress/LzmaDecoder.h"
 
 namespace NArchive {
@@ -37,17 +38,25 @@ class CDecoder
   CMyComPtr<ISequentialInStream> _codecInStream;
   CMyComPtr<ISequentialInStream> _decoderInStream;
 
+  NCompress::NDeflate::NDecoder::CCOMCoder *_deflateDecoder;
   NCompress::NLzma::CDecoder *_lzmaDecoder;
 
 public:
   CMyComPtr<IInStream> InputStream; // for non-solid
   UInt64 StreamPos; // the pos in unpacked for solid, the pos in Packed for non-solid
-  
+
   NMethodType::EEnum Method;
   bool FilterFlag;
   bool Solid;
-  
+  bool IsNsisDeflate;
+
   CByteBuffer Buffer; // temp buf.
+
+  CDecoder():
+      FilterFlag(false),
+      Solid(true),
+      IsNsisDeflate(true)
+      {}
 
   void Release()
   {
@@ -57,7 +66,7 @@ public:
     InputStream.Release();
     _lzmaDecoder = NULL;
   }
-  
+
   HRESULT Init(ISequentialInStream *inStream, bool &useFilter);
   HRESULT Read(void *data, size_t *processedSize)
   {
