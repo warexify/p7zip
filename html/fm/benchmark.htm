@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+  <META http-equiv="Content-Type" content="text/html; charset=Windows-1252">
+  <TITLE>Benchmark</TITLE>
+  <LINK href="/style.css" rel="stylesheet" type="text/css">
+</HEAD>
+
+<BODY>
+
+<H1>Benchmark</H1>
+
+<P>In that box you can measure value of the 
+performance of your computer.</P>
+
+<P>There are two tests:<P>
+<OL>
+  <LI>Compressing with LZMA method
+  <LI>Decompressing with LZMA method
+</OL>
+
+<P>Benchmark shows rating in MIPS (million instructions per second).
+Rating value is calculated from measured speed and it
+is normalized with AMD Athlon XP CPU. So if you have Athlon XP, 
+rating values must be close to real CPU frequency.</P>
+
+<P>Compressing speed and rating strongly depend from memory (RAM) latency.
+Also you can change dictionary size to increase memory usage.
+If you enable Multi-threading option, 7-Zip will use two 
+threads for compressing. It can speed up compressing speed up to 
+70-80% on Multi-Processor systems or up to 25% on Pentium 4 
+with Hyper-Threading. Decompressing program always uses one thread, 
+so Multi-threading option doesn't affect decompressing speed and rating.</P>
+
+<P>Decompressing speed and rating strongly depend from integer part of CPU.
+For example, Intel Pentium 4 has big branch 
+misprediction penalty (which is effect of long pipeline) and pretty slow 
+multiply and shift operations. So Pentium 4 has pretty low decompressing 
+ratings.</P>
+
+<P>Total rating is average of the compressing and decompression ratings.</P>
+
+<P>Also the program checks possible errors. So if Errors field shows more than 0 
+errors, it means that your hardware is bad. In most cases it means that 
+your RAM is working with errors. In that case please don't use 7-Zip for 
+compressing data, since such errors can lead to data losses.</P>
+
+</BODY>
+</HTML>

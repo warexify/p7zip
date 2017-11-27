@@ -446,8 +446,11 @@ HRESULT COutArchive::WriteHeader(const CArchiveDatabase &database,
   bool compressHeaders = (options != NULL);
   std::auto_ptr<CEncoder> encoder;
   if (compressHeaders)
-    encoder = std::auto_ptr<CEncoder>(new CEncoder(*options));
-
+  {
+    // FIXED for gcc 2.95 - encoder = std::auto_ptr<CEncoder>(new CEncoder(*options));
+    std::auto_ptr<CEncoder> tmp_encoder(new CEncoder(*options));
+    encoder = tmp_encoder;
+  }
   CRecordVector<UINT64> packSizes;
 
   UINT64 dataIndex = 0;

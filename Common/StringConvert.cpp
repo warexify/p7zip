@@ -52,7 +52,7 @@ AString SystemStringToOemString(const CSysString &srcString)
 #endif
 
 #else
-
+/*
 UString MultiByteToUnicodeString(const AString &srcString, UINT codePage)
 {
   UString resultString;
@@ -71,6 +71,32 @@ AString UnicodeStringToMultiByte(const UString &srcString, UINT codePage)
 
   // printf("UnicodeStringToMultiByte '%ls' -> '%s'\n",&srcString[0],&resultString[0]);
 
+  return resultString;
+}
+*/
+
+UString MultiByteToUnicodeString(const AString &srcString, UINT /* codePage */ )
+{
+  UString resultString;
+  if(!srcString.IsEmpty())
+  {
+    int numChars = mbstowcs(resultString.GetBuffer(srcString.Length()),srcString,srcString.Length()+1);
+    if (numChars < 0) throw "Your environment does not support UNICODE filenames";
+    resultString.ReleaseBuffer(numChars);
+  }
+  return resultString;
+}
+
+AString UnicodeStringToMultiByte(const UString &srcString, UINT /* codePage */ )
+{
+  AString resultString;
+  if(!srcString.IsEmpty())
+  {
+    int numRequiredBytes = srcString.Length() * 6+1;
+    int numChars = wcstombs(resultString.GetBuffer(numRequiredBytes),srcString,numRequiredBytes);
+    if (numChars < 0) throw "Your environment does not support UNICODE filenames";
+    resultString.ReleaseBuffer(numChars);
+  }
   return resultString;
 }
 

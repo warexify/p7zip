@@ -154,6 +154,39 @@ void CInArchive::ThrowIncorrectArchiveException()
 
 HRESULT CInArchive::ReadHeaders(CObjectVector<CItemEx> &items, CProgressVirt *progress)
 {
+  if (sizeof(NFileHeader::CVersion) != 2) {
+	printf("INTERNAL ERROR : sizeof(NFileHeader::CVersion)=%d !=2\n",(int)sizeof(NFileHeader::CVersion));
+	exit(EXIT_FAILURE);
+  }
+  if (sizeof(NFileHeader::CDataDescriptor) != 16) {
+	printf("INTERNAL ERROR : sizeof(NFileHeader::CDataDescriptor)=%d !=16\n",(int)sizeof(NFileHeader::CDataDescriptor));
+	exit(EXIT_FAILURE);
+  }
+  if (sizeof(NFileHeader::CLocalBlockFull) != 30) {
+	printf("INTERNAL ERROR : sizeof(NFileHeader::CLocalBlockFull)=%d !=30\n",(int)sizeof(NFileHeader::CLocalBlockFull));
+	exit(EXIT_FAILURE);
+  }
+  if (sizeof(NFileHeader::CBlock) != 42) {
+	printf("INTERNAL ERROR : sizeof(NFileHeader::CBlock)=%d !=42\n",(int)sizeof(NFileHeader::CBlock));
+	exit(EXIT_FAILURE);
+  }
+  if (sizeof(NFileHeader::CBlockFull) != 46) {
+	printf("INTERNAL ERROR : sizeof(NFileHeader::CBlockFull)=%d !=46\n",(int)sizeof(NFileHeader::CBlockFull));
+	exit(EXIT_FAILURE);
+  }
+  if (sizeof(NFileHeader::CLocalBlock) != 26) {
+	printf("INTERNAL ERROR : sizeof(NFileHeader::CLocalBlock)=%d !=26\n",(int)sizeof(NFileHeader::CLocalBlock));
+	exit(EXIT_FAILURE);
+  }
+  if (sizeof(CEndOfCentralDirectoryRecord) != 18) {
+	printf("INTERNAL ERROR : sizeof(CEndOfCentralDirectoryRecord)=%d !=18\n",(int)sizeof(CEndOfCentralDirectoryRecord));
+	exit(EXIT_FAILURE);
+  }
+  if (sizeof(CEndOfCentralDirectoryRecordFull) != 22) {
+	printf("INTERNAL ERROR : sizeof(CEndOfCentralDirectoryRecordFull)=%d !=22\n",(int)sizeof(CEndOfCentralDirectoryRecordFull));
+	exit(EXIT_FAILURE);
+  }
+
   // m_Signature must be kLocalFileHeaderSignature or
   // kEndOfCentralDirSignature
   // m_Position points to next byte after signature

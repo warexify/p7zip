@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+  <META http-equiv="Content-Type" content="text/html; charset=Windows-1252">
+  <TITLE>7z Format</TITLE>
+  <LINK href="/style.css" rel="stylesheet" type="text/css">
+</HEAD>
+
+<BODY>
+
+<H1>7z Format</H1>
+
+<P><B>7z</B> is the new archive format, providing high compression ratio.</P>
+
+<P>The main features of <B>7z</B> format:</P>
+<UL>
+  <LI>Open architecture
+  <LI>High compression ratio
+  <LI>Strong AES-256 encryption
+  <LI>Ability of using any compression, conversion or encryption method
+  <LI>Supporting files with sizes up to 16000000000 GB
+  <LI>Unicode file names
+  <LI>Solid compressing
+  <LI>Archive headers compressing
+</UL>
+
+<P><B>7z</B> has open architecture, so it can support any new compression methods.</P>
+Now the following methods are integrated to <B>7z</B>:<P>
+
+<TABLE cellspacing ="2" cellpadding ="4">
+  <TR> <TH class="Title" width="60">Method</TH> <TH class="Title">Description</TH> </TR>
+  <TR> <TD class="Item">LZMA</TD> <TD class="Item">Improved and optimized version of LZ77 algorithm</TD></TR>
+  <TR> <TD class="Item">PPMD</TD> <TD class="Item">Dmitry Shkarin's PPMdH with small changes</TD></TR>
+  <TR> <TD class="Item">BCJ</TD> <TD class="Item">Converter for 32-bit x86 executables</TD></TR>
+  <TR> <TD class="Item">BCJ2</TD> <TD class="Item">Converter for 32-bit x86 executables</TD></TR>
+  <TR> <TD class="Item">BZip2</TD> <TD class="Item">Standard BWT algorithm</TD></TR>
+  <TR> <TD class="Item">Deflate</TD> <TD class="Item">Standard LZ77-based algorithm</TD></TR>
+</TABLE>
+
+<P><B>LZMA</B> is default and general compression method of <B>7z</B> format. The main features of <B>LZMA</B> method:</P>
+<UL>
+  <LI>High compression ratio
+  <LI>Variable dictionary size (up to 4 GB)
+  <LI>Compressing speed: about 1 MB/s on 2 GHz CPU
+  <LI>Decompressing speed: about 10-20 MB/s on 2 GHz CPU
+  <LI>Small memory requirements for decompressing (depend from dictionary size)
+  <LI>Small code size for decompressing: about 5 KB
+  <LI>Supporting multi-threading and P4's hyper-threading
+</UL>
+
+<P><B>LZMA</B> compression algorithm is very suitable for embedded applications.
+If you want to use <B>LZMA</B> code, you can ask consultations, custom code programming 
+and required developer licenses at <A href="mailto:support@7-zip.org?subject=7-Zip">support@7-zip.org</A>.</P>
+
+<P>7-Zip also supports encryption with AES-256 algorithm. 
+This algorithm uses cipher key with length of 256 bits. To create that key 7-Zip 
+uses derivation function based on SHA-256 hash algorithm.
+A key derivation function produces a derived key from text password defined by user.
+For increasing the cost of exhaustive search for passwords 7-Zip uses big number 
+of iterations to produce cipher key from text password.</P>
+
+<H2>Tips for password length selecting</H2>
+
+<P>We will estimate time of exhaustive password search attack, when 
+password is random sequence of small Latin letters.</P>
+
+<P>We suppose that one user can check 10 passwords per second and 
+organization (with budget about $1 billion) can check 10 billions 
+passwords per second. We also 
+suppose that each 2 years processor doubles it's performance, 
+so each additional Latin letter of long password adds about 
+9 years against exhaustive key search attack.</P>
+
+<P>So we have such estimated time for attack:</P>
+
+<TABLE>
+  <TR align=center>
+    <TH>Password Length</TH>
+    <TH>Single User Attack</TH>
+    <TH>Organization Attack</TH>
+  </TR>
+  <TR align=center>
+    <TD>1</TD>
+    <TD>2 s</TD>
+    <TD>1 s</TD>
+  </TR>
+  <TR align=center>
+    <TD>2</TD>
+    <TD>1 min</TD>
+    <TD>1 s</TD>
+  </TR>
+  <TR align=center>
+    <TD>3</TD>
+    <TD>30 min</TD>
+    <TD>1 s</TD>
+  </TR>
+  <TR align=center>
+    <TD>4</TD>
+    <TD>12 hours</TD>
+    <TD>1 s</TD>
+  </TR>
+  <TR align=center>
+    <TD>5</TD>
+    <TD>14 days</TD>
+    <TD>1 s</TD>
+  </TR>
+  <TR align=center>
+    <TD>6</TD>
+    <TD>1 year</TD>
+    <TD>1 s</TD>
+  </TR>
+  <TR align=center>
+    <TD>7</TD>
+    <TD>10 years</TD>
+    <TD>1 s</TD>
+  </TR>
+  <TR align=center>
+    <TD>8</TD>
+    <TD>19 years</TD>
+    <TD>20 s</TD>
+  </TR>
+  <TR align=center>
+    <TD>9</TD>
+    <TD>26 years</TD>
+    <TD>9 min</TD>
+  </TR>
+  <TR align=center>
+    <TD>10</TD>
+    <TD>37 years</TD>
+    <TD>4 hours</TD>
+  </TR>
+  <TR align=center>
+    <TD>11</TD>
+    <TD>46 years</TD>
+    <TD>4 days</TD>
+  </TR>
+  <TR align=center>
+    <TD>12</TD>
+    <TD>55 years</TD>
+    <TD>4 months</TD>
+  </TR>
+  <TR align=center>
+    <TD>13</TD>
+    <TD>64 years</TD>
+    <TD>4 years</TD>
+  </TR>
+  <TR align=center>
+    <TD>14</TD>
+    <TD>73 years</TD>
+    <TD>13 years</TD>
+  </TR>
+  <TR align=center>
+    <TD>15</TD>
+    <TD>82 years</TD>
+    <TD>22 years</TD>
+  </TR>
+  <TR align=center>
+    <TD>16</TD>
+    <TD>91 years</TD>
+    <TD>31 years</TD>
+  </TR>
+  <TR align=center>
+    <TD>17</TD>
+    <TD>100 years</TD>
+    <TD>40 years</TD>
+  </TR>
+</TABLE>
+
+</BODY>
+</HTML>

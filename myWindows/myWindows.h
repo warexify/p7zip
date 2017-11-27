@@ -1,10 +1,9 @@
 
-void myInit(int numArguments,const char *arguments[]);
-
 /************************* FILES *************************/
 
-#define FILE_HANDLE_INVALID (-1)
-typedef int t_file_handle;
+#define FILE_HANDLE_INVALID 0
+class CFileHandlerInternal;
+typedef CFileHandlerInternal * t_file_handle;
 
 t_file_handle WINAPI myCreateFile(
   LPCTSTR lpFileName,

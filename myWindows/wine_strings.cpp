@@ -33,13 +33,7 @@
 #include <wctype.h>
 
 
-LPSTR WINAPI CharNextA( LPCSTR ptr ) {
-  if (!*ptr)
-    return (LPSTR)ptr; // FIXME : if you use MBS (MultiByte String)
-  return (LPSTR)(ptr + 1);
-}
-
-LPSTR WINAPI CharPrevA( LPCSTR start, LPCSTR ptr ) {
+LPSTR WINAPI CharPrevA( LPCSTR start, LPCSTR ptr ) { // OK for MBS
   while (*start && (start < ptr)) {
     LPCSTR next = CharNextA( start );
     if (next >= ptr)
@@ -51,40 +45,14 @@ LPSTR WINAPI CharPrevA( LPCSTR start, LPCSTR ptr ) {
 
 
 INT WINAPI lstrlenA( LPCSTR str ) {
-  return strlen(str); // FIXME : if you use MBS
+  return strlen(str); // OK for MBS
 }
 
 LPSTR WINAPI lstrcatA( LPSTR dst, LPCSTR src ) {
-  strcat( dst, src );  // FIXME : if you use MBS
+  strcat( dst, src );  // OK for MBS
   return dst;
 }
 
-int WINAPI CompareStringA(LCID lcid,DWORD style,LPCSTR str1,int len1,LPCSTR str2,int len2) {
- // FIXME : if you use MBS
-  INT ret, len;
-
-  if (!str1 || !str2) {
-    SetLastError(ERROR_INVALID_PARAMETER);
-    return 0;
-  }
-
-  if (len1 < 0)
-    len1 = lstrlenA(str1);
-  if (len2 < 0)
-    len2 = lstrlenA(str2);
-
-  len = (len1 < len2) ? len1 : len2;
-  ret = (style & NORM_IGNORECASE) ? strncasecmp(str1, str2, len) :
-        strncmp(str1, str2, len);
-
-  if (ret) /* need to translate result */
-    return (ret < 0) ? CSTR_LESS_THAN : CSTR_GREATER_THAN;
-
-  if (len1 == len2)
-    return CSTR_EQUAL;
-  /* the longer one is lexically greater */
-  return (len1 < len2) ? CSTR_LESS_THAN : CSTR_GREATER_THAN;
-}
 
 LPSTR WINAPI CharLowerA(LPSTR str) { // FIXME : if you use MBS
   if (!HIWORD(str)) {
@@ -96,7 +64,7 @@ LPSTR WINAPI CharLowerA(LPSTR str) { // FIXME : if you use MBS
   unsigned char *ret = (unsigned char*)str;
   while ((*str = tolower(*str)))
     str++;
-  return ret;
+  return (LPSTR)ret;
 }
 
 LPSTR WINAPI CharUpperA(LPSTR str) { // FIXME : if you use MBS
@@ -109,9 +77,8 @@ LPSTR WINAPI CharUpperA(LPSTR str) { // FIXME : if you use MBS
   unsigned char *ret = (unsigned char*)str;
   while ((*str = toupper(*str)))
     str++;
-  return ret;
+  return (LPSTR)ret;
 }
-
 
 int strncmpiW( const WCHAR *str1, const WCHAR *str2, int n ) {
   int ret = 0;

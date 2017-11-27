@@ -57,13 +57,13 @@ class CBitEncoder: public CBitModel<aNumMoveBits>
 public:
   void Encode(CEncoder *encoder, UINT32 symbol)
   {
-    encoder->EncodeBit(Probability, kNumBitModelTotalBits, symbol);
-    UpdateModel(symbol);
+    encoder->EncodeBit(this->Probability, kNumBitModelTotalBits, symbol);
+    this->UpdateModel(symbol);
   }
   UINT32 GetPrice(UINT32 symbol) const
   {
     return g_PriceTables.StatePrices[
-      (((Probability - symbol) ^ ((-(int)symbol))) & (kBitModelTotal - 1)) >> kNumMoveReducingBits];
+      (((this->Probability - symbol) ^ ((-(int)symbol))) & (kBitModelTotal - 1)) >> kNumMoveReducingBits];
   }
 };
 
@@ -74,11 +74,11 @@ class CBitDecoder: public CBitModel<aNumMoveBits>
 public:
   UINT32 Decode(CDecoder *decoder)
   {
-    UINT32 newBound = (decoder->Range >> kNumBitModelTotalBits) * Probability;
+    UINT32 newBound = (decoder->Range >> kNumBitModelTotalBits) * this->Probability;
     if (decoder->Code < newBound)
     {
       decoder->Range = newBound;
-      Probability += (kBitModelTotal - Probability) >> aNumMoveBits;
+      this->Probability += (kBitModelTotal - this->Probability) >> aNumMoveBits;
       if (decoder->Range < kTopValue)
       {
         decoder->Code = (decoder->Code << 8) | decoder->Stream.ReadByte();
@@ -90,7 +90,7 @@ public:
     {
       decoder->Range -= newBound;
       decoder->Code -= newBound;
-      Probability -= (Probability) >> aNumMoveBits;
+      this->Probability -= (this->Probability) >> aNumMoveBits;
       if (decoder->Range < kTopValue)
       {
         decoder->Code = (decoder->Code << 8) | decoder->Stream.ReadByte();

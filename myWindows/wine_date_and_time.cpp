@@ -121,9 +121,7 @@ BOOL WINAPI DosDateTimeToFileTime( WORD fatdate, WORD fattime, LPFILETIME ft) {
   return TRUE;
 }
 
-/* FIXME
- *  Should it be signed division instead?
- */
+/* FIXME : Should it be signed division instead? */
 static ULONGLONG WINAPI RtlLargeIntegerDivide( ULONGLONG a, ULONGLONG b, ULONGLONG *rem ) {
   ULONGLONG ret = a / b;
   if (rem)
@@ -132,7 +130,7 @@ static ULONGLONG WINAPI RtlLargeIntegerDivide( ULONGLONG a, ULONGLONG b, ULONGLO
 }
 
 
-static BOOLEAN WINAPI RtlTimeToSecondsSince1970( const LARGE_INTEGER *Time, LPDWORD Seconds ) {
+BOOLEAN WINAPI RtlTimeToSecondsSince1970( const LARGE_INTEGER *Time, LPDWORD Seconds ) {
   ULONGLONG tmp = ((ULONGLONG)Time->u.HighPart << 32) | Time->u.LowPart;
   tmp = RtlLargeIntegerDivide( tmp, 10000000, NULL );
   tmp -= SECS_1601_TO_1970;

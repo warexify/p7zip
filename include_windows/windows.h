@@ -112,7 +112,7 @@ int WINAPI MultiByteToWideChar(UINT,DWORD,LPCSTR,int,LPWSTR,int);
 
 /* BEGIN #include <ole2.h> */
   #ifdef __cplusplus
-  extern "C" {
+  // extern "C" {
   #endif
 #include "basetyps.h"
 
@@ -158,8 +158,10 @@ typedef OLECHAR *BSTR;
 __extension__   /* no named members  */
 #endif
 typedef struct tagVARIANT {
+	/*
   _ANONYMOUS_UNION union {
 	struct __tagVARIANT {
+	*/
 	VARTYPE vt;
 	WORD wReserved1;
 	WORD wReserved2;
@@ -209,14 +211,18 @@ typedef struct tagVARIANT {
 		ULONG  *pulVal;
 		INT  *pintVal;
 		UINT  *puintVal;
+		/*
 		_ANONYMOUS_STRUCT struct {
 			PVOID pvRecord;
 			struct IRecordInfo *pRecInfo;
 		} __VARIANT_NAME_4;
+		*/
 	} __VARIANT_NAME_3;
+	/*
     } __VARIANT_NAME_2;
-    /* DECIMAL decVal; */
+    * DECIMAL decVal; *
   } __VARIANT_NAME_1;
+*/
 } VARIANT,*LPVARIANT;
 
 
@@ -327,7 +333,7 @@ DECLARE_INTERFACE_(ISequentialStream,IUnknown)
 
 
   #ifdef __cplusplus
-  }
+  // }
   #endif
 /* END #include <ole2.h> */
 

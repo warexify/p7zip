@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+  <META http-equiv="Content-Type" content="text/html; charset=Windows-1252">
+  <TITLE>Supported formats</TITLE>
+  <LINK href="/style.css" rel="stylesheet" type="text/css">
+</HEAD>
+
+<BODY>
+
+<H1>Supported formats</H1>
+
+Currently 7-Zip supports the following archive formats:
+<UL>
+  <LI><A href="#7z">7z</A></LI>
+  <LI><A href="#zip">ZIP</A></LI>
+  <LI><A href="#gzip">GZIP</A></LI>
+  <LI><A href="#tar">TAR</A></LI>
+  <LI><A href="#bzip2">BZIP2</A></LI>
+  <LI><A href="#rar">RAR</A> (only browsing and decompression)</LI>
+  <LI><A href="#cab">CAB</A> (only browsing and decompression)</LI>
+  <LI><A href="#arj">ARJ</A> (only browsing and decompression)</LI>
+  <LI><A href="#cpio">CPIO</A> (only browsing and decompression)</LI>
+  <LI><A href="#rpm">RPM</A> (only browsing and decompression)</LI>
+  <LI><A href="#deb">DEB</A> (only browsing and decompression)</LI>
+  <LI><A href="#split">SPLIT</A> (only browsing and decompression)</LI>
+</UL>
+
+<H2><a name="7z"></a>7z</H2>
+<P>7-Zip fully supports <A href="7z.htm">7z archives</A>.</P>
+
+<H2><a name="zip"></a>ZIP</H2>
+
+<P>7-Zip creates fully ZIP compatible archives. It means that
+everyone can decompress these files by any ZIP compatible decompression
+utility. During compression 7-Zip can use one of the following ZIP
+compression methods:</P>
+<UL>
+  <LI>0 - Store</LI>
+  <LI>8 - Deflate</LI>
+  <LI>9 - Deflate64</LI>
+  <LI>12 - Bzip2</LI>
+</UL>
+
+<P>The current version of the 7-Zip can extract any files from ZIP archive that
+were compressed with one of the following methods:</P>
+<UL>
+  <LI>0 - Store</LI>
+  <LI>6 - Implode</LI>
+  <LI>8 - Deflate</LI>
+  <LI>9 - Deflate64</LI>
+  <LI>12 - Bzip2</LI>
+</UL>
+
+<P>Files compressed with other ZIP compression methods can't be extracted by
+the current version of the 7-Zip. But supported methods are the most popular
+now and it causes 7-Zip can decompress the most of ZIP archives. For
+extracting files compressed with non-supported methods you must use some
+other ZIP utility.</P>
+
+<P>Zip format has limitation for maximum number of files in one archive: 
+65535 files. But this limitation is not critical. 7-Zip can create zip 
+archives containing more than 65535 files. You must know that some zip 
+decompressors can't decompress all files from zip archives containing more 
+than 65535 files, but some decompressors (e.g. info-zip) can 
+handle with such archives.</P>
+
+<P>Standard Zip format doesn't support compressing files that are larger than 4 GB.
+Also there is 4GB limitation for total archive size.</P>
+
+<P>The current version of the 7-Zip doesn't support Zip multivolume archives.</P>
+
+<H2><a name="gzip"></a>GZIP</H2>
+
+<P>7-Zip fully supports GZIP files.</P>
+
+<H2><a name="tar"></a>TAR</H2>
+
+<P>7-Zip fully supports TAR files.</P>
+
+<H2><a name="bzip2"></a>BZIP2</H2>
+
+<P>7-Zip fully supports BZip2 files. BZip2 module in 7-Zip is based on sources of original program
+that supports bz2 files - bzip2.
+The home page of original bzip2 can be found at http://www.muraroa.demon.co.uk.</P>
+
+<H2><a name="rar"></a>RAR</H2>
+
+<P>7-Zip supports RAR archives only for listing, browsing and decompressing.</P>
+
+<H2><a name="cab"></a>CAB</H2>
+
+<P>7-Zip supports CAB archives only for listing, browsing and decompressing.</P>
+
+<H2><a name="arj"></a>ARJ</H2>
+
+<P>7-Zip supports ARJ archives only for listing, browsing and decompressing.</P>
+
+<H2><a name="cpio"></a>cpio</H2>
+
+<P>7-Zip supports cpio archives only for listing, browsing and decompressing.</P>
+
+<H2><a name="rpm"></a>RPM</H2>
+
+<P>7-Zip supports RPM archives only for listing, browsing and decompressing.</P>
+
+<H2><a name="deb"></a>DEB</H2>
+
+<P>7-Zip supports DEB archives only for listing, browsing and decompressing.</P>
+
+<H2><a name="split"></a>SPLIT</H2>
+
+<P>7-Zip supports split files only for listing, browsing and decompressing.</P>
+
+</BODY>
+</HTML>

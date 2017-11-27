@@ -1,8 +1,5 @@
 #include "StdAfx.h"
 
-#ifdef _UNICODE
-#include "../Common/StringConvert.h"
-#endif
 
 #include <unistd.h> // rmdir
 #include <errno.h>
@@ -10,6 +7,12 @@
 #include <sys/stat.h> // mkdir
 #include <sys/types.h>
 
+#include <limits.h>
+#ifndef MB_LEN_MAX
+#define MB_LEN_MAX 1024
+#endif
+
+#include "../Common/StringConvert.h"
 
 #include "myPrivate.h"
 
@@ -333,3 +336,26 @@ BOOL WINAPI SetFileAttributesA(LPCSTR lpFileName, DWORD attributes)  // FIXME
   TRACEN((printf("SetFileAttributesW(%s,%d) : FALSE\n",name,attributes)))
   return FALSE;
 }
+
+
+int WINAPI CompareStringA(LCID lcid,DWORD style,LPCSTR str1,int len1,LPCSTR str2,int len2) {
+  INT ret, len;
+
+  if (!str1 || !str2) {
+    SetLastError(ERROR_INVALID_PARAMETER);
+    return 0;
+  }
+
+  return CompareStringW(lcid, style, MultiByteToUnicodeString(str1), len1, MultiByteToUnicodeString(str2), len2);
+}
+
+LPSTR WINAPI CharNextA( LPCSTR ptr ) {
+  if (!*ptr)
+    return (LPSTR)ptr;
+  wchar_t wc;
+  size_t len  = mbrtowc(&wc,ptr,MB_LEN_MAX,0); 
+  if (len >= 1) return (LPSTR)(ptr + len);
+  printf("INTERNAL ERROR - CharNextA\n");
+  exit(EXIT_FAILURE);
+}
+

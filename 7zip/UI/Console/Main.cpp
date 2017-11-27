@@ -711,21 +711,44 @@ void SetArchiveType(const UString &archiveType,
   throw "Incorrect archive type was assigned";
 }
 
-// int Main2(int numArguments, const char *arguments[])
-int Main2()
+#ifdef ENV_UNIX
+static void mySplitCommandLine(int numArguments,const char *arguments[],UStringVector &parts)
+{
+   parts.Clear();
+
+   for(int ind=0;ind < numArguments; ind++)
+   {
+      UString tmp = MultiByteToUnicodeString(arguments[ind]);
+      // tmp.Trim(); " " is a valid filename ...
+      if (!tmp.IsEmpty())
+      {
+           // converting "/" to "\\"
+           tmp.Replace(L'/',L'\\');
+           parts.Add(tmp);
+      }
+   }
+}
+#endif
+
+//int Main2()
+int Main2(int numArguments, const char *arguments[])
 {
   /* SetFileApisToOEM(); */
   
   g_StdOut << kCopyrightString;
 
-  g_StdOut << "p7zip Version 0.80\n";
+  g_StdOut << "p7zip Version 0.81\n";
   g_StdOut << "Support for files larger than 2GiB : ";
 
-  if (sizeof(off_t) >= 8) g_StdOut << "Enable\n";
-  else                    g_StdOut << "Disable\n";
+  if (sizeof(off_t) >= 8) g_StdOut << "Enabled\n";
+  else                    g_StdOut << "Disabled\n";
 
   UStringVector commandStrings;
+#ifdef ENV_UNIX
+  mySplitCommandLine(numArguments,arguments,commandStrings);
+#else
   NCommandLineParser::SplitCommandLine(GetCommandLineW(), commandStrings);
+#endif
 
   if(commandStrings.Size() == 1)
   {
@@ -755,11 +778,31 @@ int Main2()
     PrintHelp();
     return 0;
   }
+#ifdef ENV_UNIX
+  /* const */ UStringVector &nonSwitchStrings = parser.NonSwitchStrings;
+#else
   const UStringVector &nonSwitchStrings = parser.NonSwitchStrings;
+#endif
 
   int numNonSwitchStrings = nonSwitchStrings.Size();
   if(numNonSwitchStrings < kMinNonSwitchWords)  
     PrintHelpAndExit();
+#ifdef ENV_UNIX
+   // Add "*" only for directories with no wildcard
+   for(int ind = kFirstFileNameIndex;ind < numNonSwitchStrings;ind ++)
+   {
+     if (!DoesNameContainWildCard(nonSwitchStrings[ind]))
+     {
+        NFind::CFileInfoW archiveFileInfo;
+        if (NFind::FindFile(nonSwitchStrings[ind], archiveFileInfo) && archiveFileInfo.IsDirectory())
+        {
+           int len = nonSwitchStrings[ind].Length();
+           if (nonSwitchStrings[ind][len-1] == L'\\')  nonSwitchStrings[ind] += L"*";
+           else                                        nonSwitchStrings[ind] += L"\\*";
+        }
+     }
+   }
+#endif
   CArchiveCommand command;
   if (!ParseArchiveCommand(nonSwitchStrings[kCommandIndex], command))
     PrintHelpAndExit();

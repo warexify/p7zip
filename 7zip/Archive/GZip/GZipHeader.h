@@ -16,6 +16,12 @@ static const UINT32 kSignatureSize = 2;
 #pragma pack( push, PragmaGZipHeaders)
 #pragma pack( push, 1)
 
+#ifdef __GNUC__   // FIXME - FIXED for gcc 2.95
+#define PACKED __attribute__((packed))
+#else
+#define PACKED
+#endif
+
 namespace NCompressionMethod
 {
   enum EType
@@ -28,12 +34,12 @@ namespace NFileHeader
 {
   struct CBlock
   {
-    UINT16 Id;
-    BYTE CompressionMethod;
-    BYTE Flags;
-    UINT32 Time;
-    BYTE ExtraFlags;
-    BYTE HostOS;
+    UINT16 Id PACKED ;
+    BYTE CompressionMethod PACKED ;
+    BYTE Flags PACKED ;
+    UINT32 Time PACKED ;
+    BYTE ExtraFlags PACKED ;
+    BYTE HostOS PACKED ;
   };
   
   

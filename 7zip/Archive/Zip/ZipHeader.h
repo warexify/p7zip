@@ -13,6 +13,13 @@ namespace NZip {
 #pragma pack( push, PragmaZipHeaders)
 #pragma pack( push, 1)
 
+
+#ifdef __GNUC__   // FIXME - FIXED for gcc 2.95
+#define PACKED __attribute__((packed))
+#else
+#define PACKED
+#endif
+
 namespace NSignature
 {
   extern UINT32 kLocalFileHeader;
@@ -25,27 +32,27 @@ namespace NSignature
 
 struct CEndOfCentralDirectoryRecord
 {
-  UINT16 ThisDiskNumber;
-  UINT16 StartCentralDirectoryDiskNumber;
-  UINT16 NumEntriesInCentaralDirectoryOnThisDisk;
-  UINT16 NumEntriesInCentaralDirectory;
-  UINT32 CentralDirectorySize;
-  UINT32 CentralDirectoryStartOffset;
-  UINT16 CommentSize;
+  UINT16 ThisDiskNumber PACKED ;
+  UINT16 StartCentralDirectoryDiskNumber PACKED ;
+  UINT16 NumEntriesInCentaralDirectoryOnThisDisk PACKED ;
+  UINT16 NumEntriesInCentaralDirectory PACKED ;
+  UINT32 CentralDirectorySize PACKED ;
+  UINT32 CentralDirectoryStartOffset PACKED ;
+  UINT16 CommentSize PACKED ;
 };
 
 struct CEndOfCentralDirectoryRecordFull
 {
-  UINT32 Signature;
-  CEndOfCentralDirectoryRecord Header;
+  UINT32 Signature PACKED ;
+  CEndOfCentralDirectoryRecord Header PACKED ;
 };
 
 namespace NFileHeader
 {
   struct CVersion
   {
-    BYTE Version;
-    BYTE HostOS;
+    BYTE Version PACKED ;
+    BYTE HostOS PACKED ;
   };
   
   namespace NCompressionMethod
@@ -77,55 +84,54 @@ namespace NFileHeader
 
   struct CLocalBlock
   {
-    CVersion ExtractVersion;
-    
-    UINT16 Flags;
-    UINT16 CompressionMethod;
-    UINT32 Time;
-    UINT32 FileCRC;
-    UINT32 PackSize;
-    UINT32 UnPackSize;
-    UINT16 NameSize;
-    UINT16 ExtraSize;
+    CVersion ExtractVersion PACKED ;
+    UINT16 Flags PACKED ;
+    UINT16 CompressionMethod PACKED ;
+    UINT32 Time PACKED ;
+    UINT32 FileCRC PACKED ;
+    UINT32 PackSize PACKED ;
+    UINT32 UnPackSize PACKED ;
+    UINT16 NameSize PACKED ;
+    UINT16 ExtraSize PACKED ;
   };
 
   struct CDataDescriptor
   {
-    UINT32 Signature;
-    UINT32 FileCRC;
-    UINT32 PackSize;
-    UINT32 UnPackSize;
+    UINT32 Signature PACKED ;
+    UINT32 FileCRC PACKED ;
+    UINT32 PackSize PACKED ;
+    UINT32 UnPackSize PACKED ;
   };
 
   struct CLocalBlockFull
   {
-    UINT32 Signature;
-    CLocalBlock Header;
+    UINT32 Signature PACKED ;
+    CLocalBlock Header PACKED ;
   };
   
   struct CBlock
   {
-    CVersion MadeByVersion;
-    CVersion ExtractVersion;
-    UINT16 Flags;
-    UINT16 CompressionMethod;
-    UINT32 Time;
-    UINT32 FileCRC;
-    UINT32 PackSize;
-    UINT32 UnPackSize;
-    UINT16 NameSize;
-    UINT16 ExtraSize;
-    UINT16 CommentSize;
-    UINT16 DiskNumberStart;
-    UINT16 InternalAttributes;
-    UINT32 ExternalAttributes;
-    UINT32 LocalHeaderOffset;
+    CVersion MadeByVersion PACKED ;
+    CVersion ExtractVersion PACKED ;
+    UINT16 Flags PACKED ;
+    UINT16 CompressionMethod PACKED ;
+    UINT32 Time PACKED ;
+    UINT32 FileCRC PACKED ;
+    UINT32 PackSize PACKED ;
+    UINT32 UnPackSize PACKED ;
+    UINT16 NameSize PACKED ;
+    UINT16 ExtraSize PACKED ;
+    UINT16 CommentSize PACKED ;
+    UINT16 DiskNumberStart PACKED ;
+    UINT16 InternalAttributes PACKED ;
+    UINT32 ExternalAttributes PACKED ;
+    UINT32 LocalHeaderOffset PACKED ;
   };
   
   struct CBlockFull
   {
-    UINT32 Signature;
-    CBlock Header;
+    UINT32 Signature PACKED ;
+    CBlock Header PACKED ;
   };
   
   namespace NFlags 

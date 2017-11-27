@@ -2,7 +2,7 @@
 
 #include "StdAfx.h"
 
-// #include <locale.h>
+#include <locale.h>
 
 #include "Windows/COM.h"
 #include "Windows/Error.h"
@@ -16,8 +16,7 @@
 
 using namespace NWindows;
 
-// extern int Main2(int numArguments, const char *arguments[]);
-extern int Main2();
+extern int Main2(int numArguments, const char *arguments[]);
 
 static const char *kExceptionErrorMessage = "\n\nError:\n";
 static const char *kUserBreak  = "\nBreak signaled\n";
@@ -28,8 +27,7 @@ static const char *kInternalExceptionMessage = "\n\nInternal Error #";
 
 int main(int numArguments, const char *arguments[])
 {
-   myInit(numArguments,arguments); // FIXED
-
+   setlocale(LC_ALL,""); // FIXED
 
   int result=1;
 #ifdef WIN32  
@@ -40,8 +38,8 @@ int main(int numArguments, const char *arguments[])
     NConsoleClose::CCtrlHandlerSetter aCtrlHandlerSetter;
     try
     {
-      // result = Main2(numArguments, arguments);
-      result = Main2();
+      result = Main2(numArguments, arguments);
+      // result = Main2();
     }
     catch(const NConsoleClose::CCtrlBreakException &)
     {

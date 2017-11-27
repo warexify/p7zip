@@ -6,25 +6,48 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <string>
 
 #include "myPrivate.h"
 
+#include <sys/types.h>
+#include <utime.h>
+
+extern BOOLEAN WINAPI RtlTimeToSecondsSince1970( const LARGE_INTEGER *Time, LPDWORD Seconds );
 
 // #define TRACEN(u) u;
 #define TRACEN(u)  /* */
 
+#define IDENT_FILE 0x1234ABEF
+
+class CFileHandlerInternal
+{
+  public:
+   int ident_file;
+   int fd;
+   std::string unix_filename;
+};
+
 bool myGetFileLength(t_file_handle hFile,UINT64 &length) {
   TRACEN((printf("myGetFileLength(%d...)\n",hFile)))
 
-  off_t pos_cur = lseek(hFile, 0, SEEK_CUR);
+  if (    (hFile == FILE_HANDLE_INVALID)
+       || (hFile->fd == -1)
+       || (hFile->ident_file != IDENT_FILE))
+  {
+     SetLastError( ERROR_INVALID_HANDLE );
+     return false;
+  }
+
+  off_t pos_cur = lseek(hFile->fd, 0, SEEK_CUR);
   if (pos_cur == (off_t)-1)
     return false;
 
-  off_t pos_end = lseek(hFile, 0, SEEK_END);
+  off_t pos_end = lseek(hFile->fd, 0, SEEK_END);
   if (pos_end == (off_t)-1)
     return false;
 
-  off_t pos_cur2 = lseek(hFile, pos_cur, SEEK_SET);
+  off_t pos_cur2 = lseek(hFile->fd, pos_cur, SEEK_SET);
   if (pos_cur2 == (off_t)-1)
     return false;
 
@@ -45,7 +68,12 @@ t_file_handle WINAPI myCreateFileA(
   char name[1024];
   nameWindowToUnixA(filename,name);
 
-  t_file_handle file;
+  CFileHandlerInternal * file = new CFileHandlerInternal;
+
+  if (file == 0) {
+     SetLastError(ERROR_GEN_FAILURE);
+     return FILE_HANDLE_INVALID;
+  }
 #ifdef O_BINARY
   int   flags = O_BINARY;
 #else
@@ -69,7 +97,7 @@ t_file_handle WINAPI myCreateFileA(
       break;
   }
 
-  file = open(name,flags, 0666);
+  file->fd = open(name,flags, 0666);
 
   TRACEN((printf("\nTHR 0x%lx : myCreateFileA(%s) %s %s %s %s %s => %d\n",
                  (unsigned long)pthread_self(),name,
@@ -84,52 +112,82 @@ t_file_handle WINAPI myCreateFileA(
                  (dwCreationDisposition ==OPEN_EXISTING)?"OPEN_EXISTING ":
                  (dwCreationDisposition ==OPEN_ALWAYS)?"OPEN_ALWAYS ":
                  (dwCreationDisposition ==TRUNCATE_EXISTING)?"TRUNCATE_EXISTING ":"",
-                 file)))
+                 file->fd)))
 
-  if (file == -1)
+  if (file->fd == -1) {
     printf("myCreateFileA : errno = %d (%s)\n",errno,strerror(errno));
+    delete file;
+    file = 0;
+  } else {
+    file->ident_file = IDENT_FILE;
+    file->unix_filename = name;
+  }
 
   return file;
 }
 
 BOOL WINAPI myCloseFile(t_file_handle hFile) {
-  BOOL ret = (close(hFile) == 0);
+  if (    (hFile == FILE_HANDLE_INVALID)
+       || (hFile->fd == -1)
+       || (hFile->ident_file != IDENT_FILE))
+  {
+     SetLastError( ERROR_INVALID_HANDLE );
+     return false;
+  }
+  BOOL ret = (close(hFile->fd) == 0);
+  delete hFile;
   TRACEN((printf("THR 0x%lx : myCloseFile(%d)=%d\n",(unsigned long)pthread_self(),hFile,(unsigned)ret)))
   if (!ret)
     printf("myCloseFile : errno = %d (%s)\n",errno,strerror(errno));
   return ret;
 }
 
-BOOL WINAPI SetFileTime( t_file_handle hFile, // FIXME
+BOOL WINAPI SetFileTime( t_file_handle hFile,
                          const FILETIME *lpCreationTime,
                          const FILETIME *lpLastAccessTime,
-                         const FILETIME *lpLastWriteTime ) {
-  // printf("SetFileTime(%d) : FIXME\n",hFile);
-  /*
-      #include <sys/types.h>
-       #include <utime.h>
+                         const FILETIME *lpLastWriteTime )
+{
+  struct stat  oldbuf;
+  struct utimbuf buf;
+  int ret;
+  if (    (hFile == FILE_HANDLE_INVALID)
+       || (hFile->fd == -1)
+       || (hFile->ident_file != IDENT_FILE))
+  {
+     SetLastError( ERROR_INVALID_HANDLE );
+     return false;
+  }
 
-       int utime(const char *filename, struct utimbuf *buf);
-  struct utimbuf {
-                      time_t actime;  // access time
-                      time_t modtime; // modification time
-              };
-        if (lpLastAccessTime)
-            RtlTimeToSecondsSince1970( (PLARGE_INTEGER) lpLastAccessTime, (DWORD *)&req->access_time );
-        else
-            req->access_time = 0; // FIXME
-        if (lpLastWriteTime)
-            RtlTimeToSecondsSince1970( (PLARGE_INTEGER) lpLastWriteTime, (DWORD *)&req->write_time );
-        else
-            req->write_time = 0; // FIXME 
-  */
-  return TRUE;
+  ret = stat(hFile->unix_filename.c_str(),&oldbuf);
+  if (ret == 0) {
+    buf.actime  = oldbuf.st_atime;
+    buf.modtime = oldbuf.st_mtime;
+  } else {
+    buf.actime  = buf.modtime = time(0);
+  }
+  
+  if (lpLastAccessTime)
+       RtlTimeToSecondsSince1970( (PLARGE_INTEGER) lpLastAccessTime, (DWORD *)&buf.actime );
+  if (lpLastWriteTime)
+       RtlTimeToSecondsSince1970( (PLARGE_INTEGER) lpLastWriteTime, (DWORD *)&buf.modtime );
+
+  ret = utime(hFile->unix_filename.c_str(), &buf);
+  return (ret == 0);
 }
 
 BOOL WINAPI WriteFile( t_file_handle hFile, LPCVOID buffer, DWORD bytesToWrite,
                        LPDWORD bytesWritten, LPOVERLAPPED overlapped ) {
   TRACEN((printf("THR 0x%lx : WriteFile(%d...)\n",(unsigned long)pthread_self(),hFile)))
-  ssize_t  ret = write  (hFile,buffer, bytesToWrite);
+
+  if (    (hFile == FILE_HANDLE_INVALID)
+       || (hFile->fd == -1)
+       || (hFile->ident_file != IDENT_FILE))
+  {
+     SetLastError( ERROR_INVALID_HANDLE );
+     return false;
+  }
+
+  ssize_t  ret = write  (hFile->fd,buffer, bytesToWrite);
 
   if (ret != -1) {
     *bytesWritten = ret;
@@ -144,9 +202,17 @@ BOOL WINAPI WriteFile( t_file_handle hFile, LPCVOID buffer, DWORD bytesToWrite,
 BOOL WINAPI SetEndOfFile(t_file_handle hFile) {
   BOOL ret = FALSE;
 
-  off_t pos_cur = lseek(hFile, 0, SEEK_CUR);
+  if (    (hFile == FILE_HANDLE_INVALID)
+       || (hFile->fd == -1)
+       || (hFile->ident_file != IDENT_FILE))
+  {
+     SetLastError( ERROR_INVALID_HANDLE );
+     return false;
+  }
+
+  off_t pos_cur = lseek(hFile->fd, 0, SEEK_CUR);
   if (pos_cur != (off_t)-1) {
-    ret =  (ftruncate(hFile, pos_cur) == 0);
+    ret =  (ftruncate(hFile->fd, pos_cur) == 0);
   }
   TRACEN((printf("SetEndOfFile(%d...)=%d\n",hFile,(unsigned)ret)))
 
@@ -156,12 +222,20 @@ BOOL WINAPI SetEndOfFile(t_file_handle hFile) {
 BOOL WINAPI ReadFile( t_file_handle hFile, LPVOID buffer, DWORD bytesToRead,
                       LPDWORD bytesRead, LPOVERLAPPED overlapped ) {
 
+  if (    (hFile == FILE_HANDLE_INVALID)
+       || (hFile->fd == -1)
+       || (hFile->ident_file != IDENT_FILE))
+  {
+     SetLastError( ERROR_INVALID_HANDLE );
+     return false;
+  }
+
   if (bytesToRead == 0) {
     *bytesRead =0;
     TRACEN((printf("ReadFile(%d,,0)=TRUE\n",hFile)))
     return TRUE;
   }
-  size_t  ret = read  (hFile,buffer,bytesToRead);
+  ssize_t  ret = read  (hFile->fd,buffer,bytesToRead);
 
   if (ret != -1) {
     *bytesRead = ret;
@@ -177,6 +251,14 @@ bool myFileSeek( t_file_handle hFile, INT64 distanceToMove, DWORD moveMethod, UI
   int direction;
   bool ret = true;
 
+  if (    (hFile == FILE_HANDLE_INVALID)
+       || (hFile->fd == -1)
+       || (hFile->ident_file != IDENT_FILE))
+  {
+     SetLastError( ERROR_INVALID_HANDLE );
+     return false;
+  }
+
   if      (moveMethod == FILE_BEGIN)
     direction = SEEK_SET;
   else if (moveMethod == FILE_CURRENT)
@@ -189,7 +271,7 @@ bool myFileSeek( t_file_handle hFile, INT64 distanceToMove, DWORD moveMethod, UI
   if (ret) {
     off_t pos = (off_t)distanceToMove;
 
-    off_t newpos = lseek(hFile,pos,direction);
+    off_t newpos = lseek(hFile->fd,pos,direction);
 
     if (newpos == ((off_t)-1)) {
       ret = false;

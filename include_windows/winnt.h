@@ -33,6 +33,10 @@ extern "C" {
 
 #include <string.h>
 
+#ifdef __cplusplus
+}
+#endif
+
 #ifndef VOID
 #define VOID void
 #endif
@@ -160,10 +164,11 @@ typedef union _LARGE_INTEGER {
     LONG  HighPart;
   } u;
 #if ! defined(NONAMELESSUNION) || defined(__cplusplus)
+  /*
   _ANONYMOUS_STRUCT struct {
     DWORD LowPart;
     LONG  HighPart;
-  };
+  }; */
 #endif /* NONAMELESSUNION */
   LONGLONG QuadPart;
 } LARGE_INTEGER, *PLARGE_INTEGER;
@@ -174,17 +179,16 @@ typedef union _ULARGE_INTEGER {
     DWORD HighPart;
   } u;
 #if ! defined(NONAMELESSUNION) || defined(__cplusplus)
+  /*
   _ANONYMOUS_STRUCT struct {
     DWORD LowPart;
     DWORD HighPart;
   };
+  */
 #endif /* NONAMELESSUNION */
   ULONGLONG QuadPart;
 } ULARGE_INTEGER, *PULARGE_INTEGER;
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif
 

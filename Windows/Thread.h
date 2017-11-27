@@ -37,10 +37,12 @@ public:
   {
     if (!_created) return true;
     
-/* FIXME : something to do with pthread ?    
+/*
     if (!::CloseHandle(_handle))
       return false;
 */
+    pthread_detach(_tid);
+    _tid = 0;
     _created = false;
     return true;
   }

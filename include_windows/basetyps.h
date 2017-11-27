@@ -31,8 +31,8 @@
  g++ vtables are now COM-compatible by default
 */
 #if defined(__GNUC__) &&  __GNUC__ < 3 && !defined(NOCOMATTRIBUTE)
-#define DECLARE_INTERFACE(i) interface __attribute__((com_interface)) i
-#define DECLARE_INTERFACE_(i,b) interface __attribute__((com_interface)) i : public b
+#define DECLARE_INTERFACE(i) interface /* __attribute__((com_interface)) */  i
+#define DECLARE_INTERFACE_(i,b) interface /* __attribute__((com_interface)) */  i : public b
 #else
 #define DECLARE_INTERFACE(i) interface i
 #define DECLARE_INTERFACE_(i,b) interface i : public b

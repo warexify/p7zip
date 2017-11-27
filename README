@@ -1,4 +1,4 @@
-	p7zip 0.80
+	p7zip 0.81
 	==========
 
 Homepage : http://sourceforge.net/projects/p7zip/
@@ -17,6 +17,7 @@ INSTALL:
 	Redhat 9.0 Standart (x86)
 	Fedora 2 (Redhat) (x86)
 	Mandrake 10.0 Official (x86)
+	Debian 3.0 Stable (x86)
 	CYGWIN_NT-5.1 1.5.9(0.112/4/2) 2004-03-18 23:05 i686 Cygwin
 
 	For Mandrake, you must change "-O2" to "-g2" in the makefile
@@ -38,6 +39,10 @@ USAGE:
   Remarks : "" is needed if you use "*" or "?"
             (p7zip use the Windows logic of 7za.exe)
 
+  NEW since version 0.81 :
+  7z a -r archive.7z  dir1 :  add all files from directory "dir1" to
+                              archive archive.7z
+
   You can also add or extract files to/from .zip or .tar archives.
   You can also compress/uncompress .gz or .bz2 files.
 
@@ -49,18 +54,18 @@ USAGE:
   You can use password for archives:
   7z a -r -pmy_password archive.7z  "dir1/*" 
 
-  For more, see the documentation of 7za.exe on a Windows machine.
+  For more, see the documentation of 7za.exe in html directory
+  (chapter "User's Guide for command line version").
 
 LIMITATIONS:
 
- - 7z supports UNICODE filename but p7zip supports only ISO-8859-1 charsets.
- (CAUTION : 7z (and p7zip) cannot extract files with non ASCII filename
-  from .zip or .tar archives)
-
+  - 7z can handle properly UNICODE filenames only if the environment is UTF-8.
+  Example : export LANG=en_US.UTF-8
+  Remark  : see in the directory "/usr/lib/locale" the possible values
+            for LANG
+ 
   - 7z (and p7zip) does not support uid/gid or Unix file access permissions
   for the .tar format (so, use tar on Unix)
-
-  - p7zip does not restore dates (SetFileTime() not implemented)
 
   - p7zip ignores Windows file access permissions (files are created with
     default permissions)

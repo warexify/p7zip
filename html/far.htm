@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+  <META http-equiv="Content-Type" content="text/html; charset=Windows-1252">
+  <TITLE>FAR Manager Support</TITLE>
+  <LINK href="style.css" rel="stylesheet" type="text/css">
+</HEAD>
+
+<BODY>
+
+<H1>FAR Manager Support</H1>
+
+<P> The <B>FAR Manager</B> is a good file manager working in text mode. 
+You can download "FAR Manager" from site:
+<P><A href="http://www.rarlab.com" target="_blank">http://www.rarlab.com</A></P>
+
+<P>There are two ways to use 7-Zip with FAR Manager:</P>
+<UL>
+  <LI>Via 7-Zip FAR Plugin (it's recommended way).</LI>
+  <LI>Via standard MultiArc Plugin.</LI>
+</UL>
+
+<H2>7-Zip FAR Plugin</H2>
+
+<P>7-Zip FAR Plugin is first level plugin for FAR Manager, like MultiArc plugin.
+It very fast extracts and updates files in archive, since
+it doesn't use external programs. It supports all formats supported by 7-Zip: 
+ZIP, RAR, CAB, GZIP, BZIP2 and TAR.</P>
+
+<P>To install 7-Zip FAR Plugin:</P>
+<OL>
+  <LI>Create <B>7-Zip</B> folder in <B>...\Program Files\Far\Plugins</B> folder.</LI>
+  <LI>Copy all files from <B>...\Program Files\7-Zip\Far</B> folder to created folder.</LI>
+  <LI>Restart FAR.</LI>
+</OL>
+
+<P>You can open archives with one of the following ways:</P>
+<UL>
+  <LI>Pressing <B>Enter</B>.</LI>
+  <LI>Pressing <B>Ctrl-PgDown</B>.</LI>
+  <LI>Pressing <B>F11</B> and selecting <B>7-Zip</B> item.</LI>
+</UL>
+
+<P>You can create new archives with 7-Zip by pressing <B>F11</B> and 
+selecting <B>7-Zip (add to archive)</B> item.</P>
+
+<P>If you think that some operations with archives is better to do with MultiArc Plugin,
+you can disable 7-Zip plugin via <B>Options / Pligin configuration / 7-Zip</B>. In such mode 
+opening archives by pressing Enter and Ctrl-PgDown will start MultiArc Plugin. And if you want to
+open archive with 7-Zip, press <B>F11</B> and select <B>7-Zip</B> item.</P>
+
+
+<H2>Using command line 7-Zip via MultiArc Plugin</H2>
+
+<P>If you want use 7-Zip via MultiArc Plugin you must
+register file <B>far7z.reg</B>.</P>
+
+<P>If you want use 7z archives via MultiArc Plugin you must
+append contents of file <B>Far\7zToFar.ini</B> to file
+<B>..\Program Files\Far\Plugins\MultiArc\Formats\Custom.ini</B>.</P>
+
+
+<P>If you want to cancel using 7-Zip by MultiArc, just remove lines that contain
+7-Zip (7z) program name from <B>HKEY_LOCAL_MACHINE\SOFTWARE\Far\Plugins\MultiArc\ZIP</B>
+registry key.</P>
+
+
+</BODY>
+</HTML>

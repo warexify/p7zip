@@ -220,7 +220,9 @@ static HRESULT Update2(COutArchive &archive,
     {
       if(compressor.get() == NULL)
       {
-        compressor = auto_ptr<CAddCommon>(new CAddCommon(*options));
+        // FIXED for gcc 2.95 - compressor = auto_ptr<CAddCommon>(new CAddCommon(*options));
+	    auto_ptr<CAddCommon>  tmp_compressor(new CAddCommon(*options));
+        compressor = tmp_compressor;
       }
       RINOK(UpdateOneFile(inStream, archive, *options, 
           *compressor, updateItem, complexity, updateCallback, item));

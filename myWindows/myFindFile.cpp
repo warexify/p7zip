@@ -8,39 +8,33 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <unistd.h>
+#include <string>
 
-#ifdef __CYGWIN__
-/* basename from glibc 2.3.1 */
-char * basename (const char *filename)
+void split_path(const std::string &p_path, std::string &dir , std::string &base)
 {
-  char *p = strrchr (filename, '/');
-  return p ? p + 1 : (char *) filename;
+	size_t pos = p_path.find_last_of("/");
+	if (pos == std::string::npos) {
+		// no separator
+		dir  = ".";
+		if (p_path.empty()) base = ".";
+		else              base = p_path;
+	} else if ((pos+1) < p_path.size()) {
+		// true separator
+		base = p_path.substr(pos+1);
+		while ((pos >= 1) && (p_path[pos-1] == '/')) pos--;
+		if (pos == 0) dir = "/";
+               	else          dir = p_path.substr(0,pos);
+	} else {
+		// separator at the end of the path
+		pos = p_path.find_last_not_of("/");
+		if (pos == std::string::npos) {
+			base = "/";
+                	dir = "/";
+		} else {
+			return split_path(p_path.substr(0,pos+1),dir,base);
+		}
+	}
 }
-/* dirname from dietlibc 0.25 */
-static char *dot=".";
-#define SLASH '/'
-#define EOL (char)0
-char *dirname(char *path)
-{
-  char *c;
-  if ( path  == NULL ) return dot;
-  for(;;) {
-    if ( !(c=strrchr(path,SLASH)) ) return dot; /* no slashes */
-    if ( c[1]==EOL && c!=path ) {   /* remove trailing slashes */
-      while ( *c==SLASH && c!=path ) *c--=EOL;
-      continue;
-    }
-    if ( c!=path )
-      while ( *c==SLASH ) *c--=EOL; /* slashes in the middle */
-    else
-      path[1]=EOL;                  /* slash is first symbol */
-    return path;
-  }
-}
-#else
-#include <libgen.h> // dirname
-#endif
-
 
 #include "myPrivate.h"
 
@@ -51,8 +45,8 @@ typedef struct {
 #define IDENT_DIR_HANDLER 0x12345678
   int IDENT;
   DIR *dirp;
-  char *pattern;
-  char *directory;
+  std::string pattern;
+  std::string directory;
 }
 t_st_dir;
 
@@ -130,49 +124,45 @@ static int filtre_pattern(const char *string , const char *pattern , int flags_n
 
 HANDLE WINAPI FindFirstFileA(LPCSTR lpFileName, WIN32_FIND_DATA *lpFindData ) {
   char cb[MAX_PATHNAME_LEN];
-  char cd[MAX_PATHNAME_LEN];
-  char *b,*d;
   t_st_dir *retour;
-  nameWindowToUnixA(lpFileName,cb);
-  strcpy(cd,cb);
-  b = basename(cb);
-  d = dirname(cd);
-
-  TRACEN((printf("FindFirstFileA : %s (dirname=%s,pattern=%s)\n",lpFileName,d,b)))
 
   if (!lpFileName) {
     SetLastError(ERROR_PATH_NOT_FOUND);
     return INVALID_HANDLE_VALUE;
   }
+ 
+  nameWindowToUnixA(lpFileName,cb);
 
+  std::string base,dir;
+  split_path(cb,dir,base);
 
-  retour = (t_st_dir *)calloc(1,sizeof(t_st_dir));
+  TRACEN((printf("FindFirstFileA : %s (dirname=%s,pattern=%s)\n",lpFileName,dir.c_str(),base.c_str())))
+
+  retour = new t_st_dir;
   if (retour == 0) {
     SetLastError( ERROR_NO_MORE_FILES );
     return INVALID_HANDLE_VALUE;
   }
 
   retour->IDENT = IDENT_DIR_HANDLER;
-  retour->dirp = opendir(d);
+  retour->dirp = opendir(dir.c_str());
   TRACEN((printf("FindFirstFileA : dirp=%p\n",retour->dirp)))
-  retour->directory = strdup(d);
-  retour->pattern = strdup(b);
+  retour->directory = dir;
+  retour->pattern   = base;
 
   if (retour->dirp) {
     struct dirent *dp;
     while ((dp = readdir(retour->dirp)) != NULL) {
-      if (filtre_pattern(dp->d_name,retour->pattern,0) == 1) {
-        remplirWIN32_FIND_DATA(lpFindData,retour->directory,dp->d_name);
+      if (filtre_pattern(dp->d_name,retour->pattern.c_str(),0) == 1) {
+        remplirWIN32_FIND_DATA(lpFindData,retour->directory.c_str(),dp->d_name);
         TRACEN((printf("FindFirstFileA : ret_handle=%ld\n",(unsigned long)retour)))
         return (HANDLE)retour;
       }
     }
   }
-  free(retour->directory);
-  free(retour->pattern);
   TRACEN((printf("FindFirstFileA : closedir(dirp=%p)\n",retour->dirp)))
   closedir(retour->dirp);
-  free(retour);
+  delete retour;
   SetLastError( ERROR_NO_MORE_FILES );
   return INVALID_HANDLE_VALUE;
 }
@@ -188,8 +178,8 @@ BOOL WINAPI FindNextFileA( HANDLE handle, WIN32_FIND_DATA  *lpFindData) {
   if (retour->dirp) {
     struct dirent *dp;
     while ((dp = readdir(retour->dirp)) != NULL) {
-      if (filtre_pattern(dp->d_name,retour->pattern,0) == 1) {
-        remplirWIN32_FIND_DATA(lpFindData,retour->directory,dp->d_name);
+      if (filtre_pattern(dp->d_name,retour->pattern.c_str(),0) == 1) {
+        remplirWIN32_FIND_DATA(lpFindData,retour->directory.c_str(),dp->d_name);
         return TRUE;
       }
     }
@@ -204,11 +194,9 @@ BOOL WINAPI FindClose( HANDLE handle ) {
   if (handle != INVALID_HANDLE_VALUE) {
     t_st_dir *retour = (t_st_dir *)handle;
     if ((retour) && (retour->IDENT == IDENT_DIR_HANDLER)) {
-      free(retour->directory);
-      free(retour->pattern);
       TRACEN((printf("FindClose : closedir(dirp=%p)\n",retour->dirp)))
       closedir(retour->dirp);
-      free(retour);
+      delete retour;
       return TRUE;
     }
   }

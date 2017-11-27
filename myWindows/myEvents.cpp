@@ -12,15 +12,11 @@ static NWindows::NSynchronization::CCriticalSection gbl_criticalSection;
 
 static void myYield() {
   myLeave();
-#ifdef __CYGWIN__
-  usleep(10);
-#else
-  int ret = pthread_yield();
+  int ret = sched_yield();
   if (ret != 0) {
-    printf("ERROR : pthread_yield()=%d\n",ret);
+    printf("ERROR : sched_yield()=%d\n",ret);
     exit(EXIT_FAILURE);
   }
-#endif
   myEnter();
 }
 
@@ -69,7 +65,7 @@ static void addHandle(HANDLE hHandle,int type,BOOL manual_reset = FALSE,BOOL ini
   }
   printf("addHandle : out of handles\n");
   myLeave();
-  exit(EXIT_FAILURE);
+  throw "addHandle : out of handles\n";
 }
 
 static void delHandle(HANDLE hHandle) {

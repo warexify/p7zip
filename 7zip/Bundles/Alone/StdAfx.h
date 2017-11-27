@@ -20,7 +20,7 @@
 #ifdef __cplusplus 
 extern "C" {
 #endif
-unsigned long __cdecl	wcstoul (const wchar_t*, wchar_t**, int);
+unsigned long wcstoul (const wchar_t*, wchar_t**, int);
 #ifdef __cplusplus
 }	/* end of extern "C" */
 #endif
