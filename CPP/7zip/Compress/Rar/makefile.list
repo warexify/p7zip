@@ -11,8 +11,7 @@ Rar3Decoder.cpp \
 Rar3Vm.cpp \
 RarCodecsRegister.cpp
 
-SRCS_C=\
- ../../../../C/Alloc.c
+SRCS_C=
 
 DllExports.o : ../DllExports.cpp
 	$(CXX) $(CFLAGS) ../DllExports.cpp
@@ -36,6 +35,3 @@ Rar3Vm.o : ./Rar3Vm.cpp
 	$(CXX) $(CFLAGS) ./Rar3Vm.cpp
 RarCodecsRegister.o : ./RarCodecsRegister.cpp
 	$(CXX) $(CFLAGS) ./RarCodecsRegister.cpp
-Alloc.o : ../../../../C/Alloc.c
-	$(CC) $(CFLAGS) ../../../../C/Alloc.c
-

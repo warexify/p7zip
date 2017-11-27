@@ -21,12 +21,11 @@ Rar2Decoder.o \
 Rar3Decoder.o \
 Rar3Vm.o \
 RarCodecsRegister.o \
+$(OBJ_CRC32) \
 InBuffer.o \
 OutBuffer.o \
 StreamUtils.o \
-LZOutWindow.o \
-$(OBJ_CRC32) \
-Alloc.o
+LZOutWindow.o
 
 include ../../../../makefile.glb
 
