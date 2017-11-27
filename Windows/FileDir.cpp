@@ -23,6 +23,10 @@
 // #define TRACEN(u) u;
 #define TRACEN(u)  /* */
 
+#ifdef HAVE_LSTAT
+extern int global_use_lstat;
+#endif
+
 DWORD WINAPI GetFullPathName( LPCSTR name, DWORD len, LPSTR buffer, LPSTR *lastpart ) {
   if (name == 0) return 0;
 
@@ -263,12 +267,18 @@ bool MySetFileAttributes(LPCTSTR fileName, DWORD fileAttributes)
   const char * name = nameWindowToUnix(fileName);
   struct stat stat_info;
 #ifdef HAVE_LSTAT
-  if(lstat(name,&stat_info)!=0) {
-#else
-  if(stat(name,&stat_info)!=0) {
+  if (global_use_lstat) {
+    if(lstat(name,&stat_info)!=0) {
+      TRACEN((printf("MySetFileAttributes(%s,%d) : false-2-1\n",name,fileAttributes)))
+      return false;
+    }
+  } else
 #endif
-    TRACEN((printf("MySetFileAttributes(%s,%d) : false-2\n",name,fileAttributes)))
-    return false;
+  {
+    if(stat(name,&stat_info)!=0) {
+      TRACEN((printf("MySetFileAttributes(%s,%d) : false-2-2\n",name,fileAttributes)))
+      return false;
+    }
   }
 
   if (fileAttributes & FILE_ATTRIBUTE_UNIX_EXTENSION) {
@@ -287,6 +297,7 @@ bool MySetFileAttributes(LPCTSTR fileName, DWORD fileAttributes)
      }
 #ifdef HAVE_LSTAT
   } else if (!S_ISLNK(stat_info.st_mode)) {
+    // do not use chmod on a link
 #else
   } else {
 #endif

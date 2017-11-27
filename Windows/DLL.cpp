@@ -106,7 +106,14 @@ bool CLibrary::Load(LPCTSTR lpLibFileName)
 {
   // HMODULE handler = ::LoadLibrary(fileName);
   void *handler = 0;
-  const char * name = nameWindowToUnix(lpLibFileName);
+  char  name[MAX_PATHNAME_LEN+1];
+  strcpy(name,nameWindowToUnix(lpLibFileName));
+  
+  // replace ".dll" with ".so"
+  size_t len = strlen(name);
+  if ((len >=4) && (strcmp(name+len-4,".dll") == 0)) {
+    strcpy(name+len-4,".so");
+  }
 
 #ifdef __APPLE_CC__
   NSObjectFileImage image;

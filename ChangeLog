@@ -1,4 +1,31 @@
 
+Version 4.20
+============
+
+  - From Windows version of 7-zip 4.19 and 4.20 :
+    - BZip2 code was rewritten. Now it supports 3 modes: Normal, Maximum and 
+      Ultra. In Normal mode it compresses almost as original BZip2 compressor. 
+      Compression ratio in Maximum and Ultra modes is 1-3% better for some files, 
+      but Maximum Mode is about 3 times slower and Ultra Mode is about 8 times 
+      slower than Normal mode.
+    - Console version now prints all messages to stdout by default,
+      and if -so switch is specified, 7-Zip prints messages to stderr.
+    - Some bugs were fixed
+
+  - Updating "contrib/VirtualFileSystemForMidnightCommander/" with u7z-4.16beta.tar.bz2
+
+  - bug #1204993 (does not find broken filenames)
+
+  - bug #1201244 (Missing files in p7zip_4.18_x86_linux_bin.tar.bz2)
+
+  - makefile.linux_x86_ppc_alpha : flag "-fPIC" added
+
+  - flag "-l" added.
+    without   : p7zip stores symlinks (like p7zip 4.18)
+    with "-l" : p7zip stores the files/directories pointed by symlinks (like before p7zip 4.18)
+      CAUTION : the scanning stage can never end because of symlinks like ".."
+                 (ex:  ln -s .. ldir)
+
 Version 4.18
 ============
 
@@ -25,6 +52,7 @@ Version 4.16
     - 7za now supports .Z archives
     - -r- switch in command line now is default for all commands 
     - Some bugs were fixed
+    - bug #1119193 (list mode output confusing/wrong)
 
   - From Windows version of 7-zip 4.15 :
     - Z format supporting (extracting only)

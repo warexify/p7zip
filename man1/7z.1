@@ -51,6 +51,9 @@ Disable percentage indicator
 .B -i 
 Include filenames
 .TP
+.B -l
+don’t store symlinks; store the files/directories they point to (CAUTION : the scanning stage can never end because of symlinks like 'ln -s .. ldir')
+.TP
 .B -m 
 Set Compression Method
 .TP

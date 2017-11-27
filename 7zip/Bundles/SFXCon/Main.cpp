@@ -31,9 +31,11 @@ using namespace NWindows;
 using namespace NFile;
 using namespace NCommandLineParser;
 
+extern CStdOutStream *g_StdStream;
+
 static const char *kCopyrightString = 
-"\n4.18 beta  Copyright (c) 1999-2005 Igor Pavlov  2005-04-18\n\n"
-"p7zip Version 4.18";
+"\n7-Zip SFX 4.20  Copyright (c) 1999-2005 Igor Pavlov  2005-05-30\n"
+"p7zip Version 4.20";
 
 static const int kNumSwitches = 6;
 
@@ -417,11 +419,13 @@ int Main2(
     {
       CExtractCallbackConsole *ecs = new CExtractCallbackConsole;
       CMyComPtr<IFolderArchiveExtractCallback> extractCallback = ecs;
+      ecs->OutStream = g_StdStream;
       ecs->PasswordIsDefined = passwordEnabled;
       ecs->Password = password;
       ecs->Init();
 
       COpenCallbackConsole openCallback;
+      openCallback.OutStream = g_StdStream;
       openCallback.PasswordIsDefined = passwordEnabled;
       openCallback.Password = password;
 
@@ -443,9 +447,9 @@ int Main2(
       if (ecs->NumArchiveErrors != 0 || ecs->NumFileErrors != 0)
       {
         if (ecs->NumArchiveErrors != 0)
-          g_StdErr << endl << "Archive Errors: " << ecs->NumArchiveErrors << endl;
+          (*g_StdStream) << endl << "Archive Errors: " << ecs->NumArchiveErrors << endl;
         if (ecs->NumFileErrors != 0)
-          g_StdErr << endl << "Sub items Errors: " << ecs->NumFileErrors << endl;
+          (*g_StdStream) << endl << "Sub items Errors: " << ecs->NumFileErrors << endl;
         return NExitCode::kFatalError;
       }
       if (result != S_OK)

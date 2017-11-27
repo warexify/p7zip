@@ -61,7 +61,17 @@ class CExtractCallback : public IArchiveExtractCallback , public CMyUnknownImp
 {
 CMyComPtr<IInArchive> _archiveHandler;
 public:
-  MY_UNKNOWN_IMP ;
+  // MY_UNKNOWN_IMP ;
+  virtual LONG QueryInterface (const GUID & iid, void **outObject) {
+   return ((LONG)0x80004002L);
+  }
+  virtual ULONG AddRef() { return ++__m_RefCount; }
+  virtual ULONG Release() { 
+     if (--__m_RefCount != 0) return __m_RefCount;
+     delete this;
+     return 0;
+   }
+  //
 
   CExtractCallback(IInArchive *archive)
   {
@@ -147,8 +157,13 @@ static void showBoolProperty(const char *name,PROPID propID)
 	}
 }
 
-int main(void)
+int main(int argc,char *argv[])
 {
+
+	if (argc != 2) {
+		printf("usage : %s archive.7z\n",argv[0]);
+		exit(EXIT_FAILURE);
+	}
 	showProperty("NArchive::kName",NArchive::kName);
 	showProperty("NArchive::kExtension",NArchive::kExtension);
 	// ? showProperty("NArchive::kAddExtension",NArchive::kAddExtension);
@@ -174,18 +189,18 @@ int main(void)
 	HRESULT result = CreateObject(&ClassID, &IID_IInArchive,(void **)&archive);
 	if (result == S_OK)
 	{
-		const char *filePath="../../../../toto.7z";
+		const char *filePath=argv[1];
 		printf("ArchiveIn : OK\n");
 
-		CInFileStream *inStreamSpec = new CInFileStream;
-		CMyComPtr<IInStream> inStream(inStreamSpec);
-		if (!inStreamSpec->Open(filePath))
+		CInFileStream *fileSpec = new CInFileStream;
+		CMyComPtr<IInStream> file = fileSpec;
+		if (!fileSpec->Open(filePath))
 		{
 			printf("error : '%s' (%d)\n",filePath,GetLastError());
 		} else {
 			printf("Opening : '%s'\n",filePath);
 
-			result = archive->Open(inStream, &kMaxCheckStartPosition, 0 /* openArchiveCallback*/ );
+			result = archive->Open(file, &kMaxCheckStartPosition, 0 /* openArchiveCallback*/ );
 
 			if (result == S_OK)
 			{
@@ -221,7 +236,7 @@ int main(void)
 						result = archive->Extract(&tabIndex[0], (UInt32)tabIndex.size(),1,extractCallbackSpec);
 						if (result == S_OK) printf(" Extract : OK\n");
 						else                printf(" Extract : BAD\n");
-						delete extractCallbackSpec;
+						// extractCallbackSpec is already deleted by archive->Extract
 					}
 	
 				} else {

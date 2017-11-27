@@ -17,7 +17,7 @@
 
   #endif /* !ENV_MACOSX && !ENV_BEOS */
 
-  /*  */
+  /* lstat and readlink */
   #define HAVE_LSTAT
 
   /* <locale.h> */

@@ -62,5 +62,7 @@ const char *my_getlocale(void);
 inline DWORD WINAPI GetLastError(void) { return errno; }
 inline void WINAPI SetLastError( DWORD err ) { errno = err; }
 
+#define AreFileApisANSI() 1
+
 #endif 
 

@@ -6,7 +6,7 @@
 
 # Written by Sergiy Niskorodov aka SGh
 #
-# beta version 4.12.2 (09 Dec 2004)
+# beta version 4.16 (11 Apr 2005)
 #
 # 7z for linux can be found on http://sourceforge.net/projects/p7zip/
 
@@ -37,7 +37,7 @@ SEVENZ=`which 7za`
 mc7zfs_list ()
 {
     $SEVENZ l "$1" 2> /dev/null | gawk -v uid=${UID-0} '
-BEGIN { flag=0 }
+BEGIN { flag=0; arr_of_month="JanFebMarAprMayJunJulAugSepOctNovDec" }
  /^-------/ { flag++; if (flag > 1) exit 0; next }
 {
 if (flag == 0) next
@@ -45,7 +45,8 @@ if (flag == 0) next
 year=substr($1, 1, 4)
 month=substr($1, 6, 2)
 day=substr($1, 9, 2)
-date=month "-" day "-" year
+
+month_name=substr(arr_of_month, (month-1)*3+1, 3)
 
 time=substr($2, 1, 5)
 
@@ -65,7 +66,7 @@ else
 
 gsub(/\\/, "/", name)
 
-printf "%s   1 %-8d %-8d %8d %s %s %s\n", attr, uid, 0, size, date, time, name
+printf "%s   1 %-8d %-8d %8d %3s %2d %4d %s %s\n", attr, uid, 0, size, month_name, day, year, time, name
 }'
 }
 
@@ -102,14 +103,11 @@ mc7zfs_copyout ()
 #    echo "$1 $2 $3" > hers
 #	p7zip 0.91 don't understand filename in subdir without "./"
 #	but in top dir it understand only without "./"
-    $SEVENZ l "$1" 2> /dev/null | grep "[.][\\]" > /dev/null 2>&1 && echo "$2" | grep "\/" > /dev/null 2>&1 && EXFNAME=*./"$2" || EXFNAME="$2"
-#    echo "$EXFNAME" > 11111
-#    echo Q is a workaround of p7zip bug, if the same file is in top dir of archive and in some
-#	subdir of archive, when we try to extract file from top level dir then after extracting,
-#	7za try to extract same file from subdirs, echo Q say it Quit.
-#    echo Q | $SEVENZ e "$1" "$EXFNAME" -so > "$3" 2> /dev/null
-    echo Q | $SEVENZ e "$1" "$EXFNAME" -o/tmp/"$dir" > /dev/null 2> /dev/null
+    FLIST=`$SEVENZ l "$1" 2> /dev/null`
+    echo "$FLIST" | grep -q "[.][/]" &> /dev/null && EXFNAME=*./"$2" || EXFNAME="$2"
     EXFN=`basename "$2"`
+    $SEVENZ e -r- "$1" "$EXFNAME" -o/tmp/"$dir" > /dev/null 2> /dev/null
+
     cat /tmp/"$dir"/"$EXFN" > "$3"
     rm -rf /tmp/"$dir"
 }
@@ -138,8 +136,8 @@ mc7zfs_mkdir ()
 
 mc7zfs_rm ()
 {
-    $SEVENZ l "$1" 2> /dev/null | grep "[.][\\]" > /dev/null 2>&1 && echo "$2" | grep "\/" > /dev/null 2>&1 && EXFNAME=*./"$2" || EXFNAME="$2"
-    $SEVENZ d "$1" "$EXFNAME" >/dev/null 2> /dev/null
+    $SEVENZ l "$1" 2> /dev/null | grep -q "[.][/]" &> /dev/null && EXFNAME=*./"$2" || EXFNAME="$2"
+    $SEVENZ d "$1" "$EXFNAME" 2>&1 | grep -q E_NOTIMPL &> /dev/null && { echo -e "Function not implemented...\n7z cannot delete files from solid archive." >&2 ; exit 1 ; }
 }
 
 umask 077

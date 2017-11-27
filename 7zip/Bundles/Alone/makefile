@@ -55,10 +55,10 @@ OBJS=\
 ../../../Common/Random.o \
 BZip2Decoder.o \
 BZip2Encoder.o \
-BZip2Error.o \
 BZip2Handler.o \
 BZip2HandlerOut.o \
 BZip2Update.o \
+BZip2CRC.o \
 BranchCoder.o \
 ConsoleClose.o \
 CopyCoder.o \
@@ -141,13 +141,6 @@ ZipUpdate.o \
 aescrypt.o \
 aeskey.o \
 aestab.o \
-blocksort.o \
-bzlib.o \
-compress.o \
-crctable.o \
-decompress.o \
-huffman.o \
-randtable.o \
 x86.o \
 x86_2.o \
 ArchiveCommandLine.o \
@@ -169,7 +162,8 @@ ZipHandler.o \
 FileIO.o \
 ShrinkDecoder.o \
 ZDecoder.o \
-ZHandler.o
+ZHandler.o \
+BlockSort.o
 
 include ../../../makefile.glb
 
@@ -210,14 +204,7 @@ DeflateDecoder.o\
 DeflateEncoder.o\
 BZip2Decoder.o\
 BZip2Encoder.o\
-BZip2Error.o\
-blocksort.o\
-bzlib.o\
-compress.o\
-crctable.o\
-decompress.o\
-huffman.o\
-randtable.o \
+BZip2CRC.o \
 CoderMixer2.o \
 CoderMixer2MT.o \
 CrossThreadProgress.o \
@@ -258,6 +245,7 @@ FileFind.o \
 FileIO.o \
 PropVariant.o \
 Synchronization.o \
+BlockSort.o\
 ../../../Common/MyWindows.o \
 	$(MY_HOME)/myGetTickCount.o \
 	$(MY_HOME)/wine_date_and_time.o \

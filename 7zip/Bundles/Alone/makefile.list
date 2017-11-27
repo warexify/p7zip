@@ -104,8 +104,10 @@ BZip2Decoder.o : ../../Compress/BZip2/BZip2Decoder.cpp
 	$(CXX) $(CFLAGS) ../../Compress/BZip2/BZip2Decoder.cpp
 BZip2Encoder.o : ../../Compress/BZip2/BZip2Encoder.cpp
 	$(CXX) $(CFLAGS) ../../Compress/BZip2/BZip2Encoder.cpp
-BZip2Error.o : ../../Compress/BZip2/BZip2Error.cpp
-	$(CXX) $(CFLAGS) ../../Compress/BZip2/BZip2Error.cpp
+BZip2CRC.o : ../../Compress/BZip2/BZip2CRC.cpp
+	$(CXX) $(CFLAGS) ../../Compress/BZip2/BZip2CRC.cpp
+BlockSort.o : ../../Compress/BWT/BlockSort.cpp
+	$(CXX) $(CFLAGS) ../../Compress/BWT/BlockSort.cpp
 CopyCoder.o : ../../Compress/Copy/CopyCoder.cpp
 	$(CXX) $(CFLAGS) ../../Compress/Copy/CopyCoder.cpp
 DeflateDecoder.o : ../../Compress/Deflate/DeflateDecoder.cpp
@@ -274,20 +276,6 @@ SHA256.o : ../../Crypto/7zAES/SHA256.cpp
 	$(CXX) $(CFLAGS) ../../Crypto/7zAES/SHA256.cpp
 SplitHandler.o : ../../Archive/Split/SplitHandler.cpp
 	$(CXX) $(CFLAGS) ../../Archive/Split/SplitHandler.cpp
-blocksort.o : ../../Compress/BZip2/Original/blocksort.c
-	$(CC) $(CFLAGS) ../../Compress/BZip2/Original/blocksort.c
-bzlib.o : ../../Compress/BZip2/Original/bzlib.c
-	$(CC) $(CFLAGS) ../../Compress/BZip2/Original/bzlib.c
-compress.o : ../../Compress/BZip2/Original/compress.c
-	$(CC) $(CFLAGS) ../../Compress/BZip2/Original/compress.c
-crctable.o : ../../Compress/BZip2/Original/crctable.c
-	$(CC) $(CFLAGS) ../../Compress/BZip2/Original/crctable.c
-decompress.o : ../../Compress/BZip2/Original/decompress.c
-	$(CC) $(CFLAGS) ../../Compress/BZip2/Original/decompress.c
-huffman.o : ../../Compress/BZip2/Original/huffman.c
-	$(CC) $(CFLAGS) ../../Compress/BZip2/Original/huffman.c
-randtable.o : ../../Compress/BZip2/Original/randtable.c
-	$(CC) $(CFLAGS) ../../Compress/BZip2/Original/randtable.c
 aescrypt.o : ../../Crypto/AES/aescrypt.c
 	$(CC) $(CFLAGS) ../../Crypto/AES/aescrypt.c
 aeskey.o : ../../Crypto/AES/aeskey.c

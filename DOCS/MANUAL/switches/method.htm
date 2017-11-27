@@ -80,7 +80,44 @@
 </DL>
 
 <H4>GZip</H4>
-GZip uses the same parameters as Zip, excepting that GZip doesn't support store method (0).
+GZip uses the same parameters as Zip, but GZip compresses only with Defalte method.
+
+<H4>BZip2</H4>
+<TABLE>
+  <TR> 
+    <TH width="160">Parameter</TH> 
+    <TH align="center">Default</TH> 
+    <TH>Description</TH> </TR>
+  <TR> 
+    <TD><A class="parameter" href="#ZipX">x=[5 | 7 | 9 ]</A></TD> 
+    <TD align="center">5</TD>
+    <TD>Sets level of compression.</TD> </TR>
+  <TR> 
+    <TD><A class="parameter" href="#Deflate_Pass">pass={NumPasses}</A></TD>
+    <TD align="center">1</TD>
+    <TD>Sets number of Passes for Bzip2 encoder.</TD></TR>
+</TABLE>
+
+<DL>
+  <DT><A name="ZipX"></A>x=[5 | 7 | 9 ]</DT>
+  <DD>
+    <P>Sets level of compression</P>
+    <TABLE>
+      <TR> <TH width="60">Level</TH> <TH>Description</TH> </TR>
+      <TR> <TD>5</TD> <TD>Default compression method (1 pass).</TD> </TR>
+      <TR> <TD>7</TD> <TD>Maximum compression method (2 passes).</TD> </TR>
+      <TR> <TD>9</TD> <TD>Ultra  compression method (7 passes).</TD> </TR>
+    </TABLE>
+  </DD>
+
+  <DT><A name="Deflate_Pass"></A>pass={NumPasses}</DT>
+  <DD>
+    <P>Sets number of passes. It can be in range from 1 to 10.
+       Default value is 1 for normal mode, 2 for maximum mode and 7 for ultra mode.
+       Bigger number can give a little bit better compression ratio and slower compression process.
+    </P>
+  </DD>
+</DL>
 
 <H4>7z</H4>
 <TABLE>

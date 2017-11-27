@@ -11,6 +11,11 @@
 #include <unistd.h>
 #include <errno.h>
 
+#ifdef HAVE_LSTAT
+extern int global_use_lstat;
+int global_use_lstat=1; // default behaviour : p7zip stores symlinks instead of dumping the files they point to
+#endif
+
 extern void my_windows_split_path(const AString &p_path, AString &dir , AString &base);
 
 #define NEED_NAME_WINDOWS_TO_UNIX
@@ -89,11 +94,15 @@ static int fillin_CFileInfo(CFileInfo &fileInfo,const char *dir,const char *name
   filename[dir_len] = CHAR_PATH_SEPARATOR;
   memcpy(filename+(dir_len+1),name,name_len+1); // copy also final '\0'
 
+  int ret;
 #ifdef HAVE_LSTAT
-  int ret = lstat(filename,&stat_info);
-#else
-  int ret = stat(filename,&stat_info);
+  if (global_use_lstat) {
+    ret = lstat(filename,&stat_info);
+  } else
 #endif
+  {
+     ret = stat(filename,&stat_info);
+  }
   if (ret != 0) {
 	AString err_msg = "stat error for ";
         err_msg += filename;

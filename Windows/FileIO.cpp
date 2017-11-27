@@ -20,7 +20,10 @@
 #include <sys/types.h>
 #include <utime.h>
 
+#ifdef HAVE_LSTAT
+extern int global_use_lstat;
 #define FD_LINK (-2)
+#endif
 
 extern BOOLEAN WINAPI RtlTimeToSecondsSince1970( const LARGE_INTEGER *Time, DWORD *Seconds );
 
@@ -76,7 +79,7 @@ bool CFileBase::Create(LPCTSTR filename, DWORD dwDesiredAccess,
 
   _fd = -1;
 #ifdef HAVE_LSTAT
-   if (ignoreSymbolicLink == false)
+   if ((global_use_lstat) && (ignoreSymbolicLink == false))
    {
      _size = readlink(name, _buffer, sizeof(_buffer)-1);
      if (_size > 0) {
@@ -91,8 +94,28 @@ bool CFileBase::Create(LPCTSTR filename, DWORD dwDesiredAccess,
      }
   }
 #endif
+
   if (_fd == -1) {
     _fd = open(name,flags, mode);
+  }
+
+  if ((_fd == -1) && (global_use_utf16_conversion)) {
+    // bug #1204993 - Try to recover the original filename
+    UString ustr = MultiByteToUnicodeString(AString(name), 0);
+    AString resultString;
+    int is_good = 1;
+    for (int i = 0; i < ustr.Length(); i++)
+    {
+      if (ustr[i] >= 256) {
+        is_good = 0;
+        break;
+      } else {
+        resultString += char(ustr[i]);
+      }
+    }
+    if (is_good) {
+      _fd = open((const char *)resultString,flags, mode);
+    }
   }
 
   if (_fd == -1) {

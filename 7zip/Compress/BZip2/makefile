@@ -12,17 +12,14 @@ LIBS=$(LOCAL_LIBS)
 OBJS = \
 ../../../Common/MyWindows.o \
 ../../../Common/Alloc.o\
+InBuffer.o\
+OutBuffer.o\
 DllExports.o\
 BZip2Decoder.o\
 BZip2Encoder.o\
-BZip2Error.o\
-blocksort.o\
-bzlib.o\
-compress.o\
-crctable.o\
-decompress.o\
-huffman.o\
-randtable.o
+HuffmanEncoder.o\
+BlockSort.o\
+BZip2CRC.o
 
 include ../../../makefile.glb
 

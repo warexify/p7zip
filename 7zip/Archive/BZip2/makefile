@@ -14,6 +14,7 @@ OBJS = \
 ../../../Common/Alloc.o\
 ../../../Common/String.o\
 ../../../Common/StringConvert.o\
+../../../Common/StringToInt.o\
 DllExports.o\
 DLL.o\
 PropVariant.o\
