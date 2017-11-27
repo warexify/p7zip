@@ -38,9 +38,9 @@ ANDROID_LINK=-v \
  -lstdc++ -Wl,-rpath-link=$(ANDROID_NDK_HOME)/platforms/android-3/arch-arm/usr/lib \
  -lsupc++
 
-OPTFLAGS=-O3
+OPTFLAGS=-O3 -s
 
-ALLFLAGS=${OPTFLAGS} -pipe -s \
+ALLFLAGS=${OPTFLAGS} -pipe \
 	-DNDEBUG -D_REENTRANT -DENV_UNIX \
 	$(ANDROID_FLAGS) \
 	$(LOCAL_FLAGS)

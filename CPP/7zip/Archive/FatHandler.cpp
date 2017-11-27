@@ -133,15 +133,23 @@ bool CHeader::Parse(const Byte *p)
     default: return false;
   }
   {
-    int s = GetLog(Get16(p + 11));
-    if (s < 9 || s > 12)
-      return false;
-    SectorSizeLog = (Byte)s;
-    s = GetLog(p[13]);
-    if (s < 0)
-      return false;
-    SectorsPerClusterLog = (Byte)s;
+    {
+      UInt32 val32 = Get16(p + 11);
+      int s = GetLog(val32);
+      if (s < 9 || s > 12)
+        return false;
+      SectorSizeLog = (Byte)s;
+    }
+    {
+      UInt32 val32 = p[13];
+      int s = GetLog(val32);
+      if (s < 0)
+        return false;
+      SectorsPerClusterLog = (Byte)s;
+    }
     ClusterSizeLog = (Byte)(SectorSizeLog + SectorsPerClusterLog);
+    if (ClusterSizeLog > 24)
+      return false;
   }
 
   NumReservedSectors = Get16(p + 14);
@@ -272,19 +280,27 @@ struct CItem
   UString GetVolName() const;
 };
 
-static int CopyAndTrim(char *dest, const char *src, int size, bool toLower)
+static unsigned CopyAndTrim(char *dest, const char *src, unsigned size, bool toLower)
 {
-  int i;
   memcpy(dest, src, size);
   if (toLower)
-    for (i = 0; i < size; i++)
+  {
+    for (unsigned i = 0; i < size; i++)
     {
       char c = dest[i];
       if (c >= 'A' && c <= 'Z')
         dest[i] = (char)(c + 0x20);
     }
-  for (i = size - 1; i >= 0 && dest[i] == ' '; i--);
-  return i + 1;
+  }
+  
+  for (unsigned i = size;;)
+  {
+    if (i == 0)
+      return 0;
+    if (dest[i - 1] != ' ')
+      return i;
+    i--;
+  }
 }
 
 static UString FatStringToUnicode(const char *s)
@@ -295,11 +311,11 @@ static UString FatStringToUnicode(const char *s)
 UString CItem::GetShortName() const
 {
   char s[16];
-  int i = CopyAndTrim(s, DosName, 8, NameIsLow());
+  unsigned i = CopyAndTrim(s, DosName, 8, NameIsLow());
   s[i++] = '.';
-  int j = CopyAndTrim(s + i, DosName + 8, 3, ExtIsLow());
+  unsigned j = CopyAndTrim(s + i, DosName + 8, 3, ExtIsLow());
   if (j == 0)
-    j--;
+    i--;
   s[i + j] = 0;
   return FatStringToUnicode(s);
 }
@@ -316,7 +332,7 @@ UString CItem::GetVolName() const
   if (!UName.IsEmpty())
     return UName;
   char s[12];
-  int i = CopyAndTrim(s, DosName, 11, false);
+  unsigned i = CopyAndTrim(s, DosName, 11, false);
   s[i] = 0;
   return FatStringToUnicode(s);
 }
@@ -348,7 +364,7 @@ struct CDatabase
 
   UString GetItemPath(Int32 index) const;
   HRESULT Open();
-  HRESULT ReadDir(Int32 parent, UInt32 cluster, int level);
+  HRESULT ReadDir(Int32 parent, UInt32 cluster, unsigned level);
 
   UInt64 GetHeadersSize() const
   {
@@ -420,9 +436,9 @@ UString CDatabase::GetItemPath(Int32 index) const
   }
 }
 
-static wchar_t *AddSubStringToName(wchar_t *dest, const Byte *p, int numChars)
+static wchar_t *AddSubStringToName(wchar_t *dest, const Byte *p, unsigned numChars)
 {
-  for (int i = 0; i < numChars; i++)
+  for (unsigned i = 0; i < numChars; i++)
   {
     wchar_t c = Get16(p + i * 2);
     if (c != 0 && c != 0xFFFF)
@@ -432,9 +448,9 @@ static wchar_t *AddSubStringToName(wchar_t *dest, const Byte *p, int numChars)
   return dest;
 }
 
-HRESULT CDatabase::ReadDir(Int32 parent, UInt32 cluster, int level)
+HRESULT CDatabase::ReadDir(Int32 parent, UInt32 cluster, unsigned level)
 {
-  int startIndex = Items.Size();
+  unsigned startIndex = Items.Size();
   if (startIndex >= (1 << 30) || level > 256)
     return S_FALSE;
 
@@ -451,6 +467,7 @@ HRESULT CDatabase::ReadDir(Int32 parent, UInt32 cluster, int level)
   UString curName;
   int checkSum = -1;
   int numLongRecords = -1;
+  
   for (UInt32 pos = blockSize;; pos += 32)
   {
     if (pos == blockSize)
@@ -483,7 +500,9 @@ HRESULT CDatabase::ReadDir(Int32 parent, UInt32 cluster, int level)
       
       RINOK(ReadStream_FALSE(InStream, ByteBuf, blockSize));
     }
+  
     const Byte *p = ByteBuf + pos;
+    
     if (p[0] == 0)
     {
       /*
@@ -493,6 +512,7 @@ HRESULT CDatabase::ReadDir(Int32 parent, UInt32 cluster, int level)
       */
       break;
     }
+    
     if (p[0] == 0xE5)
     {
       if (numLongRecords > 0)
@@ -545,7 +565,7 @@ HRESULT CDatabase::ReadDir(Int32 parent, UInt32 cluster, int level)
       if (checkSum >= 0)
       {
         Byte sum = 0;
-        for (int i = 0; i < 11; i++)
+        for (unsigned i = 0; i < 11; i++)
           sum = (Byte)(((sum & 1) ? 0x80 : 0) + (sum >> 1) + (Byte)item.DosName[i]);
         if (sum == checkSum)
           item.UName = curName;
@@ -590,8 +610,8 @@ HRESULT CDatabase::ReadDir(Int32 parent, UInt32 cluster, int level)
     }
   }
 
-  int finishIndex = Items.Size();
-  for (int i = startIndex; i < finishIndex; i++)
+  unsigned finishIndex = Items.Size();
+  for (unsigned i = startIndex; i < finishIndex; i++)
   {
     const CItem &item = Items[i];
     if (item.IsDir())
@@ -793,7 +813,7 @@ enum
   // kpidFileSysType
 };
 
-static const STATPROPSTG kArcProps[] =
+static const CStatProp kArcProps[] =
 {
   { NULL, kpidFileSystem, VT_BSTR},
   { NULL, kpidClusterSize, VT_UI4},
@@ -802,12 +822,12 @@ static const STATPROPSTG kArcProps[] =
   { NULL, kpidMTime, VT_FILETIME},
   { NULL, kpidVolumeName, VT_BSTR},
 
-  { (LPOLESTR)L"FATs", kpidNumFats, VT_UI4},
+  { "FATs", kpidNumFats, VT_UI4},
   { NULL, kpidSectorSize, VT_UI4},
   { NULL, kpidId, VT_UI4},
-  // { (LPOLESTR)L"OEM Name", kpidOemName, VT_BSTR},
-  // { (LPOLESTR)L"Volume Name", kpidVolName, VT_BSTR},
-  // { (LPOLESTR)L"File System Type", kpidFileSysType, VT_BSTR}
+  // { "OEM Name", kpidOemName, VT_BSTR},
+  // { "Volume Name", kpidVolName, VT_BSTR},
+  // { "File System Type", kpidFileSysType, VT_BSTR}
   // { NULL, kpidSectorsPerTrack, VT_UI4},
   // { NULL, kpidNumHeads, VT_UI4},
   // { NULL, kpidHiddenSectors, VT_UI4}
@@ -831,7 +851,7 @@ static void FatTimeToProp(UInt32 dosTime, UInt32 ms10, NWindows::NCOM::CPropVari
 }
 
 /*
-static void StringToProp(const Byte *src, int size, NWindows::NCOM::CPropVariant &prop)
+static void StringToProp(const Byte *src, unsigned size, NWindows::NCOM::CPropVariant &prop)
 {
   char dest[32];
   memcpy(dest, src, size);
@@ -846,7 +866,7 @@ STDMETHODIMP CHandler::GetArchiveProperty(PROPID propID, PROPVARIANT *value)
 {
   COM_TRY_BEGIN
   NWindows::NCOM::CPropVariant prop;
-  switch(propID)
+  switch (propID)
   {
     case kpidFileSystem:
     {
@@ -885,7 +905,7 @@ STDMETHODIMP CHandler::GetProperty(UInt32 index, PROPID propID, PROPVARIANT *val
   COM_TRY_BEGIN
   NWindows::NCOM::CPropVariant prop;
   const CItem &item = Items[index];
-  switch(propID)
+  switch (propID)
   {
     case kpidPath: prop = GetItemPath(index); break;
     case kpidShortName: prop = item.GetShortName(); break;
@@ -1021,15 +1041,13 @@ STDMETHODIMP CHandler::GetNumberOfItems(UInt32 *numItems)
   return S_OK;
 }
 
-IMP_CreateArcIn
+static const Byte k_Signature[] = { 0x55, 0xAA };
 
-static CArcInfo g_ArcInfo =
-  { "FAT", "fat img", 0, 0xDA,
-  2, { 0x55, 0xAA },
+REGISTER_ARC_I(
+  "FAT", "fat img", 0, 0xDA,
+  k_Signature,
   0x1FE,
   0,
-  CreateArc, NULL, IsArc_Fat };
-
-REGISTER_ARC(Fat)
+  IsArc_Fat)
 
 }}

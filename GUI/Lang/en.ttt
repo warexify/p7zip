@@ -1,5 +1,5 @@
 ﻿;!@Lang2@!UTF-8!
-;  9.33 : 2014-06-14 : Igor Pavlov
+; 15.00 : 2015-03-29 : Igor Pavlov
 ;
 ;
 ;
@@ -63,6 +63,7 @@ Create Folder
 Create File
 E&xit
 Link
+&Alternate Streams
 600
 Select &All
 Deselect All
@@ -190,6 +191,8 @@ Embedded Stub Size
 Link
 Hard Link
 iNode
+
+Read-only
 2100
 Options
 Language
@@ -200,6 +203,7 @@ Editor
 2200
 System
 Associate 7-Zip with:
+All users
 2301
 Integrate 7-Zip to shell context menu
 Cascaded context menu
@@ -256,12 +260,25 @@ The operation cannot be called from a folder that has a long path.
 You must select one file
 You must select one or more files
 Too many items
+Can not open the file as {0} archive
+The file is open as {0} archive
+The archive is open with offset
 3300
 Extracting
 Compressing
 Testing
 Opening...
 Scanning...
+Removing
+3320
+Adding
+Updating
+Analyzing
+Replicating
+Repacking
+Skipping
+Deleting
+Header creating
 3400
 Extract
 E&xtract to:
@@ -306,6 +323,7 @@ Unexpected end of data
 There are some data after the end of the payload data
 Is not archive
 Headers Error
+Wrong password
 3763
 Unavailable start of archive
 Unconfirmed start of archive

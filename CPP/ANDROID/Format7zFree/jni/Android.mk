@@ -11,7 +11,7 @@ LOCAL_MODULE := 7z
 LOCAL_CFLAGS := -DANDROID_NDK  -fexceptions \
 	-DNDEBUG -D_REENTRANT -DENV_UNIX \
 	-DEXTERNAL_CODECS \
-	-DUNICODE -D_UNICODE \
+	-DUNICODE -D_UNICODE -DUNIX_USE_WIN_FILE \
 	-I../../../Windows \
 	-I../../../Common \
 	-I../../../../C \
@@ -49,7 +49,6 @@ LOCAL_SRC_FILES := \
   ../../../../CPP/7zip/Archive/Chm/ChmIn.cpp \
   ../../../../CPP/7zip/Archive/ComHandler.cpp \
   ../../../../CPP/7zip/Archive/Common/CoderMixer2.cpp \
-  ../../../../CPP/7zip/Archive/Common/CoderMixer2MT.cpp \
   ../../../../CPP/7zip/Archive/Common/CrossThreadProgress.cpp \
   ../../../../CPP/7zip/Archive/Common/DummyOutStream.cpp \
   ../../../../CPP/7zip/Archive/Common/FindSignature.cpp \
@@ -66,9 +65,12 @@ LOCAL_SRC_FILES := \
   ../../../../CPP/7zip/Archive/DllExports2.cpp \
   ../../../../CPP/7zip/Archive/DmgHandler.cpp \
   ../../../../CPP/7zip/Archive/ElfHandler.cpp \
+  ../../../../CPP/7zip/Archive/ExtHandler.cpp \
   ../../../../CPP/7zip/Archive/FatHandler.cpp \
   ../../../../CPP/7zip/Archive/FlvHandler.cpp \
   ../../../../CPP/7zip/Archive/GzHandler.cpp \
+  ../../../../CPP/7zip/Archive/GptHandler.cpp \
+  ../../../../CPP/7zip/Archive/HandlerCont.cpp \
   ../../../../CPP/7zip/Archive/HfsHandler.cpp \
   ../../../../CPP/7zip/Archive/IhexHandler.cpp \
   ../../../../CPP/7zip/Archive/Iso/IsoHandler.cpp \
@@ -88,7 +90,9 @@ LOCAL_SRC_FILES := \
   ../../../../CPP/7zip/Archive/NtfsHandler.cpp \
   ../../../../CPP/7zip/Archive/PeHandler.cpp \
   ../../../../CPP/7zip/Archive/PpmdHandler.cpp \
+  ../../../../CPP/7zip/Archive/QcowHandler.cpp \
   ../../../../CPP/7zip/Archive/Rar/RarHandler.cpp \
+  ../../../../CPP/7zip/Archive/Rar/Rar5Handler.cpp \
   ../../../../CPP/7zip/Archive/RpmHandler.cpp \
   ../../../../CPP/7zip/Archive/SplitHandler.cpp \
   ../../../../CPP/7zip/Archive/SquashfsHandler.cpp \
@@ -103,7 +107,9 @@ LOCAL_SRC_FILES := \
   ../../../../CPP/7zip/Archive/Udf/UdfHandler.cpp \
   ../../../../CPP/7zip/Archive/Udf/UdfIn.cpp \
   ../../../../CPP/7zip/Archive/UefiHandler.cpp \
+  ../../../../CPP/7zip/Archive/VdiHandler.cpp \
   ../../../../CPP/7zip/Archive/VhdHandler.cpp \
+  ../../../../CPP/7zip/Archive/VmdkHandler.cpp \
   ../../../../CPP/7zip/Archive/Wim/WimHandler.cpp \
   ../../../../CPP/7zip/Archive/Wim/WimHandlerOut.cpp \
   ../../../../CPP/7zip/Archive/Wim/WimIn.cpp \
@@ -125,7 +131,6 @@ LOCAL_SRC_FILES := \
   ../../../../CPP/7zip/Common/InBuffer.cpp \
   ../../../../CPP/7zip/Common/InOutTempBuffer.cpp \
   ../../../../CPP/7zip/Common/LimitedStreams.cpp \
-  ../../../../CPP/7zip/Common/LockedStream.cpp \
   ../../../../CPP/7zip/Common/MemBlocks.cpp \
   ../../../../CPP/7zip/Common/MethodId.cpp \
   ../../../../CPP/7zip/Common/MethodProps.cpp \
@@ -140,8 +145,6 @@ LOCAL_SRC_FILES := \
   ../../../../CPP/7zip/Common/StreamUtils.cpp \
   ../../../../CPP/7zip/Common/UniqBlocks.cpp \
   ../../../../CPP/7zip/Common/VirtThread.cpp \
-  ../../../../CPP/7zip/Compress/ArjDecoder1.cpp \
-  ../../../../CPP/7zip/Compress/ArjDecoder2.cpp \
   ../../../../CPP/7zip/Compress/BZip2Crc.cpp \
   ../../../../CPP/7zip/Compress/BZip2Decoder.cpp \
   ../../../../CPP/7zip/Compress/BZip2Encoder.cpp \
@@ -151,7 +154,6 @@ LOCAL_SRC_FILES := \
   ../../../../CPP/7zip/Compress/BcjCoder.cpp \
   ../../../../CPP/7zip/Compress/BcjRegister.cpp \
   ../../../../CPP/7zip/Compress/BitlDecoder.cpp \
-  ../../../../CPP/7zip/Compress/BranchCoder.cpp \
   ../../../../CPP/7zip/Compress/BranchMisc.cpp \
   ../../../../CPP/7zip/Compress/BranchRegister.cpp \
   ../../../../CPP/7zip/Compress/ByteSwap.cpp \
@@ -173,7 +175,7 @@ LOCAL_SRC_FILES := \
   ../../../../CPP/7zip/Compress/LzmaDecoder.cpp \
   ../../../../CPP/7zip/Compress/LzmaEncoder.cpp \
   ../../../../CPP/7zip/Compress/LzmaRegister.cpp \
-  ../../../../CPP/7zip/Compress/Lzx86Converter.cpp \
+  ../../../../CPP/7zip/Compress/LzmsDecoder.cpp \
   ../../../../CPP/7zip/Compress/LzxDecoder.cpp \
   ../../../../CPP/7zip/Compress/PpmdDecoder.cpp \
   ../../../../CPP/7zip/Compress/PpmdEncoder.cpp \
@@ -182,19 +184,20 @@ LOCAL_SRC_FILES := \
   ../../../../CPP/7zip/Compress/QuantumDecoder.cpp \
   ../../../../CPP/7zip/Compress/ShrinkDecoder.cpp \
   ../../../../CPP/7zip/Compress/ZDecoder.cpp \
+  ../../../../CPP/7zip/Compress/XpressDecoder.cpp \
   ../../../../CPP/7zip/Compress/ZlibDecoder.cpp \
   ../../../../CPP/7zip/Compress/ZlibEncoder.cpp \
   ../../../../CPP/7zip/Crypto/7zAes.cpp \
   ../../../../CPP/7zip/Crypto/7zAesRegister.cpp \
   ../../../../CPP/7zip/Crypto/HmacSha1.cpp \
+  ../../../../CPP/7zip/Crypto/HmacSha256.cpp \
   ../../../../CPP/7zip/Crypto/MyAes.cpp \
   ../../../../CPP/7zip/Crypto/MyAesReg.cpp \
   ../../../../CPP/7zip/Crypto/Pbkdf2HmacSha1.cpp \
   ../../../../CPP/7zip/Crypto/RandGen.cpp \
   ../../../../CPP/7zip/Crypto/Rar20Crypto.cpp \
+  ../../../../CPP/7zip/Crypto/Rar5Aes.cpp \
   ../../../../CPP/7zip/Crypto/RarAes.cpp \
-  ../../../../CPP/7zip/Crypto/Sha1.cpp \
-  ../../../../CPP/7zip/Crypto/Sha1Reg.cpp \
   ../../../../CPP/7zip/Crypto/WzAes.cpp \
   ../../../../CPP/7zip/Crypto/ZipCrypto.cpp \
   ../../../../CPP/7zip/Crypto/ZipStrong.cpp \
@@ -208,6 +211,7 @@ LOCAL_SRC_FILES := \
   ../../../../CPP/Common/MyWindows.cpp \
   ../../../../CPP/Common/MyXml.cpp \
   ../../../../CPP/Common/NewHandler.cpp \
+  ../../../../CPP/Common/Sha1Reg.cpp \
   ../../../../CPP/Common/Sha256Reg.cpp \
   ../../../../CPP/Common/StringConvert.cpp \
   ../../../../CPP/Common/StringToInt.cpp \
@@ -217,6 +221,7 @@ LOCAL_SRC_FILES := \
   ../../../../CPP/Windows/FileDir.cpp \
   ../../../../CPP/Windows/FileFind.cpp \
   ../../../../CPP/Windows/FileIO.cpp \
+  ../../../../CPP/Windows/FileName.cpp \
   ../../../../CPP/Windows/PropVariant.cpp \
   ../../../../CPP/Windows/PropVariantUtils.cpp \
   ../../../../CPP/Windows/Synchronization.cpp \
@@ -229,6 +234,9 @@ LOCAL_SRC_FILES := \
   ../../../../C/7zStream.c \
   ../../../../C/Aes.c \
   ../../../../C/Alloc.c \
+  ../../../../C/Bcj2.c \
+  ../../../../C/Bcj2Enc.c \
+  ../../../../C/Blake2s.c \
   ../../../../C/Bra.c \
   ../../../../C/Bra86.c \
   ../../../../C/BraIA64.c \
@@ -249,6 +257,7 @@ LOCAL_SRC_FILES := \
   ../../../../C/Ppmd8.c \
   ../../../../C/Ppmd8Dec.c \
   ../../../../C/Ppmd8Enc.c \
+  ../../../../C/Sha1.c \
   ../../../../C/Sha256.c \
   ../../../../C/Sort.c \
   ../../../../C/Threads.c \

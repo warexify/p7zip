@@ -101,9 +101,10 @@ STDMETHODIMP CHandler::GetProperty(UInt32 index, PROPID propID, PROPVARIANT *val
 {
   COM_TRY_BEGIN
   NCOM::CPropVariant prop;
+  
   if (m_Database.NewFormat)
   {
-    switch(propID)
+    switch (propID)
     {
       case kpidSize:
         prop = (UInt64)m_Database.NewFormatString.Len();
@@ -112,26 +113,30 @@ STDMETHODIMP CHandler::GetProperty(UInt32 index, PROPID propID, PROPVARIANT *val
     prop.Detach(value);
     return S_OK;
   }
-  int entryIndex;
+  
+  unsigned entryIndex;
   if (m_Database.LowLevel)
     entryIndex = index;
   else
     entryIndex = m_Database.Indices[index];
+  
   const CItem &item = m_Database.Items[entryIndex];
+  
   switch (propID)
   {
     case kpidPath:
     {
       UString us;
-      if (ConvertUTF8ToUnicode(item.Name, us))
+      // if (
+      ConvertUTF8ToUnicode(item.Name, us);
       {
         if (!m_Database.LowLevel)
         {
-          if (us.Len() > 1)
-            if (us[0] == L'/')
-              us.Delete(0);
+          if (us.Len() > 1 && us[0] == L'/')
+            us.Delete(0);
         }
-        prop = NItemName::GetOSName2(us);
+        NItemName::ConvertToOSName2(us);
+        prop = us;
       }
       break;
     }
@@ -141,9 +146,9 @@ STDMETHODIMP CHandler::GetProperty(UInt32 index, PROPID propID, PROPVARIANT *val
     {
       if (!item.IsDir())
         if (item.Section == 0)
-          prop = L"Copy";
+          prop = "Copy";
         else if (item.Section < m_Database.Sections.Size())
-          prop = m_Database.Sections[(int)item.Section].GetMethodName();
+          prop = m_Database.Sections[(unsigned)item.Section].GetMethodName();
       break;
     }
     case kpidBlock:
@@ -160,6 +165,7 @@ STDMETHODIMP CHandler::GetProperty(UInt32 index, PROPID propID, PROPVARIANT *val
 
     #endif
   }
+  
   prop.Detach(value);
   return S_OK;
   COM_TRY_END
@@ -243,9 +249,9 @@ public:
   UInt64 m_PosInFolder;
   UInt64 m_PosInSection;
   const CRecordVector<bool> *m_ExtractStatuses;
-  int m_StartIndex;
-  int m_CurrentIndex;
-  int m_NumFiles;
+  unsigned m_StartIndex;
+  unsigned m_CurrentIndex;
+  unsigned m_NumFiles;
 
 private:
   const CFilesDatabase *m_Database;
@@ -297,7 +303,7 @@ HRESULT CChmFolderOutStream::WriteEmptyFiles()
 {
   if (m_FileIsOpen)
     return S_OK;
-  for (;m_CurrentIndex < m_NumFiles; m_CurrentIndex++)
+  for (; m_CurrentIndex < m_NumFiles; m_CurrentIndex++)
   {
     UInt64 fileSize = m_Database->GetFileSize(m_StartIndex + m_CurrentIndex);
     if (fileSize != 0)
@@ -314,9 +320,10 @@ HRESULT CChmFolderOutStream::WriteEmptyFiles()
 HRESULT CChmFolderOutStream::Write2(const void *data, UInt32 size, UInt32 *processedSize, bool isOK)
 {
   UInt32 realProcessed = 0;
-  if (processedSize != NULL)
+  if (processedSize)
    *processedSize = 0;
-  while(size != 0)
+  
+  while (size != 0)
   {
     if (m_FileIsOpen)
     {
@@ -334,7 +341,7 @@ HRESULT CChmFolderOutStream::Write2(const void *data, UInt32 size, UInt32 *proce
         }
       }
       realProcessed += numBytesToWrite;
-      if (processedSize != NULL)
+      if (processedSize)
         *processedSize = realProcessed;
       data = (const void *)((const Byte *)data + numBytesToWrite);
       size -= numBytesToWrite;
@@ -358,23 +365,32 @@ HRESULT CChmFolderOutStream::Write2(const void *data, UInt32 size, UInt32 *proce
     else
     {
       if (m_CurrentIndex >= m_NumFiles)
-        return E_FAIL;
-      int fullIndex = m_StartIndex + m_CurrentIndex;
+      {
+        realProcessed += size;
+        if (processedSize)
+          *processedSize = realProcessed;
+        return S_OK;
+        // return E_FAIL;
+      }
+
+      unsigned fullIndex = m_StartIndex + m_CurrentIndex;
       m_RemainFileSize = m_Database->GetFileSize(fullIndex);
       UInt64 fileOffset = m_Database->GetFileOffset(fullIndex);
       if (fileOffset < m_PosInSection)
         return E_FAIL;
+      
       if (fileOffset > m_PosInSection)
       {
         UInt32 numBytesToWrite = (UInt32)MyMin(fileOffset - m_PosInSection, UInt64(size));
         realProcessed += numBytesToWrite;
-        if (processedSize != NULL)
+        if (processedSize)
           *processedSize = realProcessed;
         data = (const void *)((const Byte *)data + numBytesToWrite);
         size -= numBytesToWrite;
         m_PosInSection += numBytesToWrite;
         m_PosInFolder += numBytesToWrite;
       }
+      
       if (fileOffset == m_PosInSection)
       {
         RINOK(OpenFile());
@@ -384,6 +400,7 @@ HRESULT CChmFolderOutStream::Write2(const void *data, UInt32 size, UInt32 *proce
       }
     }
   }
+  
   return WriteEmptyFiles();
 }
 
@@ -396,7 +413,7 @@ HRESULT CChmFolderOutStream::FlushCorrupted(UInt64 maxSize)
 {
   const UInt32 kBufferSize = (1 << 10);
   Byte buffer[kBufferSize];
-  for (int i = 0; i < kBufferSize; i++)
+  for (unsigned i = 0; i < kBufferSize; i++)
     buffer[i] = 0;
   if (maxSize > m_FolderSize)
     maxSize = m_FolderSize;
@@ -429,7 +446,7 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
 
   UInt64 currentTotalSize = 0;
 
-  NCompress::CCopyCoder *copyCoderSpec = new NCompress::CCopyCoder();
+  NCompress::CCopyCoder *copyCoderSpec = new NCompress::CCopyCoder;
   CMyComPtr<ICompressCoder> copyCoder = copyCoderSpec;
   UInt32 i;
 
@@ -445,11 +462,13 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
   {
     UInt64 currentItemSize = 0;
     UInt64 totalSize = 0;
+    
     if (m_Database.NewFormat)
       totalSize = m_Database.NewFormatString.Len();
     else
       for (i = 0; i < numItems; i++)
         totalSize += m_Database.Items[allFilesMode ? i : indices[i]].Size;
+    
     extractCallback->SetTotal(totalSize);
     
     for (i = 0; i < numItems; i++, currentTotalSize += currentItemSize)
@@ -480,6 +499,7 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
         RINOK(extractCallback->SetOperationResult(NExtract::NOperationResult::kOK));
         continue;
       }
+      
       const CItem &item = m_Database.Items[index];
       
       currentItemSize = item.Size;
@@ -512,12 +532,12 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
   }
   
   UInt64 lastFolderIndex = ((UInt64)0 - 1);
+  
   for (i = 0; i < numItems; i++)
   {
     UInt32 index = allFilesMode ? i : indices[i];
-    int entryIndex = m_Database.Indices[index];
-    const CItem &item = m_Database.Items[entryIndex];
-    UInt64 sectionIndex = item.Section;
+    const CItem &item = m_Database.Items[m_Database.Indices[index]];
+    const UInt64 sectionIndex = item.Section;
     if (item.IsDir() || item.Size == 0)
       continue;
     if (sectionIndex == 0)
@@ -525,7 +545,7 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
       currentTotalSize += item.Size;
       continue;
     }
-    const CSectionInfo &section = m_Database.Sections[(int)item.Section];
+    const CSectionInfo &section = m_Database.Sections[(unsigned)item.Section];
     if (section.IsLzx())
     {
       const CLzxInfo &lzxInfo = section.Methods[0].LzxInfo;
@@ -540,25 +560,32 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
 
   RINOK(extractCallback->SetTotal(currentTotalSize));
 
-  NCompress::NLzx::CDecoder *lzxDecoderSpec = 0;
-  CMyComPtr<ICompressCoder> lzxDecoder;
+  NCompress::NLzx::CDecoder *lzxDecoderSpec = NULL;
+  CMyComPtr<IUnknown> lzxDecoder;
   CChmFolderOutStream *chmFolderOutStream = 0;
   CMyComPtr<ISequentialOutStream> outStream;
 
   currentTotalSize = 0;
 
   CRecordVector<bool> extractStatuses;
-  for (i = 0; i < numItems;)
+
+  CByteBuffer packBuf;
+  
+  for (i = 0;;)
   {
     RINOK(extractCallback->SetCompleted(&currentTotalSize));
+
+    if (i >= numItems)
+      break;
+
     UInt32 index = allFilesMode ? i : indices[i];
     i++;
-    int entryIndex = m_Database.Indices[index];
-    const CItem &item = m_Database.Items[entryIndex];
-    UInt64 sectionIndex = item.Section;
+    const CItem &item = m_Database.Items[m_Database.Indices[index]];
+    const UInt64 sectionIndex = item.Section;
     Int32 askMode= testMode ?
         NExtract::NAskMode::kTest :
         NExtract::NAskMode::kExtract;
+    
     if (item.IsDir())
     {
       CMyComPtr<ISequentialOutStream> realOutStream;
@@ -594,7 +621,7 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
       continue;
     }
   
-    const CSectionInfo &section = m_Database.Sections[(int)sectionIndex];
+    const CSectionInfo &section = m_Database.Sections[(unsigned)sectionIndex];
 
     if (!section.IsLzx())
     {
@@ -609,7 +636,7 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
 
     const CLzxInfo &lzxInfo = section.Methods[0].LzxInfo;
 
-    if (chmFolderOutStream == 0)
+    if (!chmFolderOutStream)
     {
       chmFolderOutStream = new CChmFolderOutStream;
       outStream = chmFolderOutStream;
@@ -617,7 +644,7 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
 
     chmFolderOutStream->Init(&m_Database, extractCallback, testMode);
 
-    if (lzxDecoderSpec == NULL)
+    if (!lzxDecoderSpec)
     {
       lzxDecoderSpec = new NCompress::NLzx::CDecoder;
       lzxDecoder = lzxDecoderSpec;
@@ -625,9 +652,8 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
 
     UInt64 folderIndex = m_Database.GetFolder(index);
 
-    UInt64 compressedPos = m_Database.ContentOffset + section.Offset;
-    UInt32 numDictBits = lzxInfo.GetNumDictBits();
-    RINOK(lzxDecoderSpec->SetParams(numDictBits));
+    const UInt64 compressedPos = m_Database.ContentOffset + section.Offset;
+    RINOK(lzxDecoderSpec->SetParams_and_Alloc(lzxInfo.GetNumDictBits()));
 
     const CItem *lastItem = &item;
     extractStatuses.Clear();
@@ -644,17 +670,18 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
       lastFolderIndex = m_Database.GetLastFolder(index);
       UInt64 folderSize = lzxInfo.GetFolderSize();
       UInt64 unPackSize = folderSize;
+      
       if (extractStatuses.IsEmpty())
         chmFolderOutStream->m_StartIndex = index + 1;
       else
         chmFolderOutStream->m_StartIndex = index;
+      
       if (limitFolderIndex == folderIndex)
       {
         for (; i < numItems; i++)
         {
-          UInt32 nextIndex = allFilesMode ? i : indices[i];
-          int entryIndex = m_Database.Indices[nextIndex];
-          const CItem &nextItem = m_Database.Items[entryIndex];
+          const UInt32 nextIndex = allFilesMode ? i : indices[i];
+          const CItem &nextItem = m_Database.Items[m_Database.Indices[nextIndex]];
           if (nextItem.Section != sectionIndex)
             break;
           UInt64 nextFolderIndex = m_Database.GetFolder(nextIndex);
@@ -670,6 +697,7 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
           lastFolderIndex = m_Database.GetLastFolder(index);
         }
       }
+      
       unPackSize = MyMin(finishPos - startPos, unPackSize);
 
       chmFolderOutStream->m_FolderSize = folderSize;
@@ -678,11 +706,13 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
       chmFolderOutStream->m_ExtractStatuses = &extractStatuses;
       chmFolderOutStream->m_NumFiles = extractStatuses.Size();
       chmFolderOutStream->m_CurrentIndex = 0;
+      
       try
       {
         UInt64 startBlock = lzxInfo.GetBlockIndexFromFolderIndex(folderIndex);
         const CResetTable &rt = lzxInfo.ResetTable;
         UInt32 numBlocks = (UInt32)rt.GetNumBlocks(unPackSize);
+        
         for (UInt32 b = 0; b < numBlocks; b++)
         {
           UInt64 completedSize = currentTotalSize + chmFolderOutStream->m_PosInSection - startPos;
@@ -690,17 +720,35 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
           UInt64 bCur = startBlock + b;
           if (bCur >= rt.ResetOffsets.Size())
             return E_FAIL;
-          UInt64 offset = rt.ResetOffsets[(int)bCur];
+          UInt64 offset = rt.ResetOffsets[(unsigned)bCur];
           UInt64 compressedSize;
           rt.GetCompressedSizeOfBlock(bCur, compressedSize);
-          UInt64 rem = finishPos - chmFolderOutStream->m_PosInSection;
-          if (rem > rt.BlockSize)
-            rem = rt.BlockSize;
+          
+          // chm writes full blocks. So we don't need to use reduced size for last block
+
           RINOK(m_Stream->Seek(compressedPos + offset, STREAM_SEEK_SET, NULL));
           streamSpec->SetStream(m_Stream);
           streamSpec->Init(compressedSize);
+          
           lzxDecoderSpec->SetKeepHistory(b > 0);
-          HRESULT res = lzxDecoder->Code(inStream, outStream, NULL, &rem, NULL);
+      
+          size_t compressedSizeT = (size_t)compressedSize;
+          if (compressedSizeT != compressedSize)
+            throw 2;
+          packBuf.AllocAtLeast(compressedSizeT);
+
+          HRESULT res = ReadStream_FALSE(inStream, packBuf, compressedSizeT);
+          
+          if (res == S_OK)
+          {
+            lzxDecoderSpec->KeepHistoryForNext = true;
+            res = lzxDecoderSpec->Code(packBuf, compressedSizeT, kBlockSize); // rt.BlockSize;
+            if (res == S_OK)
+              res = WriteStream(chmFolderOutStream,
+                  lzxDecoderSpec->GetUnpackData(),
+                  lzxDecoderSpec->GetUnpackSize());
+          }
+          
           if (res != S_OK)
           {
             if (res != S_FALSE)
@@ -713,6 +761,7 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
       {
         RINOK(chmFolderOutStream->FlushCorrupted(unPackSize));
       }
+      
       currentTotalSize += folderSize;
       if (folderIndex == lastFolderIndex)
         break;
@@ -734,30 +783,30 @@ STDMETHODIMP CHandler::GetNumberOfItems(UInt32 *numItems)
 
 namespace NChm {
 
-IMP_CreateArcIn_2(CHandler(false))
+static const Byte k_Signature[] = { 'I', 'T', 'S', 'F', 3, 0, 0, 0, 0x60, 0,  0, 0 };
 
-static CArcInfo g_ArcInfo =
-  { "Chm", "chm chi chq chw", 0, 0xE9,
-  12, { 'I', 'T', 'S', 'F', 3, 0, 0, 0, 0x60, 0,  0, 0 },
+REGISTER_ARC_I_CLS(
+  CHandler(false),
+  "Chm", "chm chi chq chw", 0, 0xE9,
+  k_Signature,
   0,
   0,
-  CreateArc };
+  NULL)
 
-REGISTER_ARC(Chm)
 }
 
 namespace NHxs {
 
-IMP_CreateArcIn_2(CHandler(true))
+static const Byte k_Signature[] = { 'I', 'T', 'O', 'L', 'I', 'T', 'L', 'S', 1, 0, 0, 0, 0x28, 0, 0, 0 };
 
-static CArcInfo g_ArcInfo =
-  { "Hxs", "hxs hxi hxr hxq hxw lit", 0, 0xCE,
-  16, { 'I', 'T', 'O', 'L', 'I', 'T', 'L', 'S', 1, 0, 0, 0, 0x28, 0, 0, 0 },
+REGISTER_ARC_I_CLS(
+  CHandler(true),
+  "Hxs", "hxs hxi hxr hxq hxw lit", 0, 0xCE,
+  k_Signature,
   0,
   NArcInfoFlags::kFindSignature,
-  CreateArc };
+  NULL)
 
-REGISTER_ARC(Hxs)
 }
 
 }}

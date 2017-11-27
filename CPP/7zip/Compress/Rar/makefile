@@ -1,6 +1,5 @@
-PROG=../../../../bin/Codecs/Rar29.so
 
-LOCAL_FLAGS=$(CC_SHARED) -DUNICODE -D_UNICODE -DRegisterCodec=DllRegisterCodec
+TARGET_FLAGS=$(CC_SHARED) -DRegisterCodec=DllRegisterCodec
 
 MY_WINDOWS=
 

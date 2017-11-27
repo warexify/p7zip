@@ -54,7 +54,7 @@ extern bool g_IsNT;
 
 static CFSTR kTempDirPrefix = FTEXT("7zO");
 
-#if 0 // #ifndef UNDER_CE
+#if 0 // ifndef UNDER_CE
 
 class CProcessSnapshot
 {
@@ -82,7 +82,6 @@ public:
   bool GetFirstProcess(PROCESSENTRY32 *pe) { return BOOLToBool(Process32First(_handle, pe)); }
   bool GetNextProcess(PROCESSENTRY32 *pe) { return BOOLToBool(Process32Next(_handle, pe)); }
 };
-
 
 typedef DWORD (WINAPI *GetProcessIdFunc)(HANDLE process);
 
@@ -169,14 +168,9 @@ public:
 };
 #endif
 
-static bool IsNameVirus(const UString &name)
-{
-  return (name.Find(L"     ") >= 0);
-}
-
 struct CTmpProcessInfo: public CTempFileInfo
 {
-  HANDLE ProcessHandle; //   CChildProcesses Processes;
+  HANDLE ProcessHandle; // CChildProcesses Processes;
   HWND Window;
   UString FullPathFolderPrefix;
   bool UsePassword;
@@ -237,7 +231,13 @@ HRESULT CPanel::OpenItemAsArchive(IInStream *inStream,
   folderLink.Password = password;
   folderLink.UsePassword = encrypted;
 
-  folderLink.ParentFolder = _folder;
+  if (_folder)
+    folderLink.ParentFolderPath = GetFolderPath(_folder);
+  else
+    folderLink.ParentFolderPath = _currentFolderPrefix;
+  if (!_parentFolders.IsEmpty())
+    folderLink.ParentFolder = _folder;
+
   _parentFolders.Add(folderLink);
   _parentFolders.Back().Library.Attach(_library.Detach());
 
@@ -286,7 +286,7 @@ HRESULT CPanel::OpenItemAsArchive(IInStream *inStream,
         if (!values[0].IsEmpty())
         {
           if (!s2.IsEmpty())
-            s2 += L"\n";
+            s2.Add_LF();
           s2 += L"[";
           s2 += values[2];
           s2 += L"] Error: ";
@@ -297,7 +297,7 @@ HRESULT CPanel::OpenItemAsArchive(IInStream *inStream,
           if (!s.IsEmpty())
             s += L"--------------------\n";
           s += values[1];
-          s += L"\n";
+          s.Add_LF();
           s += s2;
         }
       }
@@ -319,18 +319,18 @@ HRESULT CPanel::OpenItemAsArchive(const UString &relPath, const UString &arcForm
 {
   CTempFileInfo tfi;
   tfi.RelPath = relPath;
-  tfi.FolderPath = us2fs(_currentFolderPrefix);
-  const UString fullPath = _currentFolderPrefix + relPath;
+  tfi.FolderPath = us2fs(GetFsPath());
+  const UString fullPath = GetFsPath() + relPath;
   tfi.FilePath = us2fs(fullPath);
   return OpenItemAsArchive(NULL, tfi, fullPath, arcFormat, encrypted);
 }
 
-HRESULT CPanel::OpenItemAsArchive(int index)
+HRESULT CPanel::OpenItemAsArchive(int index, const wchar_t *type)
 {
   CDisableTimerProcessing disableTimerProcessing1(*this);
   CDisableNotify disableNotify(*this);
   bool encrypted;
-  HRESULT res = OpenItemAsArchive(GetItemRelPath(index), UString(), encrypted);
+  HRESULT res = OpenItemAsArchive(GetItemRelPath2(index), type ? type : L"", encrypted);
   if (res != S_OK)
   {
     RefreshTitle(true); // in case of error we must refresh changed title of 7zFM
@@ -393,7 +393,7 @@ static const char *kStartExtensions =
 
 static bool FindExt(const char *p, const UString &name)
 {
-  int dotPos = name.ReverseFind('.');
+  int dotPos = name.ReverseFind_Dot();
   if (dotPos < 0 || dotPos == (int)name.Len() - 1)
     return false;
 
@@ -423,10 +423,7 @@ static bool DoItemAlwaysStart(const UString &name)
   return FindExt(kStartExtensions, name);
 }
 
-static UString GetQuotedString(const UString &s)
-{
-  return UString(L'\"') + s + UString(L'\"');
-}
+UString GetQuotedString(const UString &s);
 
 static void StartEditApplication(const UString &path, bool useEditor, HWND window /* , CProcess &process */ )
 {
@@ -454,6 +451,7 @@ static void StartEditApplication(const UString &path, bool useEditor, HWND windo
   HRESULT res = process.Create(command, GetQuotedString(path), NULL);
   if (res != SZ_OK)
     ::MessageBoxW(window, LangString(IDS_CANNOT_START_EDITOR), L"7-Zip", MB_OK  | MB_ICONSTOP);
+  return res;
 #else
   wxString cmd = (const wchar_t *)command;
   long pid = wxExecute(cmd, wxEXEC_ASYNC);
@@ -479,13 +477,17 @@ void CApp::DiffFiles()
   {
     const CPanel &destPanel = Panels[1 - LastFocusedPanel];
     path1 = panel.GetItemFullPath(indices[0]);
-    const UString relPath = panel.GetItemRelPath(indices[0]);
     CRecordVector<UInt32> indices2;
     destPanel.GetSelectedItemsIndices(indices2);
     if (indices2.Size() == 1)
       path2 = destPanel.GetItemFullPath(indices2[0]);
     else
+    {
+      UString relPath = panel.GetItemRelPath2(indices[0]);
+      if (panel._flatMode && !destPanel._flatMode)
+        relPath = panel.GetItemName(indices[0]);
       path2 = destPanel._currentFolderPrefix + relPath;
+    }
   }
   else
     return;
@@ -495,7 +497,9 @@ void CApp::DiffFiles()
   if (command.IsEmpty())
     return;
 
-  UString param = GetQuotedString(path1) + L' ' + GetQuotedString(path2);
+  UString param = GetQuotedString(path1);
+  param.Add_Space();
+  param += GetQuotedString(path2);
 
 #ifdef _WIN32
   HRESULT res = MyCreateProcess(command, param);
@@ -553,11 +557,12 @@ static void StartApplication(const UString &dir, const UString &path, HWND windo
           // NError::MyFormatMessageW(::GetLastError()),
           L"There is no application associated with the given file name extension",
           L"7-Zip", MB_OK | MB_ICONSTOP);
+
 }
 
 static void StartApplicationDontWait(const UString &dir, const UString &path, HWND window)
 {
-  // CProcess process;
+   // CProcess process;
   StartApplication(dir, path, window /* , process */ );
 }
 
@@ -568,7 +573,7 @@ void CPanel::EditItem(int index, bool useEditor)
     OpenItemInArchive(index, false, true, true, useEditor);
     return;
   }
-  // CProcess process;
+   // CProcess process;
   StartEditApplication(GetItemFullPath(index), useEditor, (HWND)*this /* , process */ );
 }
 
@@ -578,11 +583,11 @@ void CPanel::OpenFolderExternal(int index)
   UString name;
   if (index == kParentIndex)
   {
-    int pos = fsPrefix.ReverseFind(WCHAR_PATH_SEPARATOR);
+    int pos = fsPrefix.ReverseFind_PathSepar();
     if (pos >= 0 && pos == (int)fsPrefix.Len() - 1)
     {
       UString s = fsPrefix.Left(pos);
-      pos = s.ReverseFind(WCHAR_PATH_SEPARATOR);
+      pos = s.ReverseFind_PathSepar();
       if (pos >= 0)
         fsPrefix.SetFrom(s, pos + 1);
     }
@@ -593,19 +598,77 @@ void CPanel::OpenFolderExternal(int index)
   StartApplicationDontWait(fsPrefix, name, (HWND)*this);
 }
 
-void CPanel::OpenItem(int index, bool tryInternal, bool tryExternal)
+bool CPanel::IsVirus_Message(const UString &name)
+{
+  UString name2;
+
+  const wchar_t cRLO = (wchar_t)0x202E;
+  bool isVirus = false;
+  bool isSpaceError = false;
+  name2 = name;
+  
+  if (name2.Find(cRLO) >= 0)
+  {
+    UString badString = cRLO;
+    name2.Replace(badString, L"[RLO]");
+    isVirus = true;
+  }
+  {
+    const wchar_t *kVirusSpaces = L"     ";
+    // const unsigned kNumSpaces = strlen(kVirusSpaces);
+    for (;;)
+    {
+      int pos = name2.Find(kVirusSpaces);
+      if (pos < 0)
+        break;
+      isVirus = true;
+      isSpaceError = true;
+      name2.Replace(kVirusSpaces, L" ");
+    }
+  }
+  
+  if (!isVirus)
+    return false;
+
+  UString s = LangString(IDS_VIRUS);
+  
+  if (!isSpaceError)
+  {
+    int pos1 = s.Find(L'(');
+    if (pos1 >= 0)
+    {
+      int pos2 = s.Find(L')', pos1 + 1);
+      if (pos2 >= 0)
+      {
+        s.Delete(pos1, pos2 + 1 - pos1);
+        if (pos1 > 0 && s[pos1 - 1] == ' ' && s[pos1] == '.')
+          s.Delete(pos1 - 1);
+      }
+    }
+  }
+
+  UString name3 = name;
+  name3.Replace(L'\n', L'_');
+  name2.Replace(L'\n', L'_');
+
+  s.Add_LF(); s += name2;
+  s.Add_LF(); s += name3;
+
+  MessageBoxMyError(s);
+  return true;
+}
+
+void CPanel::OpenItem(int index, bool tryInternal, bool tryExternal, const wchar_t *type)
 {
   CDisableTimerProcessing disableTimerProcessing(*this);
-  UString name = GetItemRelPath(index);
-  if (IsNameVirus(name))
-  {
-    MessageBoxErrorLang(IDS_VIRUS);
+  UString name = GetItemRelPath2(index);
+  
+  if (IsVirus_Message(name))
     return;
-  }
 
   if (!_parentFolders.IsEmpty())
   {
-    OpenItemInArchive(index, tryInternal, tryExternal, false, false);
+    OpenItemInArchive(index, tryInternal, tryExternal, false, false, type);
     return;
   }
 
@@ -616,7 +679,7 @@ void CPanel::OpenItem(int index, bool tryInternal, bool tryExternal)
   if (tryInternal)
     if (!tryExternal || !DoItemAlwaysStart(name))
     {
-      HRESULT res = OpenItemAsArchive(index);
+      HRESULT res = OpenItemAsArchive(index, type);
       disableNotify.Restore(); // we must restore to allow text notification update
       InvalidateList();
       if (res == S_OK || res == E_ABORT)
@@ -627,6 +690,7 @@ void CPanel::OpenItem(int index, bool tryInternal, bool tryExternal)
         return;
       }
     }
+  
   if (tryExternal)
   {
     // SetCurrentDirectory opens HANDLE to folder!!!
@@ -655,8 +719,7 @@ HRESULT CThreadCopyFrom::ProcessVirt()
 HRESULT CPanel::OnOpenItemChanged(UInt32 index, const wchar_t *fullFilePath,
     bool usePassword, const UString &password)
 {
-  CMyComPtr<IFolderOperations> folderOperations;
-  if (_folder.QueryInterface(IID_IFolderOperations, &folderOperations) != S_OK)
+  if (!_folderOperations)
   {
     MessageBoxErrorLang(IDS_OPERATION_IS_NOT_SUPPORTED);
     return E_FAIL;
@@ -668,8 +731,13 @@ HRESULT CPanel::OnOpenItemChanged(UInt32 index, const wchar_t *fullFilePath,
   t.UpdateCallbackSpec->ProgressDialog = &t.ProgressDialog;
   t.ItemIndex = index;
   t.FullPath = fullFilePath;
-  t.FolderOperations = folderOperations;
-  t.UpdateCallbackSpec->Init(usePassword, password);
+  t.FolderOperations = _folderOperations;
+
+  t.UpdateCallbackSpec->Init();
+  t.UpdateCallbackSpec->PasswordIsDefined = usePassword;
+  t.UpdateCallbackSpec->Password = password;
+
+
   RINOK(t.Create(GetItemName(index), (HWND)*this));
   return t.Result;
 }
@@ -869,8 +937,11 @@ STDMETHODIMP CBufSeqOutStream_WithFile::Write(const void *data, UInt32 size, UIn
   {
     if (_size - _pos >= size)
     {
-      memcpy(_buffer + _pos, data, size);
-      _pos += size;
+      if (size != 0)
+      {
+        memcpy(_buffer + _pos, data, size);
+        _pos += size;
+      }
       if (processedSize)
         *processedSize = (UInt32)size;
       return S_OK;
@@ -927,19 +998,15 @@ static HRESULT GetTime(IFolderFolder *folder, UInt32 index, PROPID propID, FILET
 }
 */
 
-void CPanel::OpenItemInArchive(int index, bool tryInternal, bool tryExternal, bool editMode, bool useEditor)
+void CPanel::OpenItemInArchive(int index, bool tryInternal, bool tryExternal, bool editMode, bool useEditor, const wchar_t *type)
 {
   const UString name = GetItemName(index);
   const UString relPath = GetItemRelPath(index);
   
-  if (IsNameVirus(name))
-  {
-    MessageBoxErrorLang(IDS_VIRUS);
+  if (IsVirus_Message(name))
     return;
-  }
 
-  CMyComPtr<IFolderOperations> folderOperations;
-  if (_folder.QueryInterface(IID_IFolderOperations, &folderOperations) != S_OK)
+  if (!_folderOperations)
   {
     MessageBoxErrorLang(IDS_OPERATION_IS_NOT_SUPPORTED);
     return;
@@ -958,7 +1025,7 @@ void CPanel::OpenItemInArchive(int index, bool tryInternal, bool tryExternal, bo
   FString tempDir = tempDirectory.GetPath();
   FString tempDirNorm = tempDir;
   NName::NormalizeDirPathPrefix(tempDirNorm);
-  const FString tempFilePath = tempDirNorm + us2fs(GetCorrectFsPath(name));
+  const FString tempFilePath = tempDirNorm + us2fs(Get_Correct_FsFile_Name(name));
 
   CTempFileInfo tempFileInfo;
   tempFileInfo.FileIndex = index;
@@ -982,7 +1049,7 @@ void CPanel::OpenItemInArchive(int index, bool tryInternal, bool tryExternal, bo
         if (subStream)
         {
           bool encrypted;
-          HRESULT res = OpenItemAsArchive(subStream, tempFileInfo, fullVirtPath, UString(), encrypted);
+          HRESULT res = OpenItemAsArchive(subStream, tempFileInfo, fullVirtPath, type ? type : L"", encrypted);
           if (res == S_OK)
           {
             tempDirectory.DisableDeleting();
@@ -1036,7 +1103,7 @@ void CPanel::OpenItemInArchive(int index, bool tryInternal, bool tryExternal, bo
   bool isAltStream = IsItem_AltStream(index);
 
   CCopyToOptions options;
-  options.includeAltStreams = false;
+  options.includeAltStreams = true;
   options.replaceAltStreamChars = isAltStream;
   
   if (tryAsArchive)
@@ -1093,7 +1160,7 @@ void CPanel::OpenItemInArchive(int index, bool tryInternal, bool tryExternal, bo
       CMyComPtr<IInStream> bufInStream = bufInStreamSpec;
       bufInStreamSpec->Init(file.Data, streamSize, virtFileSystem);
       bool encrypted;
-      if (OpenItemAsArchive(bufInStream, tempFileInfo, fullVirtPath, UString(), encrypted) == S_OK)
+      if (OpenItemAsArchive(bufInStream, tempFileInfo, fullVirtPath, type ? type : L"", encrypted) == S_OK)
       {
         tempDirectory.DisableDeleting();
         RefreshListCtrl();
@@ -1119,7 +1186,7 @@ void CPanel::OpenItemInArchive(int index, bool tryInternal, bool tryExternal, bo
   if (tryAsArchive)
   {
     bool encrypted;
-    if (OpenItemAsArchive(NULL, tempFileInfo, fullVirtPath, UString(), encrypted) == S_OK)
+    if (OpenItemAsArchive(NULL, tempFileInfo, fullVirtPath, type ? type : L"", encrypted) == S_OK)
     {
       tempDirectory.DisableDeleting();
       RefreshListCtrl();
@@ -1144,10 +1211,11 @@ void CPanel::OpenItemInArchive(int index, bool tryInternal, bool tryExternal, bo
     return;
 
   // CProcess process;
+  // HRESULT res;
   if (editMode)
-    StartEditApplication(fs2us(tempFilePath), useEditor, (HWND)*this);
+    /* res = */ StartEditApplication(fs2us(tempFilePath), useEditor, (HWND)*this /* , process */ );
   else
-    StartApplication(fs2us(tempDirNorm), fs2us(tempFilePath), (HWND)*this);
+    /* res =  */ StartApplication(fs2us(tempDirNorm), fs2us(tempFilePath), (HWND)*this /* , process */ );
 
 #ifdef _WIN32
   if ((HANDLE)process == 0)

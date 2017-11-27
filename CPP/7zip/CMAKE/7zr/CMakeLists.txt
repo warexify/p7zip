@@ -8,7 +8,7 @@ include_directories(
   "../../../include_windows"
 )
 
-add_definitions( -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_REENTRANT -DENV_UNIX -D_NO_CRYPTO -DBREAK_HANDLER -DUNICODE -D_UNICODE)
+add_definitions( -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_REENTRANT -DENV_UNIX -D_NO_CRYPTO -DBREAK_HANDLER -DUNICODE -D_UNICODE -DUNIX_USE_WIN_FILE)
 
 IF(APPLE)
   add_definitions(-DENV_MACOSX)
@@ -21,6 +21,8 @@ add_executable(7zr
   "../../../../C/7zCrcOpt.c"
   "../../../../C/7zStream.c"
   "../../../../C/Alloc.c"
+  "../../../../C/Bcj2.c"
+  "../../../../C/Bcj2Enc.c"
   "../../../../C/Bra.c"
   "../../../../C/Bra86.c"
   "../../../../C/BraIA64.c"
@@ -57,7 +59,6 @@ add_executable(7zr
   "../../../../CPP/7zip/Archive/7z/7zSpecStream.cpp"
   "../../../../CPP/7zip/Archive/7z/7zUpdate.cpp"
   "../../../../CPP/7zip/Archive/Common/CoderMixer2.cpp"
-  "../../../../CPP/7zip/Archive/Common/CoderMixer2MT.cpp"
   "../../../../CPP/7zip/Archive/Common/CrossThreadProgress.cpp"
   "../../../../CPP/7zip/Archive/Common/DummyOutStream.cpp"
   "../../../../CPP/7zip/Archive/Common/HandlerOut.cpp"
@@ -77,7 +78,6 @@ add_executable(7zr
   "../../../../CPP/7zip/Common/InBuffer.cpp"
   "../../../../CPP/7zip/Common/InOutTempBuffer.cpp"
   "../../../../CPP/7zip/Common/LimitedStreams.cpp"
-  "../../../../CPP/7zip/Common/LockedStream.cpp"
   "../../../../CPP/7zip/Common/MethodId.cpp"
   "../../../../CPP/7zip/Common/MethodProps.cpp"
   "../../../../CPP/7zip/Common/OffsetStream.cpp"
@@ -93,7 +93,6 @@ add_executable(7zr
   "../../../../CPP/7zip/Compress/Bcj2Register.cpp"
   "../../../../CPP/7zip/Compress/BcjCoder.cpp"
   "../../../../CPP/7zip/Compress/BcjRegister.cpp"
-  "../../../../CPP/7zip/Compress/BranchCoder.cpp"
   "../../../../CPP/7zip/Compress/BranchMisc.cpp"
   "../../../../CPP/7zip/Compress/BranchRegister.cpp"
   "../../../../CPP/7zip/Compress/ByteSwap.cpp"
@@ -174,7 +173,7 @@ IF(APPLE)
    TARGET_LINK_LIBRARIES(7zr ${COREFOUNDATION_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
 ELSE(APPLE)
   IF(HAVE_PTHREADS)
-   TARGET_LINK_LIBRARIES(7zr ${CMAKE_THREAD_LIBS_INIT})
+   TARGET_LINK_LIBRARIES(7zr ${CMAKE_THREAD_LIBS_INIT} dl)
   ENDIF(HAVE_PTHREADS)
 ENDIF(APPLE)
 

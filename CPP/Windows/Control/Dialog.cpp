@@ -329,7 +329,7 @@ namespace NWindows {
 				WaitInd(this->_window,ind,DIALOG_ID_END_DIALOG,0);
 			}
 
-			void CModalDialog::PostMessage(UINT message)
+			void CModalDialog::PostMsg(UINT message)
 			{
 				int ind = findFreeInd();
 

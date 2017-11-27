@@ -12,12 +12,13 @@
 #include "Common/MyTypes.h"
 typedef          long LONG_PTR;  // FIXME 64 bits ?
 typedef LONG_PTR LRESULT;
-typedef          long DWORD_PTR; // FIXME 64 bits ?
+// typedef          long DWORD_PTR; // FIXME 64 bits ?
 #include "Common/MyCom.h"
 //#include "Windows/DLL.h"
 #include "Windows/FileDir.h"
 #include "Windows/FileFind.h"
 // #include "Windows/Synchronization.h"
+#include "Windows/PropVariant.h"
 #include "Common/Wildcard.h"
 #include "Windows/FileName.h"
 
@@ -81,7 +82,7 @@ struct CFolderLink: public CTempFileInfo
 
 UString GetFolderPath(IFolderFolder *folder)
 {
-  NCOM::CPropVariant prop;
+  NWindows::NCOM::CPropVariant prop;
   if (folder->GetFolderProperty(kpidPath, &prop) == S_OK)
     if (prop.vt == VT_BSTR)
       return (wchar_t *)prop.bstrVal;
@@ -410,3 +411,55 @@ namespace NFsFolder {
                 return false; // FIXME wxCopyFile(wxString(existingFile), wxString(newFile), overwrite);
         }
 }
+
+int CompareFileNames_ForFolderList(const wchar_t *s1, const wchar_t *s2)
+{
+  for (;;)
+  {
+    wchar_t c1 = *s1;
+    wchar_t c2 = *s2;
+    if ((c1 >= '0' && c1 <= '9') &&
+        (c2 >= '0' && c2 <= '9'))
+    {
+      for (; *s1 == '0'; s1++);
+      for (; *s2 == '0'; s2++);
+      size_t len1 = 0;
+      size_t len2 = 0;
+      for (; (s1[len1] >= '0' && s1[len1] <= '9'); len1++);
+      for (; (s2[len2] >= '0' && s2[len2] <= '9'); len2++);
+      if (len1 < len2) return -1;
+      if (len1 > len2) return 1;
+      for (; len1 > 0; s1++, s2++, len1--)
+      {
+        if (*s1 == *s2) continue;
+        return (*s1 < *s2) ? -1 : 1;
+      }
+      c1 = *s1;
+      c2 = *s2;
+    }
+    s1++;
+    s2++;
+    if (c1 != c2)
+    {
+      // Probably we need to change the order for special characters like in Explorer.
+      wchar_t u1 = MyCharUpper(c1);
+      wchar_t u2 = MyCharUpper(c2);
+      if (u1 < u2) return -1;
+      if (u1 > u2) return 1;
+    }
+    if (c1 == 0) return 0;
+  }
+}
+
+
+UString LangString(UInt32 langID)
+{
+    /* FIXME
+  const wchar_t *s = g_Lang.Get(langID);
+  if (s)
+    return s;
+    */
+  return L"FIXME"; // MyLoadString(langID);
+}
+
+

@@ -10,12 +10,10 @@
 
 #include "../../Windows/PropVariant.h"
 
-#include "../Common/LimitedStreams.h"
-#include "../Common/ProgressUtils.h"
 #include "../Common/RegisterArc.h"
 #include "../Common/StreamUtils.h"
 
-#include "../Compress/CopyCoder.h"
+#include "HandlerCont.h"
 
 static UInt32 Get32(const Byte *p, bool be) { if (be) return GetBe32(p); return GetUi32(p); }
 
@@ -36,7 +34,7 @@ namespace NMub {
 
 #define MACH_CPU_SUBTYPE_LIB64 (1 << 31)
 
-#define	MACH_CPU_SUBTYPE_I386_ALL	3
+#define MACH_CPU_SUBTYPE_I386_ALL 3
 
 struct CItem
 {
@@ -49,12 +47,8 @@ struct CItem
 
 static const UInt32 kNumFilesMax = 10;
 
-class CHandler:
-  public IInArchive,
-  public IInArchiveGetStream,
-  public CMyUnknownImp
+class CHandler: public CHandlerCont
 {
-  CMyComPtr<IInStream> _stream;
   // UInt64 _startPos;
   UInt64 _phySize;
   UInt32 _numItems;
@@ -62,10 +56,17 @@ class CHandler:
   CItem _items[kNumFilesMax];
 
   HRESULT Open2(IInStream *stream);
+
+  virtual int GetItem_ExtractInfo(UInt32 index, UInt64 &pos, UInt64 &size) const
+  {
+    const CItem &item = _items[index];
+    pos = item.Offset;
+    size = item.Size;
+    return NExtract::NOperationResult::kOK;
+  }
+
 public:
-  MY_UNKNOWN_IMP2(IInArchive, IInArchiveGetStream)
-  INTERFACE_IInArchive(;)
-  STDMETHOD(GetStream)(UInt32 index, ISequentialInStream **stream);
+  INTERFACE_IInArchive_Cont(;)
 };
 
 static const Byte kArcProps[] =
@@ -223,91 +224,18 @@ STDMETHODIMP CHandler::GetNumberOfItems(UInt32 *numItems)
   return S_OK;
 }
 
-STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
-    Int32 testMode, IArchiveExtractCallback *extractCallback)
-{
-  COM_TRY_BEGIN
-  bool allFilesMode = (numItems == (UInt32)(Int32)-1);
-  if (allFilesMode)
-    numItems = _numItems;
-  if (numItems == 0)
-    return S_OK;
-  UInt64 totalSize = 0;
-  UInt32 i;
-  for (i = 0; i < numItems; i++)
-    totalSize += _items[allFilesMode ? i : indices[i]].Size;
-  extractCallback->SetTotal(totalSize);
-
-  UInt64 currentTotalSize = 0;
-  
-  NCompress::CCopyCoder *copyCoderSpec = new NCompress::CCopyCoder();
-  CMyComPtr<ICompressCoder> copyCoder = copyCoderSpec;
-
-  CLocalProgress *lps = new CLocalProgress;
-  CMyComPtr<ICompressProgressInfo> progress = lps;
-  lps->Init(extractCallback, false);
-
-  CLimitedSequentialInStream *streamSpec = new CLimitedSequentialInStream;
-  CMyComPtr<ISequentialInStream> inStream(streamSpec);
-  streamSpec->SetStream(_stream);
-
-  for (i = 0; i < numItems; i++)
-  {
-    lps->InSize = lps->OutSize = currentTotalSize;
-    RINOK(lps->SetCur());
-    CMyComPtr<ISequentialOutStream> realOutStream;
-    Int32 askMode = testMode ?
-        NExtract::NAskMode::kTest :
-        NExtract::NAskMode::kExtract;
-    UInt32 index = allFilesMode ? i : indices[i];
-    const CItem &item = _items[index];
-    RINOK(extractCallback->GetStream(index, &realOutStream, askMode));
-    currentTotalSize += item.Size;
-    
-    if (!testMode && !realOutStream)
-      continue;
-    RINOK(extractCallback->PrepareOperation(askMode));
-    if (testMode)
-    {
-      RINOK(extractCallback->SetOperationResult(NExtract::NOperationResult::kOK));
-      continue;
-    }
-    RINOK(_stream->Seek(/* _startPos + */ item.Offset, STREAM_SEEK_SET, NULL));
-    streamSpec->Init(item.Size);
-    RINOK(copyCoder->Code(inStream, realOutStream, NULL, NULL, progress));
-    realOutStream.Release();
-    RINOK(extractCallback->SetOperationResult((copyCoderSpec->TotalSize == item.Size) ?
-        NExtract::NOperationResult::kOK:
-        NExtract::NOperationResult::kDataError));
-  }
-  return S_OK;
-  COM_TRY_END
-}
-
-STDMETHODIMP CHandler::GetStream(UInt32 index, ISequentialInStream **stream)
-{
-  COM_TRY_BEGIN
-  const CItem &item = _items[index];
-  return CreateLimitedInStream(_stream, /* _startPos + */ item.Offset, item.Size, stream);
-  COM_TRY_END
-}
-
-IMP_CreateArcIn
-
 namespace NBe {
 
-static CArcInfo g_ArcInfo =
-  { "Mub", "mub", 0, 0xE2,
-  2 + 7 + 4,
-  {
+static const Byte k_Signature[] = {
     7, 0xCA, 0xFE, 0xBA, 0xBE, 0, 0, 0,
-    4, 0xB9, 0xFA, 0xF1, 0x0E
-  },
+    4, 0xB9, 0xFA, 0xF1, 0x0E };
+
+REGISTER_ARC_I(
+  "Mub", "mub", 0, 0xE2,
+  k_Signature,
   0,
   NArcInfoFlags::kMultiSignature,
-  CreateArc };
-
-REGISTER_ARC(Mub)
+  NULL)
 
 }
 

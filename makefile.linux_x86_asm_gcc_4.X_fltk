@@ -2,13 +2,13 @@
 # makefile for Linux (x86, PPC, alpha ...)
 #
 
-OPTFLAGS=-O
+OPTFLAGS=-O -s
 
-ALLFLAGS=${OPTFLAGS} -m32 -pipe -s \
+ALLFLAGS=${OPTFLAGS} -m32 -pipe \
     	-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE \
 	-DNDEBUG -D_REENTRANT -DENV_UNIX -DUSE_FLTK \
 	-D_7ZIP_LARGE_PAGES \
-	-DP7ZIP_USE_ASM \
+	-D_7ZIP_ASM \
 	$(LOCAL_FLAGS)
 
 ALLFLAGS_CPP=-DENV_HAVE_GCCVISIBILITYPATCH -fvisibility=hidden -fvisibility-inlines-hidden `fltk-config --cxxflags`

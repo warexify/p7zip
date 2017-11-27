@@ -32,6 +32,7 @@ files_cpp=[
  'CPP/Common/CRC.cpp',
  'CPP/Common/CommandLineParser.cpp',
  'CPP/Common/CrcReg.cpp',
+ 'CPP/Common/C_FileIO.cpp',
  'CPP/Common/IntToString.cpp',
  'CPP/Common/MyString.cpp',
  'CPP/Common/MyVector.cpp',
@@ -39,9 +40,10 @@ files_cpp=[
  'CPP/Common/NewHandler.cpp',
  'CPP/Common/StringConvert.cpp',
  'CPP/Common/StringToInt.cpp',
- 'CPP/Windows/FileIO.cpp',
  'CPP/Windows/PropVariant.cpp',
  'CPP/Windows/System.cpp',
  'CPP/myWindows/wine_date_and_time.cpp',
 ]
+
+# 'CPP/Windows/FileIO.cpp',
 

@@ -2,9 +2,9 @@
 # makefile for Linux (other)
 #
 
-OPTFLAGS=-O
+OPTFLAGS=-O -s
 
-ALLFLAGS=${OPTFLAGS} -pipe -s \
+ALLFLAGS=${OPTFLAGS} -pipe \
     	-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE \
 	-DNDEBUG -D_REENTRANT -DENV_UNIX \
 	-D_7ZIP_LARGE_PAGES \

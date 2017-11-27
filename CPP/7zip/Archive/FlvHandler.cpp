@@ -2,6 +2,8 @@
 
 #include "StdAfx.h"
 
+// #include <stdio.h>
+
 #include "../../../C/CpuArch.h"
 
 #include "../../Common/ComTry.h"
@@ -69,12 +71,12 @@ class CHandler:
 {
   CMyComPtr<IInStream> _stream;
   CObjectVector<CItem2> _items2;
-  // CByteBuffer _metadata;
+  CByteBuffer _metadata;
   bool _isRaw;
   UInt64 _phySize;
 
   HRESULT Open2(IInStream *stream, IArchiveOpenCallback *callback);
-  AString GetComment();
+  // AString GetComment();
 public:
   MY_UNKNOWN_IMP2(IInArchive, IInArchiveGetStream)
   INTERFACE_IInArchive(;)
@@ -143,7 +145,7 @@ STDMETHODIMP CHandler::GetProperty(UInt32 index, PROPID propID, PROPVARIANT *val
 {
   NWindows::NCOM::CPropVariant prop;
   const CItem2 &item = _items2[index];
-  switch(propID)
+  switch (propID)
   {
     case kpidExtension:
       prop = _isRaw ?
@@ -195,10 +197,7 @@ AString CHandler::GetComment()
         break;
       {
         AString temp;
-        char *sz = temp.GetBuffer(len);
-        memcpy(sz, p, len);
-        sz[len] = 0;
-        temp.ReleaseBuffer();
+        temp.SetFrom_CalcLen((const char *)p, len);
         if (!res.IsEmpty())
           res += '\n';
         res += temp;
@@ -210,7 +209,7 @@ AString CHandler::GetComment()
       Byte type = *p++;
       size--;
       bool ok = false;
-      switch(type)
+      switch (type)
       {
         case 0:
         {
@@ -251,14 +250,13 @@ AString CHandler::GetComment()
   }
   return res;
 }
-
 */
 
 STDMETHODIMP CHandler::GetArchiveProperty(PROPID propID, PROPVARIANT *value)
 {
   // COM_TRY_BEGIN
   NWindows::NCOM::CPropVariant prop;
-  switch(propID)
+  switch (propID)
   {
     // case kpidComment: prop = GetComment(); break;
     case kpidPhySize: prop = (UInt64)_phySize; break;
@@ -413,8 +411,11 @@ HRESULT CHandler::Open2(IInStream *stream, IArchiveOpenCallback *callback)
       src += kTagHeaderSize + 1;
       size -= (kTagHeaderSize + 4 + 1);
     }
-    memcpy(item2.BufSpec->Buf + item2.Size, src, size);
-    item2.Size += size;
+    if (size != 0)
+    {
+      memcpy(item2.BufSpec->Buf + item2.Size, src, size);
+      item2.Size += size;
+    }
   }
   return S_OK;
 }
@@ -513,15 +514,13 @@ STDMETHODIMP CHandler::GetStream(UInt32 index, ISequentialInStream **stream)
   COM_TRY_END
 }
 
-IMP_CreateArcIn
+static const Byte k_Signature[] = { 'F', 'L', 'V', 1, };
 
-static CArcInfo g_ArcInfo =
-  { "FLV", "flv", 0, 0xD6,
-  4, { 'F', 'L', 'V', 1, },
+REGISTER_ARC_I(
+  "FLV", "flv", 0, 0xD6,
+  k_Signature,
   0,
   0,
-  CreateArc };
-
-REGISTER_ARC(Flv)
+  NULL)
 
 }}

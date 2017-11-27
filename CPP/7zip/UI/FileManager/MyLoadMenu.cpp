@@ -292,13 +292,13 @@ void MyLoadMenu(HWND hWnd)
 #endif
 }
 
-#ifdef _WIN32
 extern HWND g_HWND;
 void MyLoadMenu()
 {
   MyLoadMenu(g_HWND);
 }
 
+#ifdef _WIN32
 static void CopyMenu(HMENU srcMenuSpec, HMENU destMenuSpec)
 {
   CMenu srcMenu;
@@ -505,7 +505,9 @@ bool ExecuteFileCommand(int id)
   {
     // File
     case IDM_OPEN: g_App.OpenItem(); break;
-    case IDM_OPEN_INSIDE: g_App.OpenItemInside(); break;
+    case IDM_OPEN_INSIDE:        g_App.OpenItemInside(NULL); break;
+    case IDM_OPEN_INSIDE_ONE:    g_App.OpenItemInside(L"*"); break;
+    case IDM_OPEN_INSIDE_PARSER: g_App.OpenItemInside(L"#"); break;
     case IDM_OPEN_OUTSIDE: g_App.OpenItemOutside(); break;
     case IDM_FILE_VIEW: g_App.EditItem(false); break;
     case IDM_FILE_EDIT: g_App.EditItem(true); break;

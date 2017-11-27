@@ -9,12 +9,12 @@
 #include "../../../Common/StringToInt.h"
 
 #include "../../../Windows/ErrorMsg.h"
-// #include "../../../Windows/MemoryLock.h"
-// #include "../../../Windows/NtCheck.h"
+// FIXME #include "../../../Windows/MemoryLock.h"
+// FIXME #include "../../../Windows/NtCheck.h"
 #include "../../../Windows/System.h"
 
 #ifndef UNDER_CE
-// #include "../../../Windows/SecurityUtils.h"
+// FIXME #include "../../../Windows/SecurityUtils.h"
 #endif
 
 #include "../GUI/ExtractRes.h"
@@ -42,12 +42,17 @@ using namespace NFind;
 
 UInt64 g_RAM_Size;
 
+#ifdef _WIN32
 HINSTANCE g_hInstance;
+#endif
 HWND g_HWND;
 bool g_OpenArchive = false;
 static UString g_MainPath;
 static UString g_ArcFormat;
 static bool g_Maximized = false;
+
+// HRESULT LoadGlobalCodecs();
+void FreeGlobalCodecs();
 
 #if 0 // #ifndef UNDER_CE
 
@@ -178,7 +183,7 @@ static BOOL InitInstance(int nCmdShow)
 
   // LoadString(hInstance, IDS_CLASS, windowClass, MAX_LOADSTRING);
 
-  UString title = L"7-Zip"; // LangString(IDS_APP_TITLE, 0x03000000);
+  UString title = L"7-Zip (ALPHA Software)"; // LangString(IDS_APP_TITLE, 0x03000000);
 
   /*
   //If it is already running, then focus on the window
@@ -257,7 +262,7 @@ static BOOL InitInstance(int nCmdShow)
   g_App.NumPanels = kNumDefaultPanels; // FIXME info.numPanels;
   g_App.LastFocusedPanel = 0; // FIXME info.currentPanel;
 
-#ifdef _WIN32 // FIXME
+#ifdef _WIN32
   if (!wnd.Create(kWindowClass, title, style,
     x, y, xSize, ySize, NULL, NULL, g_hInstance, NULL))
     return FALSE;
@@ -285,7 +290,7 @@ static BOOL InitInstance(int nCmdShow)
   if (nCmdShow == SW_SHOWMAXIMIZED)
     g_Maximized = true;
 
-  // #ifndef UNDER_CE
+  #ifndef UNDER_CE
   WINDOWPLACEMENT placement;
   placement.length = sizeof(placement);
   if (wnd.GetPlacement(&placement))
@@ -296,8 +301,9 @@ static BOOL InitInstance(int nCmdShow)
     wnd.SetPlacement(&placement);
   }
   else
-    wnd.Show(nCmdShow);
   #endif
+    wnd.Show(nCmdShow);
+#endif
 
   return TRUE;
 }
@@ -350,7 +356,7 @@ bool IsLargePageSupported()
 {
   #ifdef _WIN64
   return true;
-  #else
+  #elif defined(_WIN32)	
   OSVERSIONINFO versionInfo;
   versionInfo.dwOSVersionInfoSize = sizeof(versionInfo);
   if (!::GetVersionEx(&versionInfo))
@@ -365,10 +371,12 @@ bool IsLargePageSupported()
     return true;
   // return IsWow64();
   return false;
+  #else
+  return false;
   #endif
 }
 
-#if 0 //#ifndef UNDER_CE
+#if 0 // ifndef UNDER_CE
 
 static void SetMemoryLock()
 {
@@ -465,18 +473,18 @@ static int WINAPI WinMain2(int nCmdShow)
 
   LoadLangOneTime();
 
-  // InitCommonControls();
+  InitCommonControls();
 
-  #if 0 // #ifndef UNDER_CE
+  #ifndef UNDER_CE
   g_ComCtl32Version = ::GetDllVersion(TEXT("comctl32.dll"));
   g_LVN_ITEMACTIVATE_Support = (g_ComCtl32Version >= MAKELONG(71, 4));
   #endif
 
-  // g_IsSmallScreen = !NWindows::NControl::IsDialogSizeOK(200, 200);
+  g_IsSmallScreen = !NWindows::NControl::IsDialogSizeOK(200, 200);
 
   // OleInitialize is required for drag and drop.
   #ifndef UNDER_CE
-  // OleInitialize(NULL);
+  OleInitialize(NULL);
   #endif
   // Maybe needs CoInitializeEx also ?
   // NCOM::CComInitializer comInitializer;
@@ -580,6 +588,13 @@ static int WINAPI WinMain2(int nCmdShow)
   if (!InitInstance (nCmdShow))
     return FALSE;
 
+  // we will load Global_Codecs at first use instead.
+  /*
+  OutputDebugStringW(L"Before LoadGlobalCodecs");
+  LoadGlobalCodecs();
+  OutputDebugStringW(L"After LoadGlobalCodecs");
+  */
+
   #ifndef _UNICODE
   if (g_IsNT)
   {
@@ -608,6 +623,10 @@ static int WINAPI WinMain2(int nCmdShow)
       }
     }
   }
+
+  // Destructor of g_CodecsReleaser can release DLLs.
+  // But we suppose that it's better to release DLLs here (before destructor).
+  FreeGlobalCodecs();
 
   g_HWND = 0;
   #ifndef UNDER_CE
@@ -707,7 +726,7 @@ int Main1(int argc,TCHAR **argv)
   if (!InitInstance (0)) 
     return FALSE;
 
-  MyLoadMenu(g_HWND);
+  MyLoadMenu();
 
   // FIXME : install Accelerators ?
 
@@ -716,8 +735,7 @@ int Main1(int argc,TCHAR **argv)
 
 #endif
 
-
-void ExecuteCommand(UINT commandID)
+/* FIXME static */ void ExecuteCommand(UINT commandID)
 {
   CPanel::CDisableTimerProcessing disableTimerProcessing1(g_App.Panels[0]);
   CPanel::CDisableTimerProcessing disableTimerProcessing2(g_App.Panels[1]);
@@ -729,6 +747,7 @@ void ExecuteCommand(UINT commandID)
     case kMenuCmdID_Toolbar_Test: g_App.TestArchives(); break;
   }
 }
+
 static void local_WM_CREATE(HWND hWnd)
 {
 printf("**local_WM_CREATE**\n");
@@ -854,35 +873,45 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         xSizes[1] = 0;
 
       g_App.CreateDragTarget();
+      
       bool archiveIsOpened;
       bool encrypted;
       bool needOpenFile = false;
-      if (!g_MainPath.IsEmpty() /* && g_OpenArchive */)
+
+      UString fullPath = g_MainPath;
+      if (!fullPath.IsEmpty() /* && g_OpenArchive */)
       {
-        if (NFile::NFind::DoesFileExist(us2fs(g_MainPath)))
+        if (!NFile::NName::IsAbsolutePath(fullPath))
+        {
+          FString fullPathF;
+          if (NFile::NName::GetFullPath(us2fs(fullPath), fullPathF))
+            fullPath = fs2us(fullPathF);
+        }
+        if (NFile::NFind::DoesFileExist(us2fs(fullPath)))
           needOpenFile = true;
       }
-      HRESULT res = g_App.Create(hWnd, g_MainPath, g_ArcFormat, xSizes, archiveIsOpened, encrypted);
+      
+      HRESULT res = g_App.Create(hWnd, fullPath, g_ArcFormat, xSizes, archiveIsOpened, encrypted);
 
       if (res == E_ABORT)
-      {
         return -1;
-      }
+      
       if (needOpenFile && !archiveIsOpened || res != S_OK)
       {
         UString message = L"Error";
         if (res == S_FALSE || res == S_OK)
         {
           message = MyFormatNew(encrypted ?
-            IDS_CANT_OPEN_ENCRYPTED_ARCHIVE :
-            IDS_CANT_OPEN_ARCHIVE,
-            g_MainPath);
+                IDS_CANT_OPEN_ENCRYPTED_ARCHIVE :
+                IDS_CANT_OPEN_ARCHIVE,
+              fullPath);
         }
         else if (res != S_OK)
           message = HResultToMessage(res);
         ErrorMessage(message);
         return -1;
       }
+      
       // g_SplitterPos = 0;
 
       // ::DragAcceptFiles(hWnd, TRUE);
@@ -890,6 +919,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
       break;
     }
+
     case WM_DESTROY:
     {
       // ::DragAcceptFiles(hWnd, FALSE);
@@ -913,11 +943,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       g_StartCaptureSplitterPos = g_Splitter.GetPos();
       ::SetCapture(hWnd);
       break;
+    
     case WM_LBUTTONUP:
     {
       ::ReleaseCapture();
       break;
     }
+    
     case WM_MOUSEMOVE:
     {
       if ((wParam & MK_LBUTTON) != 0 && ::GetCapture() == hWnd)
@@ -954,10 +986,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       return 0;
       break;
     }
+    
     case WM_SETFOCUS:
       // g_App.SetFocus(g_App.LastFocusedPanel);
       g_App.SetFocusToLastItem();
       break;
+    
     /*
     case WM_ACTIVATE:
     {
@@ -974,6 +1008,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       break;
     }
     */
+    
     /*
     case kLangWasChangedMessage:
       MyLoadMenu();
@@ -984,11 +1019,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_SETTINGCHANGE:
       break;
     */
+    
     case WM_NOTIFY:
     {
       g_App.OnNotify((int)wParam, (LPNMHDR)lParam);
       break;
     }
+    
     /*
     case WM_DROPFILES:
     {
@@ -1077,4 +1114,11 @@ void main_WM_DESTROY()
    // PostQuitMessage(0);
 }
 #endif
+
+
+// for mac
+void doMacOpenFile(	const UString & fileName	 ) 
+{
+	g_App.GetFocusedPanel().BindToPathAndRefresh(fileName);
+}
 

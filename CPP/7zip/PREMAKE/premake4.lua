@@ -11,11 +11,11 @@ solution "p7zip"
       }
 
       configuration "Debug"
-         defines { "DEBUG", "_FILE_OFFSET_BITS=64", "_LARGEFILE_SOURCE", "_REENTRANT", "ENV_UNIX", "BREAK_HANDLER", "UNICODE", "_UNICODE" }
+         defines { "DEBUG", "_FILE_OFFSET_BITS=64", "_LARGEFILE_SOURCE", "_REENTRANT", "ENV_UNIX", "BREAK_HANDLER", "UNICODE", "_UNICODE", "UNIX_USE_WIN_FILE" }
          flags { "Symbols" }
 
       configuration "Release"
-         defines { "NDEBUG", "_FILE_OFFSET_BITS=64", "_LARGEFILE_SOURCE", "_REENTRANT", "ENV_UNIX", "BREAK_HANDLER", "UNICODE", "_UNICODE" }
+         defines { "NDEBUG", "_FILE_OFFSET_BITS=64", "_LARGEFILE_SOURCE", "_REENTRANT", "ENV_UNIX", "BREAK_HANDLER", "UNICODE", "_UNICODE", "UNIX_USE_WIN_FILE" }
          flags { "Optimize" }    
 
    project "all_c_code"
@@ -27,6 +27,8 @@ solution "p7zip"
       "../../../../C/7zStream.c",
       "../../../../C/Aes.c",
       "../../../../C/Alloc.c",
+      "../../../../C/Bcj2.c",
+      "../../../../C/Bcj2Enc.c",
       "../../../../C/Bra.c",
       "../../../../C/Bra86.c",
       "../../../../C/BraIA64.c",
@@ -47,6 +49,7 @@ solution "p7zip"
       "../../../../C/Ppmd8.c",
       "../../../../C/Ppmd8Dec.c",
       "../../../../C/Ppmd8Enc.c",
+      "../../../../C/Sha1.c",
       "../../../../C/Sha256.c",
       "../../../../C/Sort.c",
       "../../../../C/Threads.c",
@@ -85,7 +88,6 @@ solution "p7zip"
       "../../../../CPP/7zip/Archive/Cab/CabIn.cpp",
       "../../../../CPP/7zip/Archive/Cab/CabRegister.cpp",
       "../../../../CPP/7zip/Archive/Common/CoderMixer2.cpp",
-      "../../../../CPP/7zip/Archive/Common/CoderMixer2MT.cpp",
       "../../../../CPP/7zip/Archive/Common/CrossThreadProgress.cpp",
       "../../../../CPP/7zip/Archive/Common/DummyOutStream.cpp",
       "../../../../CPP/7zip/Archive/Common/FindSignature.cpp",
@@ -125,7 +127,6 @@ solution "p7zip"
       "../../../../CPP/7zip/Common/InBuffer.cpp",
       "../../../../CPP/7zip/Common/InOutTempBuffer.cpp",
       "../../../../CPP/7zip/Common/LimitedStreams.cpp",
-      "../../../../CPP/7zip/Common/LockedStream.cpp",
       "../../../../CPP/7zip/Common/MemBlocks.cpp",
       "../../../../CPP/7zip/Common/MethodId.cpp",
       "../../../../CPP/7zip/Common/MethodProps.cpp",
@@ -149,7 +150,6 @@ solution "p7zip"
       "../../../../CPP/7zip/Compress/BcjCoder.cpp",
       "../../../../CPP/7zip/Compress/BcjRegister.cpp",
       "../../../../CPP/7zip/Compress/BitlDecoder.cpp",
-      "../../../../CPP/7zip/Compress/BranchCoder.cpp",
       "../../../../CPP/7zip/Compress/BranchMisc.cpp",
       "../../../../CPP/7zip/Compress/BranchRegister.cpp",
       "../../../../CPP/7zip/Compress/ByteSwap.cpp",
@@ -169,7 +169,6 @@ solution "p7zip"
       "../../../../CPP/7zip/Compress/LzmaDecoder.cpp",
       "../../../../CPP/7zip/Compress/LzmaEncoder.cpp",
       "../../../../CPP/7zip/Compress/LzmaRegister.cpp",
-      "../../../../CPP/7zip/Compress/Lzx86Converter.cpp",
       "../../../../CPP/7zip/Compress/LzxDecoder.cpp",
       "../../../../CPP/7zip/Compress/PpmdDecoder.cpp",
       "../../../../CPP/7zip/Compress/PpmdEncoder.cpp",
@@ -185,8 +184,6 @@ solution "p7zip"
       "../../../../CPP/7zip/Crypto/MyAesReg.cpp",
       "../../../../CPP/7zip/Crypto/Pbkdf2HmacSha1.cpp",
       "../../../../CPP/7zip/Crypto/RandGen.cpp",
-      "../../../../CPP/7zip/Crypto/Sha1.cpp",
-      "../../../../CPP/7zip/Crypto/Sha1Reg.cpp",
       "../../../../CPP/7zip/Crypto/WzAes.cpp",
       "../../../../CPP/7zip/Crypto/ZipCrypto.cpp",
       "../../../../CPP/7zip/Crypto/ZipStrong.cpp",
@@ -229,6 +226,7 @@ solution "p7zip"
       "../../../../CPP/Common/MyString.cpp",
       "../../../../CPP/Common/MyVector.cpp",
       "../../../../CPP/Common/MyWindows.cpp",
+      "../../../../CPP/Common/Sha1Reg.cpp",
       "../../../../CPP/Common/Sha256Reg.cpp",
       "../../../../CPP/Common/StdInStream.cpp",
       "../../../../CPP/Common/StdOutStream.cpp",

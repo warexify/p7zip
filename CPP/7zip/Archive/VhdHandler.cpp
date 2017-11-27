@@ -6,17 +6,14 @@
 
 #include "../../Common/ComTry.h"
 #include "../../Common/IntToString.h"
-#include "../../Common/MyBuffer.h"
-#include "../../Common/MyString.h"
 
 #include "../../Windows/PropVariant.h"
 
 #include "../Common/LimitedStreams.h"
-#include "../Common/ProgressUtils.h"
 #include "../Common/RegisterArc.h"
 #include "../Common/StreamUtils.h"
 
-#include "../Compress/CopyCoder.h"
+#include "HandlerCont.h"
 
 #define Get16(p) GetBe16(p)
 #define Get32(p) GetBe32(p)
@@ -41,7 +38,7 @@ static const UInt32 kDiskType_Fixed = 2;
 static const UInt32 kDiskType_Dynamic = 3;
 static const UInt32 kDiskType_Diff = 4;
 
-static const char *kDiskTypes[] =
+static const char * const kDiskTypes[] =
 {
     "0"
   , "1"
@@ -201,11 +198,17 @@ bool CDynHeader::Parse(const Byte *p)
   memcpy(ParentId, p + 0x28, 16);
   {
     const unsigned kNameLen = 256;
-    wchar_t *s = ParentName.GetBuffer(kNameLen);
-    for (unsigned i = 0; i < kNameLen; i++)
-      s[i] = Get16(p + 0x40 + i * 2);
-    s[kNameLen] = 0;
-    ParentName.ReleaseBuffer();
+    wchar_t *s = ParentName.GetBuf(kNameLen);
+    unsigned i;
+    for (i = 0; i < kNameLen; i++)
+    {
+      wchar_t c = Get16(p + 0x40 + i * 2);
+      if (c == 0)
+        break;
+      s[i] = c;
+    }
+    s[i] = 0;
+    ParentName.ReleaseBuf_SetLen(i);
   }
   for (unsigned i = 0; i < 8; i++)
     if (!ParentLocators[i].Parse(p + 0x240 + i * 24))
@@ -213,14 +216,8 @@ bool CDynHeader::Parse(const Byte *p)
   return CheckBlock(p, 1024, 0x24, 0x240 + 8 * 24);
 }
 
-class CHandler:
-  public IInStream,
-  public IInArchive,
-  public IInArchiveGetStream,
-  public CMyUnknownImp
+class CHandler: public CHandlerImg
 {
-  UInt64 _virtPos;
-  UInt64 _posInArc;
   UInt64 _posInArcLimit;
   UInt64 _startOffset;
   UInt64 _phySize;
@@ -231,7 +228,7 @@ class CHandler:
   CByteBuffer BitMap;
   UInt32 BitMapTag;
   UInt32 NumUsedBlocks;
-  CMyComPtr<IInStream> Stream;
+  // CMyComPtr<IInStream> Stream;
   CMyComPtr<IInStream> ParentStream;
   CHandler *Parent;
   UString _errorMessage;
@@ -240,7 +237,7 @@ class CHandler:
   void AddErrorMessage(const wchar_t *s)
   {
     if (!_errorMessage.IsEmpty())
-      _errorMessage += L'\n';
+      _errorMessage.Add_LF();
     _errorMessage += s;
   }
   void UpdatePhySize(UInt64 value)
@@ -265,7 +262,7 @@ class CHandler:
     while (p && p->NeedParent())
     {
       if (!res.IsEmpty())
-        res += L" -> ";
+        res.AddAscii(" -> ");
       UString mainName;
       UString anotherName;
       if (Dyn.RelativeNameWasUsed)
@@ -281,7 +278,7 @@ class CHandler:
       res += mainName;
       if (mainName != anotherName && !anotherName.IsEmpty())
       {
-        res += L' ';
+        res.Add_Space();
         res += L'(';
         res += anotherName;
         res += L')';
@@ -305,14 +302,17 @@ class CHandler:
 
   HRESULT Open3();
   HRESULT Open2(IInStream *stream, CHandler *child, IArchiveOpenCallback *openArchiveCallback, unsigned level);
+  HRESULT Open2(IInStream *stream, IArchiveOpenCallback *openArchiveCallback)
+  {
+    return Open2(stream, NULL, openArchiveCallback, 0);
+  }
+  void CloseAtError();
 
 public:
-  MY_UNKNOWN_IMP3(IInArchive, IInArchiveGetStream, IInStream)
+  INTERFACE_IInArchive_Img(;)
 
-  INTERFACE_IInArchive(;)
   STDMETHOD(GetStream)(UInt32 index, ISequentialInStream **stream);
   STDMETHOD(Read)(void *data, UInt32 size, UInt32 *processedSize);
-  STDMETHOD(Seek)(Int64 offset, UInt32 seekOrigin, UInt64 *newPosition);
 };
 
 HRESULT CHandler::Seek(UInt64 offset) { return Stream->Seek(_startOffset + offset, STREAM_SEEK_SET, NULL); }
@@ -356,6 +356,7 @@ HRESULT CHandler::Open3()
   Byte header[kHeaderSize];
   RINOK(ReadStream_FALSE(Stream, header, kHeaderSize));
   bool headerIsOK = Footer.Parse(header);
+  _size = Footer.CurrentSize;
 
   if (headerIsOK && !Footer.ThereIsDynamic())
   {
@@ -384,6 +385,7 @@ HRESULT CHandler::Open3()
   {
     if (!Footer.Parse(buf))
       return S_FALSE;
+    _size = Footer.CurrentSize;
     if (Footer.ThereIsDynamic())
       return S_FALSE; // we can't open Dynamic Archive backward.
     _posInArcLimit = Footer.CurrentSize;
@@ -425,12 +427,20 @@ HRESULT CHandler::Open3()
         Byte nameBuf[kNameBufSizeMax];
         UString tempString;
         unsigned len = (locator.DataLen >> 1);
-        wchar_t *s = tempString.GetBuffer(len);
-        RINOK(ReadPhy(locator.DataOffset, nameBuf, locator.DataLen));
-        for (unsigned j = 0; j < len; j++)
-          s[j] = GetUi16(nameBuf + j * 2);
-        s[len] = 0;
-        tempString.ReleaseBuffer();
+        {
+          wchar_t *s = tempString.GetBuf(len);
+          RINOK(ReadPhy(locator.DataOffset, nameBuf, locator.DataLen));
+          unsigned j;
+          for (j = 0; j < len; j++)
+          {
+            wchar_t c = GetUi16(nameBuf + j * 2);
+            if (c == 0)
+              break;
+            s[j] = c;
+          }
+          s[j] = 0;
+          tempString.ReleaseBuf_SetLen(j);
+        }
         if (tempString[0] == L'.' && tempString[1] == L'\\')
           tempString.DeleteFrontal(2);
         Dyn.RelativeParentNameFromLocator = tempString;
@@ -518,10 +528,10 @@ HRESULT CHandler::Open3()
 
 STDMETHODIMP CHandler::Read(void *data, UInt32 size, UInt32 *processedSize)
 {
-  if (processedSize != NULL)
+  if (processedSize)
     *processedSize = 0;
   if (_virtPos >= Footer.CurrentSize)
-    return (Footer.CurrentSize == _virtPos) ? S_OK: E_FAIL;
+    return S_OK;
   UInt64 rem = Footer.CurrentSize - _virtPos;
   if (size > rem)
     size = (UInt32)rem;
@@ -576,28 +586,12 @@ STDMETHODIMP CHandler::Read(void *data, UInt32 size, UInt32 *processedSize)
       cur += rem;
     }
   }
-  if (processedSize != NULL)
+  if (processedSize)
     *processedSize = size;
   _virtPos += size;
   return res;
 }
 
-STDMETHODIMP CHandler::Seek(Int64 offset, UInt32 seekOrigin, UInt64 *newPosition)
-{
-  switch (seekOrigin)
-  {
-    case STREAM_SEEK_SET: break;
-    case STREAM_SEEK_CUR: offset += _virtPos; break;
-    case STREAM_SEEK_END: offset += Footer.CurrentSize; break;
-    default: return STG_E_INVALIDFUNCTION;
-  }
-  if (offset < 0)
-    return HRESULT_WIN32_ERROR_NEGATIVE_SEEK;
-  _virtPos = offset;
-  if (newPosition)
-    *newPosition = offset;
-  return S_OK;
-}
 
 enum
 {
@@ -605,17 +599,17 @@ enum
   kpidSavedState
 };
 
-static const STATPROPSTG kArcProps[] =
+static const CStatProp kArcProps[] =
 {
   { NULL, kpidSize, VT_UI8},
   { NULL, kpidOffset, VT_UI8},
   { NULL, kpidCTime, VT_FILETIME},
   { NULL, kpidClusterSize, VT_UI8},
   { NULL, kpidMethod, VT_BSTR},
-  { (LPOLESTR)L"Parent", kpidParent, VT_BSTR},
+  { "Parent", kpidParent, VT_BSTR},
   { NULL, kpidCreatorApp, VT_BSTR},
   { NULL, kpidHostOS, VT_BSTR},
-  { (LPOLESTR)L"Saved State", kpidSavedState, VT_BOOL},
+  { "Saved State", kpidSavedState, VT_BOOL},
   { NULL, kpidId, VT_BSTR}
  };
 
@@ -705,7 +699,7 @@ STDMETHODIMP CHandler::GetArchiveProperty(PROPID propID, PROPVARIANT *value)
       AString res = s;
       res.Trim();
       ConvertUInt32ToString(Footer.CreatorVersion >> 16, s);
-      res += ' ';
+      res.Add_Space();
       res += s;
       res += '.';
       ConvertUInt32ToString(Footer.CreatorVersion & 0xFFFF, s);
@@ -830,31 +824,7 @@ HRESULT CHandler::Open2(IInStream *stream, CHandler *child, IArchiveOpenCallback
   return S_OK;
 }
 
-STDMETHODIMP CHandler::Open(IInStream *stream,
-    const UInt64 * /* maxCheckStartPosition */,
-    IArchiveOpenCallback * openArchiveCallback)
-{
-  COM_TRY_BEGIN
-  {
-    HRESULT res;
-    try
-    {
-      res = Open2(stream, NULL, openArchiveCallback, 0);
-      if (res == S_OK)
-        return S_OK;
-    }
-    catch(...)
-    {
-      Close();
-      throw;
-    }
-    Close();
-    return res;
-  }
-  COM_TRY_END
-}
-
-STDMETHODIMP CHandler::Close()
+void CHandler::CloseAtError()
 {
   _phySize = 0;
   Bat.Clear();
@@ -865,88 +835,39 @@ STDMETHODIMP CHandler::Close()
   Dyn.Clear();
   _errorMessage.Empty();
   // _unexpectedEnd = false;
-  return S_OK;
+  _imgExt = NULL;
 }
 
-STDMETHODIMP CHandler::GetNumberOfItems(UInt32 *numItems)
+STDMETHODIMP CHandler::Close()
 {
-  *numItems = 1;
+  CloseAtError();
   return S_OK;
 }
 
 STDMETHODIMP CHandler::GetProperty(UInt32 /* index */, PROPID propID, PROPVARIANT *value)
 {
-  // COM_TRY_BEGIN
+  COM_TRY_BEGIN
   NCOM::CPropVariant prop;
 
-  switch(propID)
+  switch (propID)
   {
     case kpidSize: prop = Footer.CurrentSize; break;
     case kpidPackSize: prop = GetPackSize(); break;
     case kpidCTime: VhdTimeToFileTime(Footer.CTime, prop); break;
+    case kpidExtension: prop = (_imgExt ? _imgExt : "img"); break;
+
     /*
     case kpidNumCyls: prop = Footer.NumCyls(); break;
     case kpidNumHeads: prop = Footer.NumHeads(); break;
     case kpidSectorsPerTrack: prop = Footer.NumSectorsPerTrack(); break;
     */
   }
+
   prop.Detach(value);
   return S_OK;
-  // COM_TRY_END
-}
-
-STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
-    Int32 testMode, IArchiveExtractCallback *extractCallback)
-{
-  COM_TRY_BEGIN
-  if (numItems == 0)
-    return S_OK;
-  if (numItems != (UInt32)(Int32)-1 && (numItems != 1 || indices[0] != 0))
-    return E_INVALIDARG;
-
-  RINOK(extractCallback->SetTotal(Footer.CurrentSize));
-  CMyComPtr<ISequentialOutStream> outStream;
-  Int32 askMode = testMode ?
-      NExtract::NAskMode::kTest :
-      NExtract::NAskMode::kExtract;
-  RINOK(extractCallback->GetStream(0, &outStream, askMode));
-  if (!testMode && !outStream)
-    return S_OK;
-  RINOK(extractCallback->PrepareOperation(askMode));
-
-  NCompress::CCopyCoder *copyCoderSpec = new NCompress::CCopyCoder();
-  CMyComPtr<ICompressCoder> copyCoder = copyCoderSpec;
-
-  CLocalProgress *lps = new CLocalProgress;
-  CMyComPtr<ICompressProgressInfo> progress = lps;
-  lps->Init(extractCallback, false);
-
-  int res = NExtract::NOperationResult::kDataError;
-  CMyComPtr<ISequentialInStream> inStream;
-  HRESULT hres = GetStream(0, &inStream);
-  if (hres == S_FALSE)
-    res = NExtract::NOperationResult::kUnsupportedMethod;
-  else
-  {
-    RINOK(hres);
-    HRESULT hres = copyCoder->Code(inStream, outStream, NULL, NULL, progress);
-    if (hres == S_OK)
-    {
-      if (copyCoderSpec->TotalSize == Footer.CurrentSize)
-        res = NExtract::NOperationResult::kOK;
-    }
-    else
-    {
-      if (hres != S_FALSE)
-      {
-        RINOK(hres);
-      }
-    }
-  }
-  outStream.Release();
-  return extractCallback->SetOperationResult(res);
   COM_TRY_END
 }
+
 
 STDMETHODIMP CHandler::GetStream(UInt32 /* index */, ISequentialInStream **stream)
 {
@@ -971,15 +892,11 @@ STDMETHODIMP CHandler::GetStream(UInt32 /* index */, ISequentialInStream **strea
   COM_TRY_END
 }
 
-IMP_CreateArcIn
-
-static CArcInfo g_ArcInfo =
-  { "VHD", "vhd", ".mbr", 0xDC,
-  kSignatureSize, SIGNATURE,
+REGISTER_ARC_I(
+  "VHD", "vhd", NULL, 0xDC,
+  kSignature,
   0,
   NArcInfoFlags::kUseGlobalOffset,
-  CreateArc };
-
-REGISTER_ARC(Vhd)
+  NULL)
 
 }}

@@ -9,10 +9,9 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := 7za
 
 LOCAL_CFLAGS := -DANDROID_NDK  -fexceptions \
-		-DNDEBUG -D_REENTRANT -DENV_UNIX \
-                 -DBREAK_HANDLER \
-  -DUNICODE \
-  -D_UNICODE \
+	-DNDEBUG -D_REENTRANT -DENV_UNIX \
+	-DBREAK_HANDLER \
+	-DUNICODE -D_UNICODE -DUNIX_USE_WIN_FILE \
 	-I../../../7zip/Archive \
 	-I../../../7zip/Archive/7z \
 	-I../../../7zip/Archive/BZip2 \
@@ -59,7 +58,6 @@ LOCAL_SRC_FILES := \
   ../../../../CPP/7zip/Archive/Cab/CabIn.cpp \
   ../../../../CPP/7zip/Archive/Cab/CabRegister.cpp \
   ../../../../CPP/7zip/Archive/Common/CoderMixer2.cpp \
-  ../../../../CPP/7zip/Archive/Common/CoderMixer2MT.cpp \
   ../../../../CPP/7zip/Archive/Common/CrossThreadProgress.cpp \
   ../../../../CPP/7zip/Archive/Common/DummyOutStream.cpp \
   ../../../../CPP/7zip/Archive/Common/FindSignature.cpp \
@@ -99,7 +97,6 @@ LOCAL_SRC_FILES := \
   ../../../../CPP/7zip/Common/InBuffer.cpp \
   ../../../../CPP/7zip/Common/InOutTempBuffer.cpp \
   ../../../../CPP/7zip/Common/LimitedStreams.cpp \
-  ../../../../CPP/7zip/Common/LockedStream.cpp \
   ../../../../CPP/7zip/Common/MemBlocks.cpp \
   ../../../../CPP/7zip/Common/MethodId.cpp \
   ../../../../CPP/7zip/Common/MethodProps.cpp \
@@ -123,7 +120,6 @@ LOCAL_SRC_FILES := \
   ../../../../CPP/7zip/Compress/BcjCoder.cpp \
   ../../../../CPP/7zip/Compress/BcjRegister.cpp \
   ../../../../CPP/7zip/Compress/BitlDecoder.cpp \
-  ../../../../CPP/7zip/Compress/BranchCoder.cpp \
   ../../../../CPP/7zip/Compress/BranchMisc.cpp \
   ../../../../CPP/7zip/Compress/BranchRegister.cpp \
   ../../../../CPP/7zip/Compress/ByteSwap.cpp \
@@ -143,7 +139,6 @@ LOCAL_SRC_FILES := \
   ../../../../CPP/7zip/Compress/LzmaDecoder.cpp \
   ../../../../CPP/7zip/Compress/LzmaEncoder.cpp \
   ../../../../CPP/7zip/Compress/LzmaRegister.cpp \
-  ../../../../CPP/7zip/Compress/Lzx86Converter.cpp \
   ../../../../CPP/7zip/Compress/LzxDecoder.cpp \
   ../../../../CPP/7zip/Compress/PpmdDecoder.cpp \
   ../../../../CPP/7zip/Compress/PpmdEncoder.cpp \
@@ -159,8 +154,6 @@ LOCAL_SRC_FILES := \
   ../../../../CPP/7zip/Crypto/MyAesReg.cpp \
   ../../../../CPP/7zip/Crypto/Pbkdf2HmacSha1.cpp \
   ../../../../CPP/7zip/Crypto/RandGen.cpp \
-  ../../../../CPP/7zip/Crypto/Sha1.cpp \
-  ../../../../CPP/7zip/Crypto/Sha1Reg.cpp \
   ../../../../CPP/7zip/Crypto/WzAes.cpp \
   ../../../../CPP/7zip/Crypto/ZipCrypto.cpp \
   ../../../../CPP/7zip/Crypto/ZipStrong.cpp \
@@ -203,6 +196,7 @@ LOCAL_SRC_FILES := \
   ../../../../CPP/Common/MyString.cpp \
   ../../../../CPP/Common/MyVector.cpp \
   ../../../../CPP/Common/MyWindows.cpp \
+  ../../../../CPP/Common/Sha1Reg.cpp \
   ../../../../CPP/Common/Sha256Reg.cpp \
   ../../../../CPP/Common/StdInStream.cpp \
   ../../../../CPP/Common/StdOutStream.cpp \
@@ -229,6 +223,8 @@ LOCAL_SRC_FILES := \
   ../../../../C/7zStream.c \
   ../../../../C/Aes.c \
   ../../../../C/Alloc.c \
+  ../../../../C/Bcj2.c \
+  ../../../../C/Bcj2Enc.c \
   ../../../../C/Bra.c \
   ../../../../C/Bra86.c \
   ../../../../C/BraIA64.c \
@@ -249,6 +245,7 @@ LOCAL_SRC_FILES := \
   ../../../../C/Ppmd8.c \
   ../../../../C/Ppmd8Dec.c \
   ../../../../C/Ppmd8Enc.c \
+  ../../../../C/Sha1.c \
   ../../../../C/Sha256.c \
   ../../../../C/Sort.c \
   ../../../../C/Threads.c \

@@ -3,7 +3,7 @@
 #ifndef __FILE_STREAMS_H
 #define __FILE_STREAMS_H
 
-#if defined(_WIN32) || defined(ENV_UNIX)
+#if defined(_WIN32) || defined(UNIX_USE_WIN_FILE)
 #define USE_WIN_FILE
 #endif
 
@@ -18,6 +18,18 @@
 #include "../../Common/MyCom.h"
 
 #include "../IStream.h"
+
+#if 1 // FIXME #ifdef _WIN32
+typedef UINT_PTR My_UINT_PTR;
+#else
+typedef UINT My_UINT_PTR;
+#endif
+
+struct IInFileStream_Callback
+{
+  virtual HRESULT InFileStream_On_Error(My_UINT_PTR val, DWORD error) = 0;
+  virtual void InFileStream_On_Destroy(My_UINT_PTR val) = 0;
+};
 
 class CInFileStream:
   public IInStream,
@@ -46,18 +58,26 @@ public:
   #endif
 
   bool SupportHardLinks;
-  
-  CInFileStream(bool b=false) { _ignoreSymbolicLink = b; }
+
+  IInFileStream_Callback *Callback;
+  My_UINT_PTR CallbackRef;
+
   virtual ~CInFileStream();
 
+  CInFileStream(bool b=false);
+  
   bool Open(CFSTR fileName)
   {
+  #ifdef USE_WIN_FILE
     return File.Open(fileName,_ignoreSymbolicLink);
+  #else
+    return File.Open(fileName);
+  #endif
   }
   
-  bool OpenShared(CFSTR fileName , bool /* shareForWrite */ )
+  bool OpenShared(CFSTR fileName, bool shareForWrite)
   {
-    return File.Open(fileName,_ignoreSymbolicLink);
+    return this->Open(fileName); // return File.OpenShared(fileName, shareForWrite);
   }
 
   MY_QUERYINTERFACE_BEGIN2(IInStream)
@@ -130,15 +150,20 @@ public:
   STDMETHOD(Write)(const void *data, UInt32 size, UInt32 *processedSize);
   STDMETHOD(Seek)(Int64 offset, UInt32 seekOrigin, UInt64 *newPosition);
   STDMETHOD(SetSize)(UInt64 newSize);
+
+  HRESULT GetSize(UInt64 *size);
 };
 
 class CStdOutFileStream:
   public ISequentialOutStream,
   public CMyUnknownImp
 {
+  UInt64 _size;
 public:
   MY_UNKNOWN_IMP
 
+  UInt64 GetSize() const { return _size; }
+  CStdOutFileStream(): _size(0) {}
   virtual ~CStdOutFileStream() {}
   STDMETHOD(Write)(const void *data, UInt32 size, UInt32 *processedSize);
 };

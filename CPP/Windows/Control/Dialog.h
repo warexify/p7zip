@@ -106,7 +106,7 @@ namespace NWindows {
 
 			INT_PTR Create(int id , HWND parentWindow);
 
-			void PostMessage(UINT message);
+			void PostMsg(UINT message);
 
 			virtual void OnHelp() {}
 

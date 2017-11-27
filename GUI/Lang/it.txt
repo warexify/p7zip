@@ -1,7 +1,7 @@
 ﻿;!@Lang2@!UTF-8!
 ;  4.07 : Leandro Spagnol
 ;       : Vincenzo Reale (some corrections)
-;  9.33 : 2014-06-16 : TJL73 : http://tjl73.altervista.org/
+; 15.05 : 2015-06-17 : TJL73 : http://tjl73.altervista.org/
 ;
 ;
 ;
@@ -63,6 +63,7 @@ Crea cartella
 Crea file
 E&sci
 Collegamento
+&Alternate Data Streams
 600
 &Seleziona tutto
 &Deseleziona tutto
@@ -190,6 +191,8 @@ Dimensione della matrice integrato
 Collegamento
 Collegamento statico
 iNode
+
+Sola lettura
 2100
 Opzioni
 Lingua
@@ -200,6 +203,7 @@ Comparatore &differenze (Diff):
 2200
 Sistema
 Associa 7-Zip a:
+Tutti gli utenti
 2301
 Integra 7-Zip nel menu contestuale della shell
 Menu contestuale a cascata
@@ -256,12 +260,25 @@ L'operazione non può essere richiamata da una cartella con percorso lungo.
 Devi selezionare un file
 Devi selezionare almeno un file
 Troppi elementi
+Impossibile aprire il file come archivio {0}
+Il file è aperto come archivio {0}
+L'archivio è aperto con offset
 3300
-Estrazione in corso...
-Compressione in corso...
-Verifica archivio...
+Estrazione in corso
+Compressione in corso
+Verifica archivio
 Apertura in corso...
 Scansione...
+Rimozione
+3320
+Aggiunta
+Aggiornamento
+Analisi
+Replica
+Ripacchettizzazione
+Salto
+Eliminazione
+Creazione intestazione
 3400
 Estrai
 E&strai in:
@@ -306,6 +323,7 @@ Fine dei dati inattesa
 Sono presenti dati oltre la fine del blocco utile
 Non è un archivio
 Errore intestazioni
+Password errata
 3763
 Inizio dell'archivio non disponibile
 Inizio dell'archivio non confermato

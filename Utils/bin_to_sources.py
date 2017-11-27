@@ -14,7 +14,7 @@ dir0='CPP/7zip/UI/Console'
 file0='Utils/file_7z.py'
 
 dir0='CPP/7zip/Compress/Rar'
-file0='Utils/file_Codecs_Rar29_so.py'
+file0='Utils/file_Codecs_Rar_so.py'
 
 dir0='CPP/7zip/Bundles/Format7zFree'
 file0='Utils/file_7z_so.py'

@@ -60,7 +60,7 @@ static const FChar kExtensionDelimiter = FTEXT('.');
 static void SplitNameToPureNameAndExtension(const FString &fullName,
     FString &pureName, FString &extensionDelimiter, FString &extension)
 {
-  int index = fullName.ReverseFind(kExtensionDelimiter);
+  int index = fullName.ReverseFind_Dot();
   if (index < 0)
   {
     pureName = fullName;
@@ -70,7 +70,7 @@ static void SplitNameToPureNameAndExtension(const FString &fullName,
   else
   {
     pureName.SetFrom(fullName, index);
-    extensionDelimiter = kExtensionDelimiter;
+    extensionDelimiter = FTEXT('.');
     extension = fullName.Ptr(index + 1);
   }
 }
@@ -91,7 +91,7 @@ HRESULT OpenFileFolderPlugin(
 
   FString extension, name, pureName, dot;
 
-  int slashPos = path.ReverseFind(FCHAR_PATH_SEPARATOR);
+  int slashPos = path.ReverseFind_PathSepar();
   FString dirPrefix;
   FString fileName;
   if (slashPos >= 0)

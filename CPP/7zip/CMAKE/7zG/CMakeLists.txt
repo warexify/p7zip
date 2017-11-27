@@ -8,7 +8,7 @@ include_directories(
   "../../../include_windows"
 )
 
-add_definitions( -DLANG -DEXTERNAL_CODECS -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_REENTRANT -DENV_UNIX -DUNICODE -D_UNICODE)
+add_definitions( -DLANG -DEXTERNAL_CODECS -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_REENTRANT -DENV_UNIX -DUNICODE -D_UNICODE -DUNIX_USE_WIN_FILE)
 
 IF(APPLE)
   add_definitions(-DENV_MACOSX)
@@ -66,6 +66,7 @@ add_executable(7zG
   "../../../../CPP/7zip/UI/FileManager/PasswordDialog.cpp"
   "../../../../CPP/7zip/UI/FileManager/PasswordDialog_rc.cpp"
   "../../../../CPP/7zip/UI/FileManager/ProgramLocation.cpp"
+  "../../../../CPP/7zip/UI/FileManager/PropertyName.cpp"
   "../../../../CPP/7zip/UI/FileManager/ProgressDialog2.cpp"
   "../../../../CPP/7zip/UI/FileManager/ProgressDialog2_rc.cpp"
   "../../../../CPP/7zip/UI/FileManager/SplitUtils.cpp"
@@ -80,6 +81,7 @@ add_executable(7zG
   "../../../../CPP/7zip/UI/GUI/GUI.cpp"
   "../../../../CPP/7zip/UI/GUI/HashGUI.cpp"
   "../../../../CPP/7zip/UI/GUI/UpdateCallbackGUI.cpp"
+  "../../../../CPP/7zip/UI/GUI/UpdateCallbackGUI2.cpp"
   "../../../../CPP/7zip/UI/GUI/UpdateGUI.cpp"
   "../../../../CPP/7zip/UI/GUI/wxGUI.cpp"
   "../../../../CPP/Common/CRC.cpp"

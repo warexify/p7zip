@@ -25,3 +25,6 @@ INCLUDEPATH = ../../../myWindows \
 	../../../include_windows
 
 DEFINES += _FILE_OFFSET_BITS=64 _LARGEFILE_SOURCE _REENTRANT ENV_UNIX BREAK_HANDLER UNICODE _UNICODE
+
+macx: LIBS += -framework CoreFoundation
+

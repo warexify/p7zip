@@ -348,7 +348,7 @@ HRESULT CInArchive::FindAndReadMarker(IInStream *stream, const UInt64 *searchLim
   return S_FALSE;
 }
 
-HRESULT CInArchive::IncreaseRealPosition(UInt64 addValue)
+HRESULT CInArchive::IncreaseRealPosition(Int64 addValue)
 {
   return Stream->Seek(addValue, STREAM_SEEK_CUR, &m_Position);
 }
@@ -439,10 +439,9 @@ void CInArchive::ReadFileName(unsigned size, AString &s)
     s.Empty();
     return;
   }
-  char *p = s.GetBuffer(size);
+  char *p = s.GetBuf(size);
   SafeReadBytes(p, size);
-  p[size] = 0;
-  s.ReleaseBuffer();
+  s.ReleaseBuf_CalcLen(size);
 }
 
 bool CInArchive::ReadExtra(unsigned extraSize, CExtraBlock &extraBlock,
@@ -556,7 +555,12 @@ bool CInArchive::ReadLocalItem(CItemEx &item)
     UInt32 diskStartNumber = 0;
     if (!ReadExtra(extraSize, item.LocalExtra, item.Size, item.PackSize,
         localHeaderOffset, diskStartNumber))
-      return false;
+    {
+      /* Most of archives are OK for Extra. But there are some rare cases
+         that have error. And if error in first item, it can't open archive.
+         So we ignore that error */
+      // return false;
+    }
   }
   if (!CheckDosTime(item.Time))
   {
@@ -575,7 +579,7 @@ static bool FlagsAreSame(const CItem &i1, const CItem &i2)
   if (i1.Flags == i2.Flags)
     return true;
   UInt32 mask = 0xFFFF;
-  switch(i1.Method)
+  switch (i1.Method)
   {
     case NFileHeader::NCompressionMethod::kDeflated:
       mask = 0x7FF9;
@@ -586,6 +590,29 @@ static bool FlagsAreSame(const CItem &i1, const CItem &i2)
   }
   return ((i1.Flags & mask) == (i2.Flags & mask));
 }
+
+// #ifdef _WIN32
+static bool AreEqualPaths_IgnoreSlashes(const char *s1, const char *s2)
+{
+  for (;;)
+  {
+    char c1 = *s1++;
+    char c2 = *s2++;
+    if (c1 == c2)
+    {
+      if (c1 == 0)
+        return true;
+    }
+    else
+    {
+      if (c1 == '\\') c1 = '/';
+      if (c2 == '\\') c2 = '/';
+      if (c1 != c2)
+        return false;
+    }
+  }
+}
+// #endif
 
 static bool AreItemsEqual(const CItemEx &localItem, const CItemEx &cdItem)
 {
@@ -607,7 +634,30 @@ static bool AreItemsEqual(const CItemEx &localItem, const CItemEx &cdItem)
     return false;
   */
   if (cdItem.Name != localItem.Name)
-    return false;
+  {
+    // #ifdef _WIN32
+    // some xap files use backslash in central dir items.
+    // we can ignore such errors in windows, where all slashes are converted to backslashes
+    unsigned hostOs = cdItem.GetHostOS();
+    
+    if (hostOs == NFileHeader::NHostOS::kFAT ||
+        hostOs == NFileHeader::NHostOS::kNTFS)
+    {
+      if (!AreEqualPaths_IgnoreSlashes(cdItem.Name, localItem.Name))
+      {
+        // pkzip 2.50 uses DOS encoding in central dir and WIN encoding in local header.
+        // so we ignore that error
+        if (hostOs != NFileHeader::NHostOS::kFAT
+            || cdItem.MadeByVersion.Version != 25)
+          return false;
+      }
+    }
+    /*
+    else
+    #endif
+      return false;
+    */
+  }
   return true;
 }
 
@@ -650,6 +700,7 @@ HRESULT CInArchive::ReadLocalItemDescriptor(CItemEx &item)
     numBytesInBuffer += processedSize;
     if (numBytesInBuffer < kDataDescriptorSize)
       return S_FALSE;
+    
     UInt32 i;
     for (i = 0; i <= numBytesInBuffer - kDataDescriptorSize; i++)
     {
@@ -666,10 +717,11 @@ HRESULT CInArchive::ReadLocalItemDescriptor(CItemEx &item)
           item.Crc = Get32(buf + i + 4);
           item.PackSize = descriptorPackSize;
           item.Size = Get32(buf + i + 12);
-          return IncreaseRealPosition(Int64(Int32(0 - (numBytesInBuffer - i - kDataDescriptorSize))));
+          return IncreaseRealPosition((Int64)(Int32)(0 - (numBytesInBuffer - i - kDataDescriptorSize)));
         }
       }
     }
+    
     packedSize += i;
     unsigned j;
     for (j = 0; i < numBytesInBuffer; i++, j++)
@@ -1262,7 +1314,10 @@ HRESULT CInArchive::ReadHeaders2(CObjectVector<CItemEx> &items, CProgressVirt *p
       (UInt32)ecd64.cdSize != (UInt32)cdSize ||
       ((UInt32)(ecd64.cdStartOffset) != (UInt32)cdRelatOffset &&
         (!items.IsEmpty())))
-    return S_FALSE;
+  {
+    // return S_FALSE;
+    HeadersError = true;
+  }
   
   // printf("\nOpen OK");
   return S_OK;

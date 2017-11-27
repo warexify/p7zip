@@ -1,7 +1,7 @@
 ﻿;!@Lang2@!UTF-8!
 ;  4.07 : Nicolas Sierro
 ;  9.07 : Philippe Berthault
-;  9.35 : Sylvain St-Amand (SSTSylvain)
+; 15.05 : Sylvain St-Amand (SSTSylvain)
 ;
 ;
 ;
@@ -32,7 +32,7 @@ Non pour T&ous
 Arrêter
 Redémarrer
 &Arrière-plan
-A&vant plan
+P&remier plan
 &Pause
 En pause
 Êtes-vous sur de vouloir annuler ?
@@ -63,6 +63,7 @@ Créer un dossier
 Créer un fichier
 &Quitter
 Lien
+Flux &Alternatif
 600
 Sélectionner &Tout
 Désélectionner Tout
@@ -113,7 +114,7 @@ Accédé le
 Modifié le
 Solide
 Commentaire
-Crypté
+Chiffrer
 Diviser Avant
 Diviser Après
 Dictionnaire
@@ -133,7 +134,7 @@ Dossiers
 Fichiers
 Version
 Volume
-Multi-volume
+Multivolume
 Offset
 Liens
 Blocs
@@ -146,7 +147,7 @@ Taille physique
 Taille des en-têtes
 Somme de contrôle
 Caractéristiques
-Adresse Virtuelle
+Adresse virtuelle
 ID
 Nom court
 Application créatrice
@@ -161,7 +162,7 @@ Nom de volume
 Nom local
 Fournisseur
 Sécurité NT
-Stream Alternatif
+Flux alternatif
 Aux
 Effacer
 En Arbre
@@ -172,9 +173,9 @@ Erreurs
 Erreurs
 Avertissements
 Avertissement
-Streams
-Streams Alterné
-Grosseur du Streams Alterné
+Flux
+Flux Alterné
+Grosseur du Flux Alterné
 Grosseur Virtuel
 Grosseur Décompressé
 Grosseur Physique Totale
@@ -190,6 +191,8 @@ Grosseur Embedded Stub
 Lien
 Lien Solide
 iNode
+
+Lecture-seulement
 2100
 Options
 Langue
@@ -200,6 +203,7 @@ Langue :
 2200
 Système
 Associer avec 7-Zip :
+Tous les utilisateurs
 2301
 Intégrer 7-Zip au menu contextuel
 Menu contextuel en cascade
@@ -256,12 +260,25 @@ Cette opération ne peut être effectuée depuis un dossier ayant un trop long c
 Vous devez sélectionner un fichier
 Vous devez sélectionner un ou plusieurs fichiers
 Trop d'objets
+Ne peut ouvrir les fichiers {0} comme une archive
+Le fichier {0} est ouvert comme une archive
+L'archive est ouvert avec un décalage
 3300
 Extraction
 Compression
 Contrôle
 Ouverture...
 Exploration...
+Enlever
+3320
+Ajoute
+Modifie
+Analyse
+Réplique
+Remballage
+Passe
+Efface
+Création d'un en-tête
 3400
 Extraire
 E&xtraire vers :
@@ -280,7 +297,7 @@ Ignorer les fichiers existants
 Renommer automatiquement
 Renommer les fichiers existants
 3430
-Eliminate duplication of root folder
+Élimine la duplication du répertoire racine
 Restauration du fichier de sécurité
 3500
 Confirmer le remplacement de fichier
@@ -302,10 +319,11 @@ Méthode de compression non supportée
 Erreur de donnée
 Échec de CRC
 Donnée non disponible
-Fin des données inattendus
+Fin de données inattendues
 Il y a des données après la fin des données utiles
 N'est pas une archive
-Erreur Headers
+Erreur en-têtes
+Mauvais mot de passe
 3763
 Démarrage non disponible d'une archive
 Démarrage non confirmer d'une archive
@@ -330,14 +348,14 @@ Vitesse :
 Traité :
 Taux de compression :
 Erreurs :
-Archives :
+Archive :
 4000
 Ajouter à l'archive
 &Archive :
 &Mode de mise à jour :
 &Format de l'archive :
 N&iveau de compression :
-Type de &compression :
+Méthode de &compression :
 &Taille du dictionnaire :
 Tai&lle des mots :
 Taille de bloc solide :
@@ -346,16 +364,16 @@ Nombre de threads CPU :
 Options
 Créer une archive SF&X
 Compresser des fichiers partagés
-Cryptage
-Méthode de cryptage :
-Crypter les &noms de fichiers
+Chiffrement
+Méthode de chiffrement :
+Chiffre les &noms de fichiers
 Mémoire pour la compression :
 Mémoire pour la décompression :
 Effacer les fichiers après compression
 4040
 Emmagasine liens symbolique
 Emmagasine liens solide
-Emmagasine donnée streams alternatif
+Emmagasine flux de données alternatifs
 Emmagasine fichier de sécurité
 4050
 Aucune
@@ -371,7 +389,7 @@ Rafraîchir les fichiers existants
 Synchroniser les fichiers
 4070
 Choisir
-Tous les Fichiers
+Tous les fichiers
 Non-solide
 Solide
 6000
@@ -385,8 +403,8 @@ Renommage...
 Sélectionnez le dossier de destination.
 L'opération n'est pas possible pour ce dossier.
 Erreur durant le Renommage du Fichier ou du Dossier
-Confirmation de la Copie de(des) Fichier(s)
-Confirmer la copie du(des) fichier(s) à archiver
+Confirmation de la Copie de(s) Fichier(s)
+Confirmer la copie de(s) fichier(s) à archiver
 6100
 Confirmer la Suppression du Fichier
 Confirmer la Suppression du Dossier
@@ -463,15 +481,15 @@ Actuel
 Résultant
 Utilisation CPU
 Estimé / Usage
-Passes :
+Passe :
 7700
 Lien
 Lien
 Lien depuis :
 Lien ver :
 7710
-Sorte Lien
-Lien Solide
+Sorte de lien
+Lien solide
 Lien symbolique de fichier
 Lien symbolique de répertoire
 Jonction de répertoire

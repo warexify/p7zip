@@ -17,6 +17,7 @@
 #include "Common/Common.h"
 #include "Common/MyWindows.h"
 #include "Common/MyTypes.h"
+#include "Common/MyString.h" // FIXME
 
 #include <windows.h>
 
@@ -115,10 +116,15 @@ int MessageBoxW(wxWindow * parent, const TCHAR * mes, const TCHAR * title,int fl
 
 typedef void *HINSTANCE;
 
-typedef          int   INT_PTR;  // FIXME 64 bits ?
-typedef unsigned int  UINT_PTR;  // FIXME 64 bits ?
-typedef          long LONG_PTR;  // FIXME 64 bits ?
-typedef          long DWORD_PTR; // FIXME 64 bits ?
+// gcc / clang on Unix  : sizeof(long==sizeof(void*) in 32 or 64 bits)
+//typedef          int   INT_PTR;
+typedef          long   INT_PTR;
+// typedef unsigned int  UINT_PTR;
+typedef unsigned long  UINT_PTR;
+
+typedef          long LONG_PTR;
+typedef unsigned long DWORD_PTR;
+
 typedef UINT_PTR WPARAM;
 
 /* WARNING
@@ -137,6 +143,11 @@ typedef LONG_PTR LRESULT;
 #define ERROR_NEGATIVE_SEEK         0x100131 // FIXME
 #define FACILITY_WIN32                        7 // FIXME
 #define __HRESULT_FROM_WIN32(x)   ((HRESULT)(x) > 0 ? ((HRESULT) (((x) & 0x0000FFFF) | (FACILITY_WIN32 << 16) | 0x80000000)) : (HRESULT)(x) ) // FIXME
+
+static inline HRESULT HRESULT_FROM_WIN32(unsigned int x)
+{
+    return (HRESULT)x > 0 ? ((HRESULT) ((x & 0x0000FFFF) | (FACILITY_WIN32 << 16) | 0x80000000)) : (HRESULT)x;
+}
 
 /************ Windows2.h ***********/
 

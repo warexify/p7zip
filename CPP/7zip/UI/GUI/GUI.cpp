@@ -102,11 +102,10 @@ static int Main2(int argc,TCHAR **argv)
   UStringVector commandStrings;
 #ifdef _WIN32
   NCommandLineParser::SplitCommandLine(GetCommandLineW(), commandStrings);
-  #else
+#else
   extern void mySplitCommandLineW(int numArguments,TCHAR  **arguments,UStringVector &parts);
   mySplitCommandLineW(argc,argv,commandStrings);
-  #endif
-
+#endif
   #ifndef UNDER_CE
   if (commandStrings.Size() > 0)
     commandStrings.Delete(0);
@@ -131,14 +130,8 @@ static int Main2(int argc,TCHAR **argv)
   #endif
   #endif
 
-  CCodecs *codecs = new CCodecs;
-  #ifdef EXTERNAL_CODECS
-  CExternalCodecs __externalCodecs;
-  __externalCodecs.GetCodecs = codecs;
-  __externalCodecs.GetHashers = codecs;
-  #else
-  CMyComPtr<IUnknown> compressCodecsInfo = codecs;
-  #endif
+  CREATE_CODECS_OBJECT
+
   codecs->CaseSensitiveChange = options.CaseSensitiveChange;
   codecs->CaseSensitive = options.CaseSensitive;
   ThrowException_if_Error(codecs->Load());
@@ -149,8 +142,18 @@ static int Main2(int argc,TCHAR **argv)
         (isExtractGroupCommand
         
         || options.Command.IsFromUpdateGroup()))
+  {
+    #ifdef EXTERNAL_CODECS
+    if (!codecs->MainDll_ErrorPath.IsEmpty())
+    {
+      UString s = L"7-Zip cannot load module ";
+      s += fs2us(codecs->MainDll_ErrorPath);
+      throw s;
+    }
+    #endif
     throw kNoFormats;
-
+  }
+  
   CObjectVector<COpenType> formatIndices;
   if (!ParseOpenTypes(*codecs, options.ArcType, formatIndices))
   {
@@ -176,12 +179,12 @@ static int Main2(int argc,TCHAR **argv)
   if (isExtractGroupCommand
       || options.Command.CommandType == NCommandType::kHash
       || options.Command.CommandType == NCommandType::kBenchmark)
-    ThrowException_if_Error(__externalCodecs.LoadCodecs());
+    ThrowException_if_Error(__externalCodecs.Load());
   #endif
   
   if (options.Command.CommandType == NCommandType::kBenchmark)
   {
-    HRESULT res = Benchmark(EXTERNAL_CODECS_VARS options.Properties);
+    HRESULT res = Benchmark(EXTERNAL_CODECS_VARS_L options.Properties);
     /*
     if (res == S_FALSE)
     {
@@ -193,6 +196,9 @@ static int Main2(int argc,TCHAR **argv)
   }
   else if (isExtractGroupCommand)
   {
+    UStringVector ArchivePathsSorted;
+    UStringVector ArchivePathsFullSorted;
+
     CExtractCallbackImp *ecs = new CExtractCallbackImp;
     CMyComPtr<IFolderArchiveExtractCallback> extractCallback = ecs;
 
@@ -223,14 +229,37 @@ static int Main2(int argc,TCHAR **argv)
     if (!options.HashMethods.IsEmpty())
     {
       hb_ptr = &hb;
-      ThrowException_if_Error(hb.SetMethods(EXTERNAL_CODECS_VARS options.HashMethods));
+      ThrowException_if_Error(hb.SetMethods(EXTERNAL_CODECS_VARS_L options.HashMethods));
     }
     #endif
 
+    {
+      CDirItemsStat st;
+      HRESULT hresultMain = EnumerateDirItemsAndSort(
+          options.arcCensor,
+          NWildcard::k_RelatPath,
+          UString(), // addPathPrefix
+          ArchivePathsSorted,
+          ArchivePathsFullSorted,
+          st,
+          NULL // &scan: change it!!!!
+          );
+      if (hresultMain != S_OK)
+      {
+        /*
+        if (hresultMain != E_ABORT && messageWasDisplayed)
+          return NExitCode::kFatalError;
+        */
+        throw CSystemException(hresultMain);
+      }
+    }
+
+    ecs->MultiArcMode = (ArchivePathsSorted.Size() > 1);
+
     HRESULT result = ExtractGUI(codecs,
           formatIndices, excludedFormatIndices,
-          options.ArchivePathsSorted,
-          options.ArchivePathsFullSorted,
+          ArchivePathsSorted,
+          ArchivePathsFullSorted,
           options.Censor.Pairs.Front().Head,
           eo,
           #ifndef _SFX
@@ -296,7 +325,7 @@ static int Main2(int argc,TCHAR **argv)
   else if (options.Command.CommandType == NCommandType::kHash)
   {
     bool messageWasDisplayed = false;
-    HRESULT result = HashCalcGUI(EXTERNAL_CODECS_VARS
+    HRESULT result = HashCalcGUI(EXTERNAL_CODECS_VARS_L
         options.Censor, options.HashOptions, messageWasDisplayed);
 
     if (result != S_OK)

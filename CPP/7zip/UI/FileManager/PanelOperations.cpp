@@ -85,16 +85,15 @@ HRESULT CThreadFolderOperations::DoOperation(CPanel &panel, const UString &progr
   ProgressDialog.Sync.FinalMessage.ErrorMessage.Title = titleError;
   Result = S_OK;
 
-  bool usePassword = false;
-  UString password;
+  UpdateCallbackSpec->Init();
+
   if (panel._parentFolders.Size() > 0)
   {
     const CFolderLink &fl = panel._parentFolders.Back();
-    usePassword = fl.UsePassword;
-    password = fl.Password;
+    UpdateCallbackSpec->PasswordIsDefined = fl.UsePassword;
+    UpdateCallbackSpec->Password = fl.Password;
   }
 
-  UpdateCallbackSpec->Init(usePassword, password);
 
   ProgressDialog.MainWindow = panel._mainWindow; // panel.GetParent()
   ProgressDialog.MainTitle = L"7-Zip"; // LangString(IDS_APP_TITLE);
@@ -108,6 +107,7 @@ HRESULT CThreadFolderOperations::DoOperation(CPanel &panel, const UString &progr
 typedef int (WINAPI * SHFileOperationWP)(LPSHFILEOPSTRUCTW lpFileOp);
 #endif
 
+/*
 void CPanel::MessageBoxErrorForUpdate(HRESULT errorCode, UINT resourceID)
 {
   if (errorCode == E_NOINTERFACE)
@@ -115,6 +115,7 @@ void CPanel::MessageBoxErrorForUpdate(HRESULT errorCode, UINT resourceID)
   else
     MessageBoxError(errorCode, LangString(resourceID));
 }
+*/
 
 void CPanel::DeleteItems(bool NON_CE_VAR(toRecycleBin))
 {
@@ -137,8 +138,8 @@ void CPanel::DeleteItems(bool NON_CE_VAR(toRecycleBin))
       CDynamicBuffer<CHAR> buffer;
       FOR_VECTOR (i, indices)
       {
-        const AString path = GetSystemString(GetFsPath() + GetItemRelPath(indices[i]));
-        memcpy(buffer.GetCurPtrAndGrow(path.Len() + 1), (const CHAR *)path, (path.Len() + 1) * sizeof(CHAR));
+        const AString path = GetSystemString(GetItemFullPath(indices[i]));
+        buffer.AddData(path, path.Len() + 1);
       }
       *buffer.GetCurPtrAndGrow(1) = 0;
       SHFILEOPSTRUCTA fo;
@@ -163,13 +164,14 @@ void CPanel::DeleteItems(bool NON_CE_VAR(toRecycleBin))
     {
       CDynamicBuffer<WCHAR> buffer;
       unsigned maxLen = 0;
+      const UString prefix = GetFsPath();
       FOR_VECTOR (i, indices)
       {
         // L"\\\\?\\") doesn't work here.
-        const UString path = GetFsPath() + GetItemRelPath(indices[i]);
+        const UString path = prefix + GetItemRelPath2(indices[i]);
         if (path.Len() > maxLen)
           maxLen = path.Len();
-        memcpy(buffer.GetCurPtrAndGrow(path.Len() + 1), (const WCHAR *)path, (path.Len() + 1) * sizeof(WCHAR));
+        buffer.AddData(path, path.Len() + 1);
       }
       *buffer.GetCurPtrAndGrow(1) = 0;
 #ifdef _WIN32
@@ -195,15 +197,15 @@ void CPanel::DeleteItems(bool NON_CE_VAR(toRecycleBin))
         fo.fAnyOperationsAborted = FALSE;
         fo.hNameMappings = 0;
         fo.lpszProgressTitle = 0;
-        int res;
+        // int res;
         #ifdef _UNICODE
-        res = ::SHFileOperationW(&fo);
+        /* res = */ ::SHFileOperationW(&fo);
         #else
         SHFileOperationWP shFileOperationW = (SHFileOperationWP)
           ::GetProcAddress(::GetModuleHandleW(L"shell32.dll"), "SHFileOperationW");
         if (shFileOperationW == 0)
           return;
-        res = shFileOperationW(&fo);
+        /* res = */ shFileOperationW(&fo);
         #endif
       }
 #else
@@ -225,19 +227,15 @@ void CPanel::DeleteItems(bool NON_CE_VAR(toRecycleBin))
  
   // DeleteItemsInternal
 
-  CMyComPtr<IFolderOperations> folderOperations;
-  if (_folder.QueryInterface(IID_IFolderOperations, &folderOperations) != S_OK)
-  {
-    MessageBoxErrorForUpdate(E_NOINTERFACE, IDS_ERROR_DELETING);
+  if (!CheckBeforeUpdate(IDS_ERROR_DELETING))
     return;
-  }
 
   UInt32 titleID, messageID;
   UString messageParam;
   if (indices.Size() == 1)
   {
     int index = indices[0];
-    messageParam = GetItemRelPath(index);
+    messageParam = GetItemRelPath2(index);
     if (IsItem_Folder(index))
     {
       titleID = IDS_CONFIRM_FOLDER_DELETE;
@@ -261,7 +259,7 @@ void CPanel::DeleteItems(bool NON_CE_VAR(toRecycleBin))
   CDisableNotify disableNotify(*this);
   {
     CThreadFolderOperations op(FOLDER_TYPE_DELETE);
-    op.FolderOperations = folderOperations;
+    op.FolderOperations = _folderOperations;
     op.Indices = indices;
     op.DoOperation(*this,
         LangString(IDS_DELETING),
@@ -277,26 +275,15 @@ BOOL CPanel::OnBeginLabelEdit(LV_DISPINFOW * lpnmh)
   int realIndex = GetRealIndex(lpnmh->item);
   if (realIndex == kParentIndex)
     return TRUE;
-  CMyComPtr<IFolderOperations> folderOperations;
-  if (_folder.QueryInterface(IID_IFolderOperations, &folderOperations) != S_OK)
+  if (IsThereReadOnlyFolder())
     return TRUE;
   return FALSE;
 }
 #endif
 
-static UString GetLastPart(const UString name)
-{
-  int slashPos = name.ReverseFind(L'/');
-  #ifdef _WIN32
-  int slash1Pos = name.ReverseFind(L'\\');
-  slashPos = MyMax(slashPos, slash1Pos);
-  #endif
-  return name.Ptr(slashPos + 1);
-}
-
 bool IsCorrectFsName(const UString &name)
 {
-  const UString lastPart = GetLastPart(name);
+  const UString lastPart = name.Ptr(name.ReverseFind_PathSepar() + 1);
   return
       lastPart != L"." &&
       lastPart != L"..";
@@ -306,7 +293,7 @@ bool CorrectFsPath(const UString &relBase, const UString &path, UString &result)
 
 bool CPanel::CorrectFsPath(const UString &path2, UString &result)
 {
-  return ::CorrectFsPath(_currentFolderPrefix, path2, result);
+  return ::CorrectFsPath(GetFsPath(), path2, result);
 }
 
 #ifdef _WIN32
@@ -315,12 +302,10 @@ BOOL CPanel::OnEndLabelEdit(LV_DISPINFOW * lpnmh)
   if (lpnmh->item.pszText == NULL)
     return FALSE;
   CDisableTimerProcessing disableTimerProcessing2(*this);
-  CMyComPtr<IFolderOperations> folderOperations;
-  if (_folder.QueryInterface(IID_IFolderOperations, &folderOperations) != S_OK)
-  {
-    MessageBoxErrorForUpdate(E_NOINTERFACE, IDS_ERROR_RENAMING);
+
+  if (!CheckBeforeUpdate(IDS_ERROR_RENAMING))
     return FALSE;
-  }
+
   UString newName = lpnmh->item.pszText;
   if (!IsCorrectFsName(newName))
   {
@@ -350,7 +335,7 @@ BOOL CPanel::OnEndLabelEdit(LV_DISPINFOW * lpnmh)
   CDisableNotify disableNotify(*this);
   {
     CThreadFolderOperations op(FOLDER_TYPE_RENAME);
-    op.FolderOperations = folderOperations;
+    op.FolderOperations = _folderOperations;
     op.Index = realIndex;
     op.Name = newName;
     /* HRESULTres = */ op.DoOperation(*this,
@@ -386,12 +371,9 @@ bool Dlg_CreateFolder(HWND wnd, UString &destName);
 
 void CPanel::CreateFolder()
 {
-  CMyComPtr<IFolderOperations> folderOperations;
-  if (_folder.QueryInterface(IID_IFolderOperations, &folderOperations) != S_OK)
-  {
-    MessageBoxErrorForUpdate(E_NOINTERFACE, IDS_CREATE_FOLDER_ERROR);
+  if (!CheckBeforeUpdate(IDS_CREATE_FOLDER_ERROR))
     return;
-  }
+
   CDisableTimerProcessing disableTimerProcessing2(*this);
   CSelectedState state;
   SaveSelectedState(state);
@@ -421,7 +403,7 @@ void CPanel::CreateFolder()
   CDisableNotify disableNotify(*this);
   {
     CThreadFolderOperations op(FOLDER_TYPE_CREATE_FOLDER);
-    op.FolderOperations = folderOperations;
+    op.FolderOperations = _folderOperations;
     op.Name = newName;
     res = op.DoOperation(*this,
         LangString(IDS_CREATE_FOLDER),
@@ -448,12 +430,9 @@ void CPanel::CreateFolder()
 
 void CPanel::CreateFile()
 {
-  CMyComPtr<IFolderOperations> folderOperations;
-  if (_folder.QueryInterface(IID_IFolderOperations, &folderOperations) != S_OK)
-  {
-    MessageBoxErrorForUpdate(E_NOINTERFACE, IDS_CREATE_FILE_ERROR);
+  if (!CheckBeforeUpdate(IDS_CREATE_FILE_ERROR))
     return;
-  }
+
   CDisableTimerProcessing disableTimerProcessing2(*this);
   CSelectedState state;
   SaveSelectedState(state);
@@ -480,10 +459,11 @@ void CPanel::CreateFile()
     newName = correctName;
   }
 
-  HRESULT result = folderOperations->CreateFile(newName, 0);
+  HRESULT result = _folderOperations->CreateFile(newName, 0);
   if (result != S_OK)
   {
-    MessageBoxErrorForUpdate(result, IDS_CREATE_FILE_ERROR);
+    MessageBoxError(result, LangString(IDS_CREATE_FILE_ERROR));
+    // MessageBoxErrorForUpdate(result, IDS_CREATE_FILE_ERROR);
     return;
   }
   int pos = newName.Find(WCHAR_PATH_SEPARATOR);
@@ -498,6 +478,8 @@ void CPanel::CreateFile()
 
 void CPanel::RenameFile()
 {
+  if (!CheckBeforeUpdate(IDS_ERROR_RENAMING))
+    return;
   int index = _listView.GetFocusedItem();
   if (index >= 0)
     _listView.EditLabel(index);
@@ -505,6 +487,8 @@ void CPanel::RenameFile()
 
 void CPanel::ChangeComment()
 {
+  if (!CheckBeforeUpdate(IDS_COMMENT))
+    return;
   CDisableTimerProcessing disableTimerProcessing2(*this);
   int index = _listView.GetFocusedItem();
   if (index < 0)
@@ -514,13 +498,6 @@ void CPanel::ChangeComment()
     return;
   CSelectedState state;
   SaveSelectedState(state);
-  CMyComPtr<IFolderOperations> folderOperations;
-  if (_folder.QueryInterface(IID_IFolderOperations, &folderOperations) != S_OK)
-  {
-    MessageBoxErrorLang(IDS_OPERATION_IS_NOT_SUPPORTED);
-    return;
-  }
-
   UString comment;
   {
     NCOM::CPropVariant propVariant;
@@ -531,17 +508,19 @@ void CPanel::ChangeComment()
     else if (propVariant.vt != VT_EMPTY)
       return;
   }
-  UString name = GetItemRelPath(realIndex);
+  UString name = GetItemRelPath2(realIndex);
   CComboDialog dlg;
-  dlg.Title = name + L' ' + LangString(IDS_COMMENT);
+  dlg.Title = name;
+  dlg.Title += L" : ";
+  AddLangString(dlg.Title, IDS_COMMENT);
   dlg.Value = comment;
   LangString(IDS_COMMENT2, dlg.Static);
   if (dlg.Create(GetParent()) != IDOK)
     return;
-  NCOM::CPropVariant propVariant(dlg.Value);
+  NCOM::CPropVariant propVariant = dlg.Value.Ptr();
 
   CDisableNotify disableNotify(*this);
-  HRESULT result = folderOperations->SetProperty(realIndex, kpidComment, &propVariant, NULL);
+  HRESULT result = _folderOperations->SetProperty(realIndex, kpidComment, &propVariant, NULL);
   if (result != S_OK)
   {
     if (result == E_NOINTERFACE)

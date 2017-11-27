@@ -1,7 +1,7 @@
 
-OPTFLAGS=-fast
+OPTFLAGS=-fast -s
 
-ALLFLAGS=${OPTFLAGS} -s -mt \
+ALLFLAGS=${OPTFLAGS} -mt \
         -DHAVE_LONG_LONG \
         -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE \
         -DENV_UNIX \

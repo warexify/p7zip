@@ -10,6 +10,10 @@
 #include "FileFind.h"
 #include "FileName.h"
 
+using namespace NWindows;
+using namespace NFile;
+using namespace NName;
+
 #include "../Common/StringConvert.h"
 #include "../Common/IntToString.h"
 
@@ -40,9 +44,9 @@ class Umask
   mode_t  mask;
   Umask() {
     current_umask = umask (0);  /* get and set the umask */
-    umask(current_umask);	/* restore the umask */
+    umask(current_umask);   /* restore the umask */
     mask = 0777 & (~current_umask);
-  } 
+  }
 };
 
 static Umask gbl_umask;
@@ -117,7 +121,7 @@ DWORD WINAPI GetFullPathNameW( LPCTSTR name, DWORD len, LPTSTR buffer, LPTSTR *l
   if (cret) {
     begin_len = strlen(begin);
   }
-   
+
   if (begin_len >= 1) {
     //    strlen(begin) + strlen("/") + strlen(name)
     ret = begin_len     +    1        + name_len;
@@ -337,7 +341,7 @@ static int convert_to_symlink(const char * name) {
       if (ir == 0) {
         ir = symlink(buf,name);
       }
-      return ir;    
+      return ir;
     }
   }
   return -1;
@@ -451,7 +455,7 @@ bool MyMoveFile(CFSTR existFileName, CFSTR newFileName)
       struct stat info_file;
       ret = stat(src,&info_file);
       if (ret == 0) {
-	TRACEN((printf("##DBG chmod-1(%s,%o)\n",(const char *)dst,(unsigned)info_file.st_mode & gbl_umask.mask)))
+    TRACEN((printf("##DBG chmod-1(%s,%o)\n",(const char *)dst,(unsigned)info_file.st_mode & gbl_umask.mask)))
         ret = chmod(dst,info_file.st_mode & gbl_umask.mask);
       }
       if (ret == 0) {
@@ -589,7 +593,7 @@ bool RemoveDirWithSubItems(const FString &path)
         return false;
     }
   }
-  
+
   if (!SetFileAttrib(path, 0))
     return false;
   return RemoveDir(path);
@@ -628,84 +632,9 @@ bool MyGetFullPathName(CFSTR fileName, FString &resFullPath)
 
 #else
 
-#ifdef WIN_LONG_PATH
-
-static FString GetLastPart(CFSTR path)
+bool MyGetFullPathName(CFSTR path, FString &resFullPath)
 {
-  int i = MyStringLen(path);
-  for (; i > 0; i--)
-  {
-    FChar c = path[i - 1];
-    if (c == FCHAR_PATH_SEPARATOR || c == '/')
-      break;
-  }
-  return path + i;
-}
-
-static void AddTrailingDots(CFSTR oldPath, FString &newPath)
-{
-  int len = MyStringLen(oldPath);
-  int i;
-  for (i = len; i > 0 && oldPath[i - 1] == '.'; i--);
-  if (i == 0 || i == len)
-    return;
-  FString oldName = GetLastPart(oldPath);
-  FString newName = GetLastPart(newPath);
-  int nonDotsLen = oldName.Len() - (len - i);
-  if (nonDotsLen == 0 || newName.CompareNoCase(oldName.Left(nonDotsLen)) != 0)
-    return;
-  for (; i != len; i++)
-    newPath += '.';
-}
-
-#endif
-
-
-bool MyGetFullPathName(CFSTR fileName, FString &resFullPath)
-{
-  resFullPath.Empty();
-  #ifndef _UNICODE
-  if (!g_IsNT)
-  {
-    TCHAR s[MAX_PATH + 2];
-    s[0] = 0;
-    LPTSTR fileNamePointer = 0;
-    DWORD needLength = ::GetFullPathName(fs2fas(fileName), MAX_PATH + 1, s, &fileNamePointer);
-    if (needLength == 0 || needLength > MAX_PATH)
-      return false;
-    resFullPath = fas2fs(s);
-    return true;
-  }
-  else
-  #endif
-  {
-    LPWSTR fileNamePointer = 0;
-    WCHAR s[MAX_PATH + 2];
-    s[0] = 0;
-    DWORD needLength = ::GetFullPathNameW(fs2us(fileName), MAX_PATH + 1, s, &fileNamePointer);
-    if (needLength == 0)
-      return false;
-    if (needLength <= MAX_PATH)
-    {
-      resFullPath = us2fs(s);
-      return true;
-    }
-    #ifdef WIN_LONG_PATH
-    needLength++;
-    UString temp;
-    LPWSTR buffer = temp.GetBuffer(needLength + 1);
-    buffer[0] = 0;
-    DWORD needLength2 = ::GetFullPathNameW(fs2us(fileName), needLength, buffer, &fileNamePointer);
-    temp.ReleaseBuffer();
-    if (needLength2 > 0 && needLength2 <= needLength)
-    {
-      resFullPath = us2fs(temp);
-      AddTrailingDots(fileName, resFullPath);
-      return true;
-    }
-    #endif
-    return false;
-  }
+  return GetFullPath(path, resFullPath);
 }
 
 bool SetCurrentDir(CFSTR path)
@@ -887,5 +816,23 @@ bool CTempDir::Remove()
 
 }}}
 
+#ifndef _SFX
 
+namespace NWindows {
+namespace NDLL {
 
+FString GetModuleDirPrefix()
+{
+  FString s;
+
+  const char *p7zip_home_dir = getenv("P7ZIP_HOME_DIR");
+  if (p7zip_home_dir) {
+    return MultiByteToUnicodeString(p7zip_home_dir,CP_ACP);
+  }
+
+  return FTEXT(".") FSTRING_PATH_SEPARATOR;
+}
+
+}}
+
+#endif

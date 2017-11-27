@@ -8,14 +8,14 @@ include_directories(
   "../../../include_windows"
 )
 
-add_definitions( -DLANG -DNEW_FOLDER_INTERFACE -DEXTERNAL_CODECS -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_REENTRANT -DENV_UNIX -DBREAK_HANDLER -DUNICODE -D_UNICODE)
+add_definitions( -DLANG -DNEW_FOLDER_INTERFACE -DEXTERNAL_CODECS -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_REENTRANT -DENV_UNIX -DBREAK_HANDLER -DUNICODE -D_UNICODE -DUNIX_USE_WIN_FILE)
 
 IF(APPLE)
   add_definitions(-DENV_MACOSX)
   FIND_LIBRARY(COREFOUNDATION_LIBRARY CoreFoundation )
 ENDIF(APPLE)
 
-add_executable(7zFM
+add_executable(7zFM_do_not_use
 
   "../../../../C/7zCrc.c"
   "../../../../C/7zCrcOpt.c"
@@ -116,6 +116,7 @@ add_executable(7zFM
   "../../../../CPP/7zip/UI/FileManager/ViewSettings.cpp"
   "../../../../CPP/7zip/UI/FileManager/wxFM.cpp"
   "../../../../CPP/7zip/UI/GUI/HashGUI.cpp"
+  "../../../../CPP/7zip/UI/GUI/UpdateCallbackGUI2.cpp"
   "../../../../CPP/Common/CRC.cpp"
   "../../../../CPP/Common/CrcReg.cpp"
   "../../../../CPP/Common/IntToString.cpp"
@@ -164,10 +165,10 @@ include( ${wxWidgets_USE_FILE} )
 link_directories(${DL_LIB_PATH})
 
 IF(APPLE)
-   TARGET_LINK_LIBRARIES(7zFM ${COREFOUNDATION_LIBRARY} ${wxWidgets_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+   TARGET_LINK_LIBRARIES(7zFM_do_not_use ${COREFOUNDATION_LIBRARY} ${wxWidgets_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 ELSE(APPLE)
   IF(HAVE_PTHREADS)
-   TARGET_LINK_LIBRARIES(7zFM ${wxWidgets_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} dl)
+   TARGET_LINK_LIBRARIES(7zFM_do_not_use ${wxWidgets_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} dl)
   ENDIF(HAVE_PTHREADS)
 ENDIF(APPLE)
 

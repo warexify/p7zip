@@ -19,14 +19,14 @@ ifeq ($(WATT_ROOT),)
 $(error Please set WATT_ROOT env. var. first!)
 endif
 
-#OPTFLAGS=-O
-OPTIMIZE=-Os -mtune=i686 -fomit-frame-pointer
+#OPTFLAGS=-O -s
+OPTIMIZE=-Os -mtune=i686 -fomit-frame-pointer -s
 OPTFLAGS=$(OPTIMIZE) -I$(WATT_ROOT)/inc -L$(WATT_ROOT)/lib
 
-ALLFLAGS=$(OPTFLAGS) -s \
+ALLFLAGS=$(OPTFLAGS) \
        -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE \
        -DNDEBUG -D_REENTRANT -DENV_UNIX \
-	-DP7ZIP_USE_ASM \
+	-D_7ZIP_ASM \
        $(LOCAL_FLAGS)
 
 CXX=gpp

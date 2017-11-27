@@ -70,7 +70,7 @@ static FARPROC local_GetProcAddress(HMODULE module,LPCSTR lpProcName)
 #else
     ptr = dlsym (module, lpProcName);
 #endif
-	TRACEN((printf("CLibrary::GetProc : dlsym(%p,%s)=%p\n",(void *)module,lpProcName,ptr)))
+    TRACEN((printf("CLibrary::GetProc : dlsym(%p,%s)=%p\n",(void *)module,lpProcName,ptr)))
   }
   return (FARPROC)ptr;
 }
@@ -94,7 +94,7 @@ bool CLibrary::Load(LPCTSTR lpLibFileName)
 #else
   strcpy(name,nameWindowToUnix(lpLibFileName));
 #endif
-  
+
   // replace ".dll" with ".so"
   size_t len = strlen(name);
   if ((len >=4) && (strcmp(name+len-4,".dll") == 0)) {
@@ -152,10 +152,10 @@ TRACEN((printf("load_add_on(%s)=%d\n",p.Path(),(int)image)))
     // Propagate the value of global_use_utf16_conversion into the plugins
     int *tmp = (int *)local_GetProcAddress(handler,"global_use_utf16_conversion");
     if (tmp) *tmp = global_use_utf16_conversion;
-
+#ifdef ENV_HAVE_LSTAT
     tmp = (int *)local_GetProcAddress(handler,"global_use_lstat");
     if (tmp) *tmp = global_use_lstat;
-
+#endif
     // test construtors calls
     void (*fctTest)(void) = (void (*)(void))local_GetProcAddress(handler,"sync_TestConstructor");
     if (fctTest) fctTest();
@@ -172,29 +172,13 @@ TRACEN((printf("load_add_on(%s)=%d\n",p.Path(),(int)image)))
 #else
     printf("Can't load '%ls' (%s)\n", lpLibFileName,dlerror());
 #endif
-  } 
+  }
 
   _module = handler;
   TRACEN((printf("CLibrary::Load(this=%p,%ls) => _module=%p\n",(void *)this,lpLibFileName,_module)))
 
   return true;
 }
-
-#ifndef _SFX
-
-FString GetModuleDirPrefix()
-{
-  FString s;
-
-  const char *p7zip_home_dir = getenv("P7ZIP_HOME_DIR");
-  if (p7zip_home_dir) {
-    return MultiByteToUnicodeString(p7zip_home_dir,CP_ACP);
-  }
-
-  return FTEXT(".") FSTRING_PATH_SEPARATOR;
-}
-
-#endif
 
 
 }}

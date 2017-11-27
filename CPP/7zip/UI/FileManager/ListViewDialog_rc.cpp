@@ -31,7 +31,6 @@ class CListViewDialogImpl : public NWindows::NControl::CModalDialogImpl
 			   wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxMAXIMIZE_BOX | wxMINIMIZE_BOX)
 
   {
-
 	wxBoxSizer* topsizer = new wxBoxSizer(wxVERTICAL);
 
 	wxListCtrl *list = new wxListCtrl(this, IDL_LISTVIEW, wxDefaultPosition, wxSize(645,195), wxLC_REPORT | wxLC_NO_HEADER);

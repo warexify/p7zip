@@ -2,8 +2,9 @@
 #-fast -xarch=v9 => 64 bits
 # use "isainfo -v" to set the flag "-xarch"
 
-OPTFLAGS=-fast -xarch=v9
-ALLFLAGS=${OPTFLAGS} -s -mt \
+OPTFLAGS=-fast -xarch=v9 -s
+
+ALLFLAGS=${OPTFLAGS} -mt \
         -DHAVE_LONG_LONG \
         -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE \
         -DENV_UNIX \

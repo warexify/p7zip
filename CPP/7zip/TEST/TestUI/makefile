@@ -1,16 +1,10 @@
-PROG=../../../../bin/TestUI$(BINSUFFIX)
 
-LOCAL_FLAGS=\
-	-DUNICODE -D_UNICODE \
-	-DLANG \
-	-DEXTERNAL_CODECS \
+TARGET_FLAGS=\
 	-I. \
 	`wx-config --unicode=yes --cxxflags`
 
 include ../../../../makefile.crc32
 include ../../../../makefile.machine
-
-PCH_NAME=$(PRE_COMPILED_HEADER)
 
 LIBS=`wx-config --unicode=yes --libs` $(LOCAL_LIBS_DLL)
 

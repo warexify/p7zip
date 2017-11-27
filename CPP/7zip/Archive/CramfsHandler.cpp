@@ -8,6 +8,7 @@
 #include "../../../C/LzmaDec.h"
 
 #include "../../Common/ComTry.h"
+#include "../../Common/MyLinux.h"
 #include "../../Common/StringConvert.h"
 
 #include "../../Windows/PropVariantUtils.h"
@@ -26,8 +27,7 @@ namespace NCramfs {
 
 #define SIGNATURE { 'C','o','m','p','r','e','s','s','e','d',' ','R','O','M','F','S' }
 
-static const UInt32 kSignatureSize = 16;
-static const char kSignature[kSignatureSize] = SIGNATURE;
+static const Byte kSignature[] = SIGNATURE;
 
 static const UInt32 kArcSizeMax = (256 + 16) << 20;
 static const UInt32 kNumFilesMax = (1 << 19);
@@ -55,7 +55,7 @@ static const unsigned k_Flags_Method_Mask = 3;
 #define k_Flags_Method_ZLIB 1
 #define k_Flags_Method_LZMA 2
 
-static const char *k_Methods[] =
+static const char * const k_Methods[] =
 {
     "Copy"
   , "ZLIB"
@@ -99,7 +99,7 @@ struct CNode
 #define Get32(p) (be ? GetBe32(p) : GetUi32(p))
 
 static UInt32 GetMode(const Byte *p, bool be) { return be ? GetBe16(p) : GetUi16(p); }
-static bool IsDir(const Byte *p, bool be) { return (GetMode(p, be) & 0xF000) == 0x4000; }
+static bool IsDir(const Byte *p, bool be) { return MY_LIN_S_ISDIR(GetMode(p, be)); }
 
 static UInt32 GetSize(const Byte *p, bool be)
 {
@@ -145,9 +145,9 @@ struct CHeader
 
   bool Parse(const Byte *p)
   {
-    if (memcmp(p + 16, kSignature, kSignatureSize) != 0)
+    if (memcmp(p + 16, kSignature, ARRAY_SIZE(kSignature)) != 0)
       return false;
-    switch(GetUi32(p))
+    switch (GetUi32(p))
     {
       case 0x28CD3D45: be = false; break;
       case 0x453DCD28: be = true; break;
@@ -355,7 +355,7 @@ HRESULT CHandler::Open2(IInStream *inStream)
   
   if (!_h.IsVer2())
   {
-    FOR_VECTOR(i, _items)
+    FOR_VECTOR (i, _items)
     {
       const CItem &item = _items[i];
       const Byte *p = _data + item.Offset;
@@ -408,7 +408,7 @@ AString CHandler::GetPath(int index) const
   len--;
 
   AString path;
-  char *dest = path.GetBuffer(len) + len;
+  char *dest = path.GetBuf_SetEnd(len) + len;
   index = indexMem;
   for (;;)
   {
@@ -425,7 +425,6 @@ AString CHandler::GetPath(int index) const
       break;
     *(--dest) = CHAR_PATH_SEPARATOR;
   }
-  path.ReleaseBuffer(len);
   return path;
 }
 
@@ -532,7 +531,7 @@ STDMETHODIMP CHandler::GetProperty(UInt32 index, PROPID propID, PROPVARIANT *val
   const Byte *p = _data + item.Offset;
   bool be = _h.be;
   bool isDir = IsDir(p, be);
-  switch(propID)
+  switch (propID)
   {
     case kpidPath: prop = MultiByteToUnicodeString(GetPath(index), CP_OEMCP); break;
     case kpidIsDir: prop = isDir; break;
@@ -564,10 +563,6 @@ HRESULT CCramfsInStream::ReadBlock(UInt64 blockIndex, Byte *dest, size_t blockSi
 {
   return Handler->ReadBlock(blockIndex, dest, blockSize);
 }
-
-static void *SzAlloc(void *p, size_t size) { p = p; return MyAlloc(size); }
-static void SzFree(void *p, void *address) { p = p; MyFree(address); }
-static ISzAlloc g_Alloc = { SzAlloc, SzFree };
 
 HRESULT CHandler::ReadBlock(UInt64 blockIndex, Byte *dest, size_t blockSize)
 {
@@ -666,10 +661,6 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
   CMyComPtr<ICompressProgressInfo> progress = lps;
   lps->Init(extractCallback, false);
 
-  CLimitedSequentialInStream *streamSpec = new CLimitedSequentialInStream;
-  CMyComPtr<ISequentialInStream> inStream(streamSpec);
-  streamSpec->SetStream(_stream);
-
   for (i = 0; i < numItems; i++)
   {
     lps->InSize = totalPackSize;
@@ -707,20 +698,16 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
     int res = NExtract::NOperationResult::kDataError;
     {
       CMyComPtr<ISequentialInStream> inSeqStream;
-      CMyComPtr<IInStream> inStream;
       HRESULT hres = GetStream(index, &inSeqStream);
-      if (inSeqStream)
-        inSeqStream.QueryInterface(IID_IInStream, &inStream);
       if (hres == E_OUTOFMEMORY)
         return E_OUTOFMEMORY;
-      if (hres == S_FALSE || !inStream)
+      if (hres == S_FALSE || !inSeqStream)
         res = NExtract::NOperationResult::kUnsupportedMethod;
       else
       {
         RINOK(hres);
-        if (inStream)
         {
-          HRESULT hres = copyCoder->Code(inStream, outStream, NULL, NULL, progress);
+          HRESULT hres = copyCoder->Code(inSeqStream, outStream, NULL, NULL, progress);
           if (hres == S_OK)
           {
             if (copyCoderSpec->TotalSize == curSize)
@@ -735,6 +722,7 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
     }
     RINOK(extractCallback->SetOperationResult(res));
   }
+
   return S_OK;
   COM_TRY_END
 }
@@ -789,15 +777,11 @@ STDMETHODIMP CHandler::GetStream(UInt32 index, ISequentialInStream **stream)
   COM_TRY_END
 }
 
-IMP_CreateArcIn
-
-static CArcInfo g_ArcInfo =
-  { "CramFS", "cramfs", 0, 0xD3,
-  kSignatureSize, SIGNATURE,
+REGISTER_ARC_I(
+  "CramFS", "cramfs", 0, 0xD3,
+  kSignature,
   16,
   0,
-  CreateArc };
-
-REGISTER_ARC(Cramfs)
+  NULL)
 
 }}

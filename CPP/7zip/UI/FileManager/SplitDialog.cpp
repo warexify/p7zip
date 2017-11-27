@@ -38,7 +38,7 @@ bool CSplitDialog::OnInit()
   {
     UString title;
     GetText(title);
-    title += L' ';
+    title.Add_Space();
     title += FilePath;
     SetText(title);
   }
@@ -78,7 +78,7 @@ bool CSplitDialog::OnSize(WPARAM /* wParam */, int xSize, int ySize)
 
 bool CSplitDialog::OnButtonClicked(int buttonID, HWND buttonHWND)
 {
-  switch(buttonID)
+  switch (buttonID)
   {
     case IDB_SPLIT_PATH:
       OnButtonSetPath();

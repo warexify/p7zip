@@ -29,7 +29,7 @@ static const char kNoAll = 's';
 static const char kAutoRenameAll = 'u';
 static const char kQuit = 'q';
 
-static const char *kFirstQuestionMessage = "?\n";
+static const char *kFirstQuestionMessage = "? ";
 static const char *kHelpQuestionMessage =
   "(Y)es / (N)o / (A)lways / (S)kip all / A(u)to rename all / (Q)uit? ";
 
@@ -37,11 +37,15 @@ static const char *kHelpQuestionMessage =
 
 NUserAnswerMode::EEnum ScanUserYesNoAllQuit(CStdOutStream *outStream)
 {
-  (*outStream) << kFirstQuestionMessage;
+  if (outStream)
+    *outStream << kFirstQuestionMessage;
   for (;;)
   {
-    (*outStream) << kHelpQuestionMessage;
-    outStream->Flush();
+    if (outStream)
+    {
+      *outStream << kHelpQuestionMessage;
+      outStream->Flush();
+    }
     AString scannedString = g_StdIn.ScanStringUntilNewLine();
     scannedString.Trim();
     if (!scannedString.IsEmpty())
@@ -63,55 +67,39 @@ NUserAnswerMode::EEnum ScanUserYesNoAllQuit(CStdOutStream *outStream)
 #endif
 #endif
 
+#ifdef ENV_HAVE_GETPASS
+#define MY_DISABLE_ECHO
+#endif
+
 UString GetPassword(CStdOutStream *outStream,bool verify)
 {
 #ifdef USE_FLTK 
   const char *r = fl_password("Enter password", 0);
   AString oemPassword = "";
   if (r) oemPassword = r;
-#else /* USE_FLTK */
-#ifdef ENV_HAVE_GETPASS
-  (*outStream) << "\nEnter password (will not be echoed) :";
-  outStream->Flush();
-  AString oemPassword = getpass("");
-  if (verify)
-  {
-    (*outStream) << "Verify password (will not be echoed) :";
-  outStream->Flush();
-    AString oemPassword2 = getpass("");
-    if (oemPassword != oemPassword2) throw "password verification failed";
-  }
-#else
-  (*outStream) << "\nEnter password:";
-  outStream->Flush();
-  AString oemPassword = g_StdIn.ScanStringUntilNewLine();
-#endif
-#endif /* USE_FLTK */
   return MultiByteToUnicodeString(oemPassword, CP_OEMCP);
-
-#if 0
-  (*outStream) << "\nEnter password"
+#else /* USE_FLTK */
+  if (outStream)
+  {
+    *outStream << "\nEnter password"
       #ifdef MY_DISABLE_ECHO
       " (will not be echoed)"
       #endif
       ":";
-  outStream->Flush();
-
-  #ifdef MY_DISABLE_ECHO
-  HANDLE console = GetStdHandle(STD_INPUT_HANDLE);
-  bool wasChanged = false;
-  DWORD mode = 0;
-  if (console != INVALID_HANDLE_VALUE && console != 0)
-    if (GetConsoleMode(console, &mode))
-      wasChanged = (SetConsoleMode(console, mode & ~ENABLE_ECHO_INPUT) != 0);
-  UString res = g_StdIn.ScanUStringUntilNewLine();
-  if (wasChanged)
-    SetConsoleMode(console, mode);
-  (*outStream) << "\n";
-  outStream->Flush();
-  return res;
-  #else
+    outStream->Flush();
+  }
+#ifdef ENV_HAVE_GETPASS
+  AString oemPassword = getpass("");
+  if ( (verify) && (outStream) )
+  {
+    (*outStream) << "Verify password (will not be echoed) :";
+    outStream->Flush();
+    AString oemPassword2 = getpass("");
+    if (oemPassword != oemPassword2) throw "password verification failed";
+  }
+  return MultiByteToUnicodeString(oemPassword, CP_OEMCP);
+#else
   return g_StdIn.ScanUStringUntilNewLine();
-  #endif
 #endif
+#endif /* USE_FLTK */
 }

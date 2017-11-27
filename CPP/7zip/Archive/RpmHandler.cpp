@@ -4,21 +4,19 @@
 
 #include "../../../C/CpuArch.h"
 
+#include "../../Common/MyBuffer.h"
 #include "../../Common/ComTry.h"
 #include "../../Common/IntToString.h"
-#include "../../Common/MyString.h"
 #include "../../Common/StringConvert.h"
 #include "../../Common/UTFConvert.h"
 
 #include "../../Windows/PropVariant.h"
 #include "../../Windows/TimeUtils.h"
 
-#include "../Common/LimitedStreams.h"
-#include "../Common/ProgressUtils.h"
 #include "../Common/RegisterArc.h"
 #include "../Common/StreamUtils.h"
 
-#include "../Compress/CopyCoder.h"
+#include "HandlerCont.h"
 
 // #define _SHOW_RPM_METADATA
 
@@ -77,7 +75,7 @@ enum
   k_EntryType_I18NSTRING
 };
 
-static const char *k_CPUs[] =
+static const char * const k_CPUs[] =
 {
     "noarch"
   , "i386"
@@ -101,7 +99,7 @@ static const char *k_CPUs[] =
   , "aarch64"  // 19
 };
 
-static const char *k_OS[] =
+static const char * const k_OS[] =
 {
     "0"
   , "Linux"
@@ -169,13 +167,8 @@ struct CEntry
   }
 };
 
-class CHandler:
-  public IInArchive,
-  public IInArchiveGetStream,
-  public CMyUnknownImp
+class CHandler: public CHandlerCont
 {
-  CMyComPtr<IInStream> _stream;
-  
   UInt64 _headersSize; // is equal to start offset of payload data
   UInt64 _payloadSize;
   UInt64 _size;
@@ -232,10 +225,16 @@ class CHandler:
 
   HRESULT ReadHeader(ISequentialInStream *stream, bool isMainHeader);
   HRESULT Open2(ISequentialInStream *stream);
+
+  virtual int GetItem_ExtractInfo(UInt32 /* index */, UInt64 &pos, UInt64 &size) const
+  {
+    pos = _headersSize;
+    size = _size;
+    return NExtract::NOperationResult::kOK;
+  }
+
 public:
-  MY_UNKNOWN_IMP2(IInArchive, IInArchiveGetStream)
-  INTERFACE_IInArchive(;)
-  STDMETHOD(GetStream)(UInt32 index, ISequentialInStream **stream);
+  INTERFACE_IInArchive_Cont(;)
 };
 
 static const Byte kArcProps[] =
@@ -299,12 +298,7 @@ AString CHandler::GetBaseName() const
     }
   }
   else
-  {
-    char *p = s.GetBuffer(kNameSize);
-    memcpy(p, _lead.Name, kNameSize);
-    p[kNameSize] = 0;
-    s.ReleaseBuffer();
-  }
+    s.SetFrom_CalcLen(_lead.Name, kNameSize);
 
   s += '.';
   if (_lead.Type == kRpmType_Src)
@@ -553,7 +547,7 @@ HRESULT CHandler::ReadHeader(ISequentialInStream *stream, bool isMainHeader)
         for (UInt32 t = 0; t < entry.Count; t++)
         {
           if (t != 0)
-            _metadata += ' ';
+            _metadata.Add_Space();
           char temp[16];
           ConvertUInt32ToString(Get32(p + t * 4), temp);
           _metadata += temp;
@@ -592,7 +586,7 @@ HRESULT CHandler::ReadHeader(ISequentialInStream *stream, bool isMainHeader)
         for (UInt32 t = 0; t < entry.Count; t++)
         {
           if (t != 0)
-            _metadata += ' ';
+            _metadata.Add_Space();
           char temp[16];
           ConvertUInt32ToString(Get16(p + t * 2), temp);
           _metadata += temp;
@@ -733,59 +727,13 @@ STDMETHODIMP CHandler::GetNumberOfItems(UInt32 *numItems)
   return S_OK;
 }
 
-STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
-    Int32 testMode, IArchiveExtractCallback *extractCallback)
-{
-  COM_TRY_BEGIN
-  if (numItems == 0)
-    return S_OK;
-  if (numItems != (UInt32)(Int32)-1 && (numItems != 1 || indices[0] != 0))
-    return E_INVALIDARG;
+static const Byte k_Signature[] = { 0xED, 0xAB, 0xEE, 0xDB};
 
-  RINOK(extractCallback->SetTotal(_size));
-
-  CMyComPtr<ISequentialOutStream> outStream;
-  Int32 askMode = testMode ?
-      NExtract::NAskMode::kTest :
-      NExtract::NAskMode::kExtract;
-  RINOK(extractCallback->GetStream(0, &outStream, askMode));
-  if (!testMode && !outStream)
-    return S_OK;
-  RINOK(extractCallback->PrepareOperation(askMode));
-
-  NCompress::CCopyCoder *copyCoderSpec = new NCompress::CCopyCoder;
-  CMyComPtr<ICompressCoder> copyCoder = copyCoderSpec;
-
-  CLocalProgress *lps = new CLocalProgress;
-  CMyComPtr<ICompressProgressInfo> progress = lps;
-  lps->Init(extractCallback, false);
-  
-  RINOK(_stream->Seek(_headersSize, STREAM_SEEK_SET, NULL));
-  RINOK(copyCoder->Code(_stream, outStream, NULL, &_size, progress));
-  outStream.Release();
-  Int32 opRes = NExtract::NOperationResult::kOK;
-  if (copyCoderSpec->TotalSize < _size)
-    opRes = NExtract::NOperationResult::kUnexpectedEnd;
-  return extractCallback->SetOperationResult(opRes);
-  COM_TRY_END
-}
-
-STDMETHODIMP CHandler::GetStream(UInt32 /* index */, ISequentialInStream **stream)
-{
-  COM_TRY_BEGIN
-  return CreateLimitedInStream(_stream, _headersSize, _size, stream);
-  COM_TRY_END
-}
-
-IMP_CreateArcIn
-
-static CArcInfo g_ArcInfo =
-  { "Rpm", "rpm", 0, 0xEB,
-  4, { 0xED, 0xAB, 0xEE, 0xDB},
+REGISTER_ARC_I(
+  "Rpm", "rpm", 0, 0xEB,
+  k_Signature,
   0,
   0,
-  CreateArc };
-
-REGISTER_ARC(Rpm)
+  NULL)
 
 }}

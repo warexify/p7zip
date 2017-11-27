@@ -84,6 +84,17 @@ UString CStdInStream::ScanUStringUntilNewLine()
     dest = MultiByteToUnicodeString(s, (UINT)codePage);
   return dest;
 }
+#else
+
+#ifndef ENV_HAVE_GETPASS
+UString CStdInStream::ScanUStringUntilNewLine()
+{
+  AString s = ScanStringUntilNewLine(true);
+  UString dest = MultiByteToUnicodeString(s, (UINT)-1);
+  return dest;
+}
+#endif
+
 #endif
 
 void CStdInStream::ReadToString(AString &resultString)

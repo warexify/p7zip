@@ -34,15 +34,16 @@ STDMETHODIMP CHandler::GetFileTimeType(UInt32 *timeType)
   return S_OK;
 }
 
-static bool IsAsciiString(const UString &s)
+static bool IsSimpleAsciiString(const wchar_t *s)
 {
-  for (unsigned i = 0; i < s.Len(); i++)
+  for (;;)
   {
-    wchar_t c = s[i];
+    wchar_t c = *s++;
+    if (c == 0)
+      return true;
     if (c < 0x20 || c > 0x7F)
       return false;
   }
-  return true;
 }
 
 #define COM_TRY_BEGIN2 try {
@@ -186,11 +187,8 @@ STDMETHODIMP CHandler::UpdateItems(ISequentialOutStream *outStream, UInt32 numIt
 
       if (tryUtf8)
       {
-        unsigned i;
-        for (i = 0; i < name.Len() && (unsigned)name[i] < 0x80; i++);
-        ui.IsUtf8 = (i != name.Len());
-        if (!ConvertUnicodeToUTF8(name, ui.Name))
-          return E_INVALIDARG;
+        ui.IsUtf8 = !name.IsAscii();
+        ConvertUnicodeToUTF8(name, ui.Name);
       }
 
       if (ui.Name.Len() >= (1 << 16))
@@ -215,7 +213,8 @@ STDMETHODIMP CHandler::UpdateItems(ISequentialOutStream *outStream, UInt32 numIt
     }
     if (IntToBool(newData))
     {
-      UInt64 size;
+      UInt64 size = 0;
+      if (!ui.IsDir)
       {
         NCOM::CPropVariant prop;
         RINOK(callback->GetProperty(i, kpidSize, &prop));
@@ -227,6 +226,7 @@ STDMETHODIMP CHandler::UpdateItems(ISequentialOutStream *outStream, UInt32 numIt
         largestSizeDefined = true;
       }
       ui.Size = size;
+
       // ui.Size -= ui.Size / 2;
     }
     updateItems.Add(ui);
@@ -255,10 +255,10 @@ STDMETHODIMP CHandler::UpdateItems(ISequentialOutStream *outStream, UInt32 numIt
       if (!m_ForceAesMode)
         options.IsAesMode = thereAreAesUpdates;
 
-      if (!IsAsciiString((BSTR)password))
+      if (!IsSimpleAsciiString(password))
         return E_INVALIDARG;
       if (password)
-        options.Password = UnicodeStringToMultiByte((BSTR)password, CP_OEMCP);
+        options.Password = UnicodeStringToMultiByte((LPCOLESTR)password, CP_OEMCP);
       if (options.IsAesMode)
       {
         if (options.Password.Len() > NCrypto::NWzAes::kPasswordSizeMax)
@@ -303,7 +303,7 @@ static const CMethodIndexToName k_SupportedMethods[] =
   { NFileHeader::NCompressionMethod::kPPMd, "ppmd" }
 };
 
-STDMETHODIMP CHandler::SetProperties(const wchar_t **names, const PROPVARIANT *values, UInt32 numProps)
+STDMETHODIMP CHandler::SetProperties(const wchar_t * const *names, const PROPVARIANT *values, UInt32 numProps)
 {
   InitMethodProps();
   #ifndef _7ZIP_ST
@@ -324,7 +324,7 @@ STDMETHODIMP CHandler::SetProperties(const wchar_t **names, const PROPVARIANT *v
       UInt32 level = 9;
       RINOK(ParsePropToUInt32(name.Ptr(1), prop, level));
       _props.Level = level;
-      _props.MethodInfo.AddLevelProp(level);
+      _props.MethodInfo.AddProp_Level(level);
     }
     else if (name == L"m")
     {

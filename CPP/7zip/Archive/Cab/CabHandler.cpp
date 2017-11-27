@@ -71,7 +71,7 @@ static const Byte kArcProps[] =
 IMP_IInArchive_Props
 IMP_IInArchive_ArcProps
 
-static const char *kMethods[] =
+static const char * const kMethods[] =
 {
     "None"
   , "MSZip"
@@ -124,17 +124,19 @@ STDMETHODIMP CHandler::GetArchiveProperty(PROPID propID, PROPVARIANT *value)
           }
         }
       }
+      
       AString s;
+      
       for (unsigned i = 0; i < kNumMethodsMax; i++)
       {
         if ((mask & (1 << i)) == 0)
           continue;
-        if (!s.IsEmpty())
-          s += ' ';
+        s.Add_Space_if_NotEmpty();
         char temp[kMethodNameBufSize];
         SetMethodName(temp, i, params[i == NHeader::NMethod::kQuantum ? 0 : 1]);
         s += temp;
       }
+      
       prop = s;
       break;
     }
@@ -466,8 +468,8 @@ STDMETHODIMP CHandler::Open(IInStream *inStream,
           return result;
 
         if (!_errorMessage.IsEmpty())
-          _errorMessage += L"\n";
-        _errorMessage += L"Can't open volume: ";
+          _errorMessage.Add_LF();
+        _errorMessage.AddAscii("Can't open volume: ");
         _errorMessage += fullName;
         
         if (prevChecked)
@@ -528,7 +530,7 @@ private:
   
   Byte *TempBuf;
   UInt32 TempBufSize;
-  int NumIdenticalFiles;
+  unsigned NumIdenticalFiles;
   bool TempBufMode;
   UInt32 m_BufStartFolderOffset;
 
@@ -567,12 +569,13 @@ public:
       UInt64 folderSize,
       IArchiveExtractCallback *extractCallback,
       bool testMode);
-  HRESULT FlushCorrupted();
+  HRESULT FlushCorrupted(unsigned folderIndex);
   HRESULT Unsupported();
 
   UInt64 GetRemain() const { return m_FolderSize - m_PosInFolder; }
   UInt64 GetPosInFolder() const { return m_PosInFolder; }
 };
+
 
 void CFolderOutStream::Init(
     const CMvDatabaseEx *database,
@@ -598,6 +601,7 @@ void CFolderOutStream::Init(
   NumIdenticalFiles = 0;
 }
 
+
 HRESULT CFolderOutStream::CloseFileWithResOp(Int32 resOp)
 {
   m_RealOutStream.Release();
@@ -606,6 +610,7 @@ HRESULT CFolderOutStream::CloseFileWithResOp(Int32 resOp)
   return m_ExtractCallback->SetOperationResult(resOp);
 }
 
+
 HRESULT CFolderOutStream::CloseFile()
 {
   return CloseFileWithResOp(m_IsOk ?
@@ -613,14 +618,16 @@ HRESULT CFolderOutStream::CloseFile()
       NExtract::NOperationResult::kDataError);
 }
 
+
 HRESULT CFolderOutStream::OpenFile()
 {
   if (NumIdenticalFiles == 0)
   {
     const CMvItem &mvItem = m_Database->Items[m_StartIndex + m_CurrentIndex];
     const CItem &item = m_Database->Volumes[mvItem.VolumeIndex].Items[mvItem.ItemIndex];
-    int numExtractItems = 0;
+    unsigned numExtractItems = 0;
     unsigned curIndex;
+    
     for (curIndex = m_CurrentIndex; curIndex < m_ExtractStatuses->Size(); curIndex++)
     {
       const CMvItem &mvItem2 = m_Database->Items[m_StartIndex + curIndex];
@@ -632,10 +639,12 @@ HRESULT CFolderOutStream::OpenFile()
       if (!m_TestMode && (*m_ExtractStatuses)[curIndex])
         numExtractItems++;
     }
+    
     NumIdenticalFiles = (curIndex - m_CurrentIndex);
     if (NumIdenticalFiles == 0)
       NumIdenticalFiles = 1;
     TempBufMode = false;
+    
     if (numExtractItems > 1)
     {
       if (!TempBuf || item.Size > TempBufSize)
@@ -675,6 +684,7 @@ HRESULT CFolderOutStream::OpenFile()
   return m_ExtractCallback->PrepareOperation(askMode);
 }
 
+
 HRESULT CFolderOutStream::WriteEmptyFiles()
 {
   if (m_FileIsOpen)
@@ -694,20 +704,22 @@ HRESULT CFolderOutStream::WriteEmptyFiles()
   return S_OK;
 }
 
-// This is Write function
+
 HRESULT CFolderOutStream::Write2(const void *data, UInt32 size, UInt32 *processedSize, bool isOK)
 {
   COM_TRY_BEGIN
+  
   UInt32 realProcessed = 0;
-  if (processedSize != NULL)
+  if (processedSize)
    *processedSize = 0;
+  
   while (size != 0)
   {
     if (m_FileIsOpen)
     {
       UInt32 numBytesToWrite = MyMin(m_RemainFileSize, size);
       HRESULT res = S_OK;
-      if (numBytesToWrite > 0)
+      if (numBytesToWrite != 0)
       {
         if (!isOK)
           m_IsOk = false;
@@ -721,14 +733,16 @@ HRESULT CFolderOutStream::Write2(const void *data, UInt32 size, UInt32 *processe
           memcpy(TempBuf + (m_PosInFolder - m_BufStartFolderOffset), data, numBytesToWrite);
       }
       realProcessed += numBytesToWrite;
-      if (processedSize != NULL)
+      if (processedSize)
         *processedSize = realProcessed;
       data = (const void *)((const Byte *)data + numBytesToWrite);
       size -= numBytesToWrite;
       m_RemainFileSize -= numBytesToWrite;
       m_PosInFolder += numBytesToWrite;
+      
       if (res != S_OK)
         return res;
+      
       if (m_RemainFileSize == 0)
       {
         RINOK(CloseFile());
@@ -749,17 +763,27 @@ HRESULT CFolderOutStream::Write2(const void *data, UInt32 size, UInt32 *processe
           {
             RINOK(CloseFile());
           }
+      
           RINOK(result);
         }
+      
         TempBufMode = false;
       }
+  
       if (realProcessed > 0)
         break; // with this break this function works as Write-Part
     }
     else
     {
       if (m_CurrentIndex >= m_ExtractStatuses->Size())
-        return E_FAIL;
+      {
+        // we ignore extra data;
+        realProcessed += size;
+        if (processedSize)
+          *processedSize = realProcessed;
+        return S_OK;
+        // return E_FAIL;
+      }
 
       const CMvItem &mvItem = m_Database->Items[m_StartIndex + m_CurrentIndex];
       const CItem &item = m_Database->Volumes[mvItem.VolumeIndex].Items[mvItem.ItemIndex];
@@ -767,18 +791,21 @@ HRESULT CFolderOutStream::Write2(const void *data, UInt32 size, UInt32 *processe
       m_RemainFileSize = item.Size;
 
       UInt32 fileOffset = item.Offset;
+      
       if (fileOffset < m_PosInFolder)
         return E_FAIL;
+      
       if (fileOffset > m_PosInFolder)
       {
         UInt32 numBytesToWrite = MyMin(fileOffset - (UInt32)m_PosInFolder, size);
         realProcessed += numBytesToWrite;
-        if (processedSize != NULL)
+        if (processedSize)
           *processedSize = realProcessed;
         data = (const void *)((const Byte *)data + numBytesToWrite);
         size -= numBytesToWrite;
         m_PosInFolder += numBytesToWrite;
       }
+      
       if (fileOffset == m_PosInFolder)
       {
         RINOK(OpenFile());
@@ -788,35 +815,54 @@ HRESULT CFolderOutStream::Write2(const void *data, UInt32 size, UInt32 *processe
       }
     }
   }
+  
   return WriteEmptyFiles();
+  
   COM_TRY_END
 }
+
 
 STDMETHODIMP CFolderOutStream::Write(const void *data, UInt32 size, UInt32 *processedSize)
 {
   return Write2(data, size, processedSize, true);
 }
 
-HRESULT CFolderOutStream::FlushCorrupted()
+
+HRESULT CFolderOutStream::FlushCorrupted(unsigned folderIndex)
 {
-  const UInt32 kBufferSize = (1 << 10);
-  Byte buffer[kBufferSize];
-  for (int i = 0; i < kBufferSize; i++)
-    buffer[i] = 0;
+  UInt64 remain = GetRemain();
+  
+  if (remain == 0)
+  {
+    CMyComPtr<IArchiveExtractCallbackMessage> callbackMessage;
+    m_ExtractCallback.QueryInterface(IID_IArchiveExtractCallbackMessage, &callbackMessage);
+    if (callbackMessage)
+    {
+      RINOK(callbackMessage->ReportExtractResult(NEventIndexType::kBlockIndex, folderIndex, NExtract::NOperationResult::kDataError));
+    }
+    return S_OK;
+  }
+
+  const unsigned kBufSize = (1 << 10);
+  Byte buf[kBufSize];
+  for (unsigned i = 0; i < kBufSize; i++)
+    buf[i] = 0;
+  
   for (;;)
   {
     UInt64 remain = GetRemain();
     if (remain == 0)
       return S_OK;
-    UInt32 size = (UInt32)MyMin(remain, (UInt64)kBufferSize);
+    UInt32 size = (remain < kBufSize ? (UInt32)remain : (UInt32)kBufSize);
     UInt32 processedSizeLocal = 0;
-    RINOK(Write2(buffer, size, &processedSizeLocal, false));
+    RINOK(Write2(buf, size, &processedSizeLocal, false));
   }
 }
 
+
 HRESULT CFolderOutStream::Unsupported()
 {
-  while(m_CurrentIndex < m_ExtractStatuses->Size())
+  while (m_CurrentIndex < m_ExtractStatuses->Size())
   {
     HRESULT result = OpenFile();
     if (result != S_FALSE && result != S_OK)
@@ -833,6 +879,7 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
     Int32 testModeSpec, IArchiveExtractCallback *extractCallback)
 {
   COM_TRY_BEGIN
+
   bool allFilesMode = (numItems == (UInt32)(Int32)-1);
   if (allFilesMode)
     numItems = m_Database.Items.Size();
@@ -844,9 +891,10 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
   UInt32 i;
   int lastFolder = -2;
   UInt64 lastFolderSize = 0;
-  for(i = 0; i < numItems; i++)
+  
+  for (i = 0; i < numItems; i++)
   {
-    int index = allFilesMode ? i : indices[i];
+    unsigned index = allFilesMode ? i : indices[i];
     const CMvItem &mvItem = m_Database.Items[index];
     const CItem &item = m_Database.Volumes[mvItem.VolumeIndex].Items[mvItem.ItemIndex];
     if (item.IsDir())
@@ -857,6 +905,7 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
     lastFolder = folderIndex;
     lastFolderSize = item.GetEndOffset();
   }
+  
   totalUnPacked += lastFolderSize;
 
   extractCallback->SetTotal(totalUnPacked);
@@ -876,10 +925,10 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
   CMyComPtr<ICompressCoder> deflateDecoder;
 
   NCompress::NLzx::CDecoder *lzxDecoderSpec = NULL;
-  CMyComPtr<ICompressCoder> lzxDecoder;
+  CMyComPtr<IUnknown> lzxDecoder;
 
   NCompress::NQuantum::CDecoder *quantumDecoderSpec = NULL;
-  CMyComPtr<ICompressCoder> quantumDecoder;
+  CMyComPtr<IUnknown> quantumDecoder;
 
   CCabBlockInStream *cabBlockInStreamSpec = new CCabBlockInStream();
   CMyComPtr<ISequentialInStream> cabBlockInStream = cabBlockInStreamSpec;
@@ -887,9 +936,10 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
     return E_OUTOFMEMORY;
 
   CRecordVector<bool> extractStatuses;
-  for(i = 0; i < numItems;)
+  
+  for (i = 0; i < numItems;)
   {
-    int index = allFilesMode ? i : indices[i];
+    unsigned index = allFilesMode ? i : indices[i];
 
     const CMvItem &mvItem = m_Database.Items[index];
     const CDatabaseEx &db = m_Database.Volumes[mvItem.VolumeIndex];
@@ -909,7 +959,9 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
       RINOK(extractCallback->SetOperationResult(NExtract::NOperationResult::kOK));
       continue;
     }
+    
     int folderIndex = m_Database.GetFolderIndex(&mvItem);
+    
     if (folderIndex < 0)
     {
       // If we need previous archive
@@ -923,17 +975,19 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
       RINOK(extractCallback->SetOperationResult(NExtract::NOperationResult::kDataError));
       continue;
     }
-    int startIndex2 = m_Database.FolderStartFileIndex[folderIndex];
-    int startIndex = startIndex2;
+    
+    unsigned startIndex2 = m_Database.FolderStartFileIndex[folderIndex];
+    unsigned startIndex = startIndex2;
     extractStatuses.Clear();
     for (; startIndex < index; startIndex++)
       extractStatuses.Add(false);
     extractStatuses.Add(true);
     startIndex++;
     UInt64 curUnpack = item.GetEndOffset();
+    
     for (; i < numItems; i++)
     {
-      int indexNext = allFilesMode ? i : indices[i];
+      unsigned indexNext = allFilesMode ? i : indices[i];
       const CMvItem &mvItem = m_Database.Items[indexNext];
       const CItem &item = m_Database.Volumes[mvItem.VolumeIndex].Items[mvItem.ItemIndex];
       if (item.IsDir())
@@ -956,17 +1010,20 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
     CFolderOutStream *cabFolderOutStream = new CFolderOutStream;
     CMyComPtr<ISequentialOutStream> outStream(cabFolderOutStream);
 
-    const CFolder &folder = db.Folders[item.GetFolderIndex(db.Folders.Size())];
+    unsigned folderIndex2 = item.GetFolderIndex(db.Folders.Size());
+    const CFolder &folder = db.Folders[folderIndex2];
 
     cabFolderOutStream->Init(&m_Database, &extractStatuses, startIndex2,
         curUnpack, extractCallback, testMode);
 
     cabBlockInStreamSpec->MsZip = false;
     HRESULT res = S_OK;
+    
     switch (folder.GetMethod())
     {
       case NHeader::NMethod::kNone:
         break;
+      
       case NHeader::NMethod::kMSZip:
         if (!deflateDecoder)
         {
@@ -975,14 +1032,16 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
         }
         cabBlockInStreamSpec->MsZip = true;
         break;
+      
       case NHeader::NMethod::kLZX:
         if (!lzxDecoder)
         {
           lzxDecoderSpec = new NCompress::NLzx::CDecoder;
           lzxDecoder = lzxDecoderSpec;
         }
-        res = lzxDecoderSpec->SetParams(folder.MethodMinor);
+        res = lzxDecoderSpec->SetParams_and_Alloc(folder.MethodMinor);
         break;
+
       case NHeader::NMethod::kQuantum:
         if (!quantumDecoder)
         {
@@ -991,6 +1050,7 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
         }
         res = quantumDecoderSpec->SetParams(folder.MethodMinor);
         break;
+      
       default:
         res = E_INVALIDARG;
         break;
@@ -1009,7 +1069,9 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
       int locFolderIndex = item.GetFolderIndex(db.Folders.Size());
       bool keepHistory = false;
       bool keepInputBuffer = false;
-      for (UInt32 f = 0; cabFolderOutStream->GetRemain() != 0;)
+      bool thereWasNotAlignedChunk = false;
+      
+      for (UInt32 bl = 0; cabFolderOutStream->GetRemain() != 0;)
       {
         if (volIndex >= m_Database.Volumes.Size())
         {
@@ -1019,19 +1081,33 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
 
         const CDatabaseEx &db = m_Database.Volumes[volIndex];
         const CFolder &folder = db.Folders[locFolderIndex];
-        if (f == 0)
+        
+        if (bl == 0)
         {
           cabBlockInStreamSpec->ReservedSize = db.ArcInfo.GetDataBlockReserveSize();
           RINOK(db.Stream->Seek(db.StartPosition + folder.DataStart, STREAM_SEEK_SET, NULL));
         }
-        if (f == folder.NumDataBlocks)
+        
+        if (bl == folder.NumDataBlocks)
         {
-          volIndex++;
-          locFolderIndex = 0;
-          f = 0;
-          continue;
+          /*
+            CFolder::NumDataBlocks (CFFOLDER::cCFData in CAB specification) is 16-bit.
+            But there are some big CAB archives from MS that contain more
+            than (0xFFFF) CFDATA blocks in folder.
+            Old cab extracting software can show error (or ask next volume)
+            but cab extracting library in new Windows ignores this error.
+            15.00 : We also try to ignore such error, if archive is not multi-volume.
+          */
+          if (m_Database.Volumes.Size() > 1)
+          {
+            volIndex++;
+            locFolderIndex = 0;
+            bl = 0;
+            continue;
+          }
         }
-        f++;
+        
+        bl++;
 
         if (!keepInputBuffer)
           cabBlockInStreamSpec->InitForNewBlock();
@@ -1052,19 +1128,39 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
         lps->InSize = totalPacked;
         RINOK(lps->SetCur());
 
-        UInt64 unpackRemain = cabFolderOutStream->GetRemain();
-
         const UInt32 kBlockSizeMax = (1 << 15);
-        if (unpackRemain > kBlockSizeMax)
-          unpackRemain = kBlockSizeMax;
-        if (unpackRemain > unpackSize)
-          unpackRemain = unpackSize;
-   
+
+        /* We don't try to reduce last block.
+           Note that LZX converts data with x86 filter.
+           and filter needs larger input data than reduced size.
+           It's simpler to decompress full chunk here.
+           also we need full block for quantum for more integrity checks */
+
+        if (unpackSize > kBlockSizeMax)
+        {
+          res = S_FALSE;
+          break;
+        }
+
+        if (unpackSize != kBlockSizeMax)
+        {
+          if (thereWasNotAlignedChunk)
+          {
+            res = S_FALSE;
+            break;
+          }
+          thereWasNotAlignedChunk = true;
+        }
+
+        UInt64 unpackSize64 = unpackSize;
+        UInt32 packSizeChunk = cabBlockInStreamSpec->GetPackSizeAvail();
+
         switch (folder.GetMethod())
         {
           case NHeader::NMethod::kNone:
-            res = copyCoder->Code(cabBlockInStream, outStream, NULL, &unpackRemain, NULL);
+            res = copyCoder->Code(cabBlockInStream, outStream, NULL, &unpackSize64, NULL);
             break;
+          
           case NHeader::NMethod::kMSZip:
             deflateDecoderSpec->Set_KeepHistory(keepHistory);
             /* v9.31: now we follow MSZIP specification that requires to finish deflate stream at the end of each block.
@@ -1073,7 +1169,7 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
                Maybe we also should ignore that error?
                Or we should extract full file and show the warning? */
             deflateDecoderSpec->Set_NeedFinishInput(true);
-            res = deflateDecoder->Code(cabBlockInStream, outStream, NULL, &unpackRemain, NULL);
+            res = deflateDecoder->Code(cabBlockInStream, outStream, NULL, &unpackSize64, NULL);
             if (res == S_OK)
             {
               if (!deflateDecoderSpec->IsFinished())
@@ -1081,39 +1177,55 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
               if (!deflateDecoderSpec->IsFinalBlock())
                 res = S_FALSE;
             }
-
             break;
+
           case NHeader::NMethod::kLZX:
             lzxDecoderSpec->SetKeepHistory(keepHistory);
-            res = lzxDecoder->Code(cabBlockInStream, outStream, NULL, &unpackRemain, NULL);
+            lzxDecoderSpec->KeepHistoryForNext = true;
+            
+            res = lzxDecoderSpec->Code(cabBlockInStreamSpec->GetData(), packSizeChunk, unpackSize);
+
+            if (res == S_OK)
+              res = WriteStream(outStream,
+                  lzxDecoderSpec->GetUnpackData(),
+                  lzxDecoderSpec->GetUnpackSize());
             break;
+          
           case NHeader::NMethod::kQuantum:
-            quantumDecoderSpec->SetKeepHistory(keepHistory);
-            res = quantumDecoder->Code(cabBlockInStream, outStream, NULL, &unpackRemain, NULL);
-          break;
+            res = quantumDecoderSpec->Code(cabBlockInStreamSpec->GetData(),
+                packSizeChunk, outStream, unpackSize, keepHistory);
+            break;
         }
+      
         if (res != S_OK)
         {
           if (res != S_FALSE)
             RINOK(res);
           break;
         }
+        
         keepHistory = true;
       }
+      
       if (res == S_OK)
       {
         RINOK(cabFolderOutStream->WriteEmptyFiles());
       }
     }
+
     if (res != S_OK || cabFolderOutStream->GetRemain() != 0)
     {
-      RINOK(cabFolderOutStream->FlushCorrupted());
+      RINOK(cabFolderOutStream->FlushCorrupted(folderIndex2));
     }
+
     totalUnPacked += curUnpack;
   }
+
   return S_OK;
+
   COM_TRY_END
 }
+
 
 STDMETHODIMP CHandler::GetNumberOfItems(UInt32 *numItems)
 {

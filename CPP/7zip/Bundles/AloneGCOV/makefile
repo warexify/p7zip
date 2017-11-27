@@ -18,9 +18,9 @@
 #  Recompile all code with -fprofile-use (above steps will place lots of .gcda files in source tree)
 
 LOCAL_FLAGS=\
-  -pg \
+  -pg -g2 \
   -DBREAK_HANDLER \
-  -DUNICODE -D_UNICODE \
+  -DUNICODE -D_UNICODE -DUNIX_USE_WIN_FILE \
 	-I../../Archive \
 	-I../../Archive/7z \
 	-I../../Archive/BZip2 \
@@ -46,7 +46,6 @@ LOCAL_FLAGS=\
 
 include ../../../../makefile.machine
 
-
 SRCS=\
   ../../../../CPP/7zip/Archive/7z/7zCompressionMode.cpp \
   ../../../../CPP/7zip/Archive/7z/7zDecode.cpp \
@@ -70,7 +69,6 @@ SRCS=\
   ../../../../CPP/7zip/Archive/Cab/CabIn.cpp \
   ../../../../CPP/7zip/Archive/Cab/CabRegister.cpp \
   ../../../../CPP/7zip/Archive/Common/CoderMixer2.cpp \
-  ../../../../CPP/7zip/Archive/Common/CoderMixer2MT.cpp \
   ../../../../CPP/7zip/Archive/Common/CrossThreadProgress.cpp \
   ../../../../CPP/7zip/Archive/Common/DummyOutStream.cpp \
   ../../../../CPP/7zip/Archive/Common/FindSignature.cpp \
@@ -110,7 +108,6 @@ SRCS=\
   ../../../../CPP/7zip/Common/InBuffer.cpp \
   ../../../../CPP/7zip/Common/InOutTempBuffer.cpp \
   ../../../../CPP/7zip/Common/LimitedStreams.cpp \
-  ../../../../CPP/7zip/Common/LockedStream.cpp \
   ../../../../CPP/7zip/Common/MemBlocks.cpp \
   ../../../../CPP/7zip/Common/MethodId.cpp \
   ../../../../CPP/7zip/Common/MethodProps.cpp \
@@ -134,7 +131,6 @@ SRCS=\
   ../../../../CPP/7zip/Compress/BcjCoder.cpp \
   ../../../../CPP/7zip/Compress/BcjRegister.cpp \
   ../../../../CPP/7zip/Compress/BitlDecoder.cpp \
-  ../../../../CPP/7zip/Compress/BranchCoder.cpp \
   ../../../../CPP/7zip/Compress/BranchMisc.cpp \
   ../../../../CPP/7zip/Compress/BranchRegister.cpp \
   ../../../../CPP/7zip/Compress/ByteSwap.cpp \
@@ -154,7 +150,6 @@ SRCS=\
   ../../../../CPP/7zip/Compress/LzmaDecoder.cpp \
   ../../../../CPP/7zip/Compress/LzmaEncoder.cpp \
   ../../../../CPP/7zip/Compress/LzmaRegister.cpp \
-  ../../../../CPP/7zip/Compress/Lzx86Converter.cpp \
   ../../../../CPP/7zip/Compress/LzxDecoder.cpp \
   ../../../../CPP/7zip/Compress/PpmdDecoder.cpp \
   ../../../../CPP/7zip/Compress/PpmdEncoder.cpp \
@@ -170,8 +165,6 @@ SRCS=\
   ../../../../CPP/7zip/Crypto/MyAesReg.cpp \
   ../../../../CPP/7zip/Crypto/Pbkdf2HmacSha1.cpp \
   ../../../../CPP/7zip/Crypto/RandGen.cpp \
-  ../../../../CPP/7zip/Crypto/Sha1.cpp \
-  ../../../../CPP/7zip/Crypto/Sha1Reg.cpp \
   ../../../../CPP/7zip/Crypto/WzAes.cpp \
   ../../../../CPP/7zip/Crypto/ZipCrypto.cpp \
   ../../../../CPP/7zip/Crypto/ZipStrong.cpp \
@@ -214,6 +207,7 @@ SRCS=\
   ../../../../CPP/Common/MyString.cpp \
   ../../../../CPP/Common/MyVector.cpp \
   ../../../../CPP/Common/MyWindows.cpp \
+  ../../../../CPP/Common/Sha1Reg.cpp \
   ../../../../CPP/Common/Sha256Reg.cpp \
   ../../../../CPP/Common/StdInStream.cpp \
   ../../../../CPP/Common/StdOutStream.cpp \
@@ -222,6 +216,7 @@ SRCS=\
   ../../../../CPP/Common/UTFConvert.cpp \
   ../../../../CPP/Common/Wildcard.cpp \
   ../../../../CPP/Common/XzCrc64Reg.cpp \
+  ../../../../CPP/Windows/DLL.cpp \
   ../../../../CPP/Windows/ErrorMsg.cpp \
   ../../../../CPP/Windows/FileDir.cpp \
   ../../../../CPP/Windows/FileFind.cpp \
@@ -242,6 +237,8 @@ SRCS_C=\
   ../../../../C/7zStream.c \
   ../../../../C/Aes.c \
   ../../../../C/Alloc.c \
+  ../../../../C/Bcj2.c \
+  ../../../../C/Bcj2Enc.c \
   ../../../../C/Bra.c \
   ../../../../C/Bra86.c \
   ../../../../C/BraIA64.c \
@@ -262,6 +259,7 @@ SRCS_C=\
   ../../../../C/Ppmd8.c \
   ../../../../C/Ppmd8Dec.c \
   ../../../../C/Ppmd8Enc.c \
+  ../../../../C/Sha1.c \
   ../../../../C/Sha256.c \
   ../../../../C/Sort.c \
   ../../../../C/Threads.c \
@@ -272,13 +270,12 @@ SRCS_C=\
   ../../../../C/XzEnc.c \
   ../../../../C/XzIn.c \
 
-
 all : copy 7za.exe
 	
 7za.exe:
-	$(CXX) -c *.cpp 
-	$(CC)  -c *.c
-	$(CXX) *.o -o 7za.exe $(LOCAL_LIBS)
+	$(CXX) $(LOCAL_FLAGS) -c *.cpp 
+	$(CC)  $(LOCAL_FLAGS) -c *.c
+	$(CXX) $(LOCAL_FLAGS) *.o -o 7za.exe $(LOCAL_LIBS_DLL)
 	ld -r *.o -o  7za.ld
 	nm -u -C 7za.ld > 7za.undefined
 copy:

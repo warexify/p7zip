@@ -16,14 +16,6 @@ extern bool g_IsNT;
 #include <unistd.h>
 #include <errno.h>
 
-#ifdef ENV_HAVE_LSTAT
-extern "C"
-{
-
-int global_use_lstat=1; // default behaviour : p7zip stores symlinks instead of dumping the files they point to
-}
-#endif
-
 #define NEED_NAME_WINDOWS_TO_UNIX
 #include "myPrivate.h"
 
@@ -148,7 +140,7 @@ bool GetLongPath(CFSTR fileName, UString &res);
 
 namespace NFind {
 
-bool CFileInfo::IsDots() const
+bool CFileInfo::IsDots() const throw()
 {
   if (!IsDir() || Name.IsEmpty())
     return false;
@@ -386,13 +378,15 @@ bool CFindFile::FindNext(CFileInfo &fi)
 
 #define MY_CLEAR_FILETIME(ft) ft.dwLowDateTime = ft.dwHighDateTime = 0;
 
-void CFileInfoBase::Clear()
+void CFileInfoBase::ClearBase() throw()
 {
   Size = 0;
   MY_CLEAR_FILETIME(CTime);
   MY_CLEAR_FILETIME(ATime);
   MY_CLEAR_FILETIME(MTime);
   Attrib = 0;
+  IsAltStream = false;
+  IsDevice = false;
 }
   
 bool CFileInfo::Find(CFSTR wildcard, bool ignoreLink)

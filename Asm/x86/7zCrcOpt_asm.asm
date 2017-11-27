@@ -20,8 +20,8 @@ MY_ASM_START
 
 %define SRCDAT  rN + rD + 4 *
 
-%macro CRC 4  ;CRC macro op:req, dest:req, src:req, t:req  
-    %1      %2, DWORD [r5 + %3 * 4 + 0400h * %4]  ; op      dest, DWORD [r5 + src * 4 + 0400h * t] 
+%macro CRC 4  ;CRC macro op:req, dest:req, src:req, t:req
+    %1      %2, DWORD [r5 + %3 * 4 + 0400h * %4]  ; op      dest, DWORD [r5 + src * 4 + 0400h * t]
 %endmacro
 
 %macro CRC_XOR 3  ; CRC_XOR macro dest:req, src:req, t:req
@@ -44,30 +44,38 @@ MY_ASM_START
 
 %macro  MY_PROLOG 1 ; MY_PROLOG macro crc_end:req
     MY_PUSH_4_REGS
-    
-    
+
+
 %ifdef x64
-    ;EDI=CRC, RSI=buf, RDX=size RCX=table 
+  %ifdef CYGWIN64
+    ;ECX=CRC, RDX=buf, R8=size R9=table
+    ; already in R8  : mov num_VAR,R8 ; LEN
+    ; already in RDX : mov rD, RDX ; BUF
+    ; already in R9  : mov table_VAR,R9; table
+    mov x0, ECX ; CRC
+  %else
+    ;EDI=CRC, RSI=buf, RDX=size RCX=table
     mov num_VAR,RDX ; LEN
     mov rD, RSI ; BUF
     mov table_VAR,RCX; table
     mov x0, EDI ; CRC
+  %endif
 %else
     mov     x0, [r4 + 20]  ; CRC
-    mov     rD, [r4 + 24]  ; buf 
+    mov     rD, [r4 + 24]  ; buf
 %endif
     mov     rN, num_VAR
     mov     r5, table_VAR
     test    rN, rN
-    jz      %1 ; crc_end
+    jz   near   %1 ; crc_end
   %%sl:
     test    rD, 7
-    jz      %%sl_end
+    jz     %%sl_end
     CRC1b
     jnz     %%sl
   %%sl_end:
     cmp     rN, 16
-    jb      %1; crc_end
+    jb   near   %1; crc_end
     add     rN, rD
     mov     num_VAR, rN
     sub     rN, 8
@@ -138,7 +146,7 @@ MY_PROC CrcUpdateT4, 4
     CRC_XOR x1, r3, 2
     CRC_XOR x1, r6, 0
     CRC_XOR x1, r0, 1
- 
+
     movzx   x0, x1_L
     movzx   x3, x1_H
     shr     x1, 16

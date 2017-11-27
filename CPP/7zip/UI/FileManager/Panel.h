@@ -11,16 +11,17 @@
 #include "../../../Windows/DLL.h"
 #include "../../../Windows/FileDir.h"
 #include "../../../Windows/FileFind.h"
+#include "../../../Windows/FileName.h"
 // #include "../../../Windows/Handle.h"
 #include "../../../Windows/Synchronization.h"
 
 #include "../../../Windows/Control/ComboBox.h"
 #include "../../../Windows/Control/Edit.h"
 #include "../../../Windows/Control/ListView.h"
-// #include "../../../Windows/Control/ReBar.h"
+// FIXME #include "../../../Windows/Control/ReBar.h"
 #include "../../../Windows/Control/Static.h"
 #include "../../../Windows/Control/StatusBar.h"
-// #include "../../../Windows/Control/ToolBar.h"
+// FIXME #include "../../../Windows/Control/ToolBar.h"
 #include "../../../Windows/Control/Window2.h"
 
 #include "../../Archive/IArchive.h"
@@ -29,7 +30,7 @@
 
 #include "AppState.h"
 #include "IFolder.h"
-// #include "MyCom2.h"
+// FIXME #include "MyCom2.h"
 #include "ProgressDialog2.h"
 #include "SysIconUtils.h"
 
@@ -43,10 +44,10 @@ const int kParentFolderID = 100;
 
 const int kParentIndex = -1;
 
-#ifdef UNDER_CE
+#if !defined(_WIN32) || defined(UNDER_CE)
 #define ROOT_FS_FOLDER L"\\"
 #else
-#define ROOT_FS_FOLDER L"C:\\\\"
+#define ROOT_FS_FOLDER L"C:\\"
 #endif
 
 struct CPanelCallback
@@ -117,12 +118,13 @@ struct CTempFileInfo
 struct CFolderLink: public CTempFileInfo
 {
   NWindows::NDLL::CLibrary Library;
-  CMyComPtr<IFolderFolder> ParentFolder;
+  CMyComPtr<IFolderFolder> ParentFolder; // can be NULL, if parent is FS folder (in _parentFolders[0])
+  UString ParentFolderPath; // including tail slash (doesn't include paths parts of parent in next level)
   bool UsePassword;
   UString Password;
   bool IsVirtual;
 
-  UString VirtualPath;
+  UString VirtualPath; // without tail slash
   CFolderLink(): UsePassword(false), IsVirtual(false) {}
 
   bool WasChanged(const NWindows::NFile::NFind::CFileInfo &newFileInfo) const
@@ -146,7 +148,7 @@ enum MyMessages
   #endif
 };
 
-UString GetFolderPath(IFolderFolder * folder);
+UString GetFolderPath(IFolderFolder *folder);
 
 class CPanel;
 
@@ -253,14 +255,14 @@ class CPanel: public NWindows::NControl::CWindow2
   void OnItemChanged(NMLISTVIEW *item);
   void OnNotifyActivateItems();
   bool OnNotifyList(LPNMHDR lParam, LRESULT &result);
-/*
+/* FIXME
   void OnDrag(LPNMLISTVIEW nmListView);
   bool OnKeyDown(LPNMLVKEYDOWN keyDownInfo, LRESULT &result);
   BOOL OnBeginLabelEdit(LV_DISPINFOW * lpnmh);
   BOOL OnEndLabelEdit(LV_DISPINFOW * lpnmh);
-*/  
+*/
   void OnColumnClick(LPNMLISTVIEW info);
-  // bool OnCustomDraw(LPNMLVCUSTOMDRAW lplvcd, LRESULT &result);
+  // FIXME bool OnCustomDraw(LPNMLVCUSTOMDRAW lplvcd, LRESULT &result);
 
 
 public:
@@ -281,7 +283,7 @@ private:
  
   HRESULT InitColumns();
   // void InitColumns2(PROPID sortID);
-  void InsertColumn(int index);
+  void InsertColumn(unsigned index);
 
   void SetFocusedSelectedItem(int index, bool select);
   HRESULT RefreshListCtrl(const UString &focusedName, int focusedPos, bool selectFocused,
@@ -347,6 +349,7 @@ public:
     */
     return (UInt32)item.lParam;
   }
+  
   int GetRealItemIndex(int indexInListView) const
   {
     /*
@@ -382,27 +385,11 @@ public:
   CMyComPtr<IFolderCompare> _folderCompare;
   CMyComPtr<IFolderGetItemName> _folderGetItemName;
   CMyComPtr<IArchiveGetRawProps> _folderRawProps;
+  CMyComPtr<IFolderAltStreams> _folderAltStreams;
+  CMyComPtr<IFolderOperations> _folderOperations;
 
-  void ReleaseFolder()
-  {
-    _folderCompare.Release();
-    _folderGetItemName.Release();
-    _folderRawProps.Release();
-    _folder.Release();
-    _thereAreDeletedItems = false;
-  }
-
-  void SetNewFolder(IFolderFolder *newFolder)
-  {
-    ReleaseFolder();
-    _folder = newFolder;
-    if (_folder)
-    {
-      _folder.QueryInterface(IID_IFolderCompare, &_folderCompare);
-      _folder.QueryInterface(IID_IFolderGetItemName, &_folderGetItemName);
-      _folder.QueryInterface(IID_IArchiveGetRawProps, &_folderRawProps);
-    }
-  }
+  void ReleaseFolder();
+  void SetNewFolder(IFolderFolder *newFolder);
 
   // CMyComPtr<IFolderGetSystemIconIndex> _folderGetSystemIconIndex;
 
@@ -419,9 +406,11 @@ public:
   bool IsItem_AltStream(int itemIndex) const;
 
   UString GetItemName(int itemIndex) const;
-  void GetItemNameFast(int itemIndex, UString &s) const;
+  UString GetItemName_for_Copy(int itemIndex) const;
+  void GetItemName(int itemIndex, UString &s) const;
   UString GetItemPrefix(int itemIndex) const;
   UString GetItemRelPath(int itemIndex) const;
+  UString GetItemRelPath2(int itemIndex) const;
   UString GetItemFullPath(int itemIndex) const;
   UInt64 GetItemSize(int itemIndex) const;
 
@@ -440,6 +429,7 @@ public:
   void LoadFullPathAndShow();
   void FoldersHistory();
   void OpenParentFolder();
+  void CloseOneLevel();
   void CloseOpenFolders();
   void OpenRootFolder();
 
@@ -506,8 +496,8 @@ public:
 
   void Release();
   ~CPanel();
-  // void OnLeftClick(MY_NMLISTVIEW_NMITEMACTIVATE *itemActivate);
-  // bool OnRightClick(MY_NMLISTVIEW_NMITEMACTIVATE *itemActivate, LRESULT &result);
+  // FIXME void OnLeftClick(MY_NMLISTVIEW_NMITEMACTIVATE *itemActivate);
+  // FIXME bool OnRightClick(MY_NMLISTVIEW_NMITEMACTIVATE *itemActivate, LRESULT &result);
   void ShowColumnsContextMenu(int x, int y);
 
   void OnTimer();
@@ -560,19 +550,65 @@ public:
   void KillSelection();
 
   UString GetFolderTypeID() const;
-  bool IsFolderTypeEqTo(const wchar_t *s) const;
+  
+  bool IsFolderTypeEqTo(const char *s) const;
   bool IsRootFolder() const;
   bool IsFSFolder() const;
   bool IsFSDrivesFolder() const;
+  bool IsAltStreamsFolder() const;
   bool IsArcFolder() const;
-  bool IsFsOrDrivesFolder() const { return IsFSFolder() || IsFSDrivesFolder(); }
+  
+  /*
+    c:\Dir
+    Computer\
+    \\?\
+    \\.\
+  */
+  bool Is_IO_FS_Folder() const
+  {
+    return IsFSFolder() || IsFSDrivesFolder() || IsAltStreamsFolder();
+  }
+
+  bool Is_Slow_Icon_Folder() const
+  {
+    return IsFSFolder() || IsAltStreamsFolder();
+  }
+
+  // bool IsFsOrDrivesFolder() const { return IsFSFolder() || IsFSDrivesFolder(); }
   bool IsDeviceDrivesPrefix() const { return _currentFolderPrefix == L"\\\\.\\"; }
+  bool IsSuperDrivesPrefix() const { return _currentFolderPrefix == L"\\\\?\\"; }
+  
+  /*
+    c:\Dir
+    Computer\
+    \\?\
+  */
   bool IsFsOrPureDrivesFolder() const { return IsFSFolder() || (IsFSDrivesFolder() && !IsDeviceDrivesPrefix()); }
+
+  /*
+    c:\Dir
+    Computer\
+    \\?\
+    \\SERVER\
+  */
+  bool IsFolder_with_FsItems() const
+  {
+    if (IsFsOrPureDrivesFolder())
+      return true;
+    #if defined(_WIN32) && !defined(UNDER_CE)
+    FString prefix = us2fs(GetFsPath());
+    return (prefix.Len() == NWindows::NFile::NName::GetNetworkServerPrefixSize(prefix));
+    #else
+    return false;
+    #endif
+  }
 
   UString GetFsPath() const;
   UString GetDriveOrNetworkPrefix() const;
 
-  bool DoesItSupportOperations() const;
+  bool DoesItSupportOperations() const { return _folderOperations != NULL; }
+  bool IsThereReadOnlyFolder() const;
+  bool CheckBeforeUpdate(UINT resourceID);
 
   bool _processTimer;
   bool _processNotify;
@@ -580,53 +616,57 @@ public:
 
   class CDisableTimerProcessing
   {
-    bool _processTimerMem;
+    CLASS_NO_COPY(CDisableTimerProcessing);
+
+    bool _processTimer;
 
     CPanel &_panel;
+    
     public:
 
     CDisableTimerProcessing(CPanel &panel): _panel(panel) { Disable(); }
     ~CDisableTimerProcessing() { Restore(); }
     void Disable()
     {
-      _processTimerMem = _panel._processTimer;
+      _processTimer = _panel._processTimer;
       _panel._processTimer = false;
     }
     void Restore()
     {
-      _panel._processTimer = _processTimerMem;
+      _panel._processTimer = _processTimer;
     }
-    CDisableTimerProcessing& operator=(const CDisableTimerProcessing &) {; }
   };
 
   class CDisableNotify
   {
-    bool _processNotifyMem;
-    bool _processStatusBarMem;
+    CLASS_NO_COPY(CDisableNotify);
+
+    bool _processNotify;
+    bool _processStatusBar;
 
     CPanel &_panel;
+
     public:
 
     CDisableNotify(CPanel &panel): _panel(panel) { Disable(); }
     ~CDisableNotify() { Restore(); }
     void Disable()
     {
-      _processNotifyMem = _panel._processNotify;
-      _processStatusBarMem = _panel._processStatusBar;
+      _processNotify = _panel._processNotify;
+      _processStatusBar = _panel._processStatusBar;
       _panel._processNotify = false;
       _panel._processStatusBar = false;
     }
     void SetMemMode_Enable()
     {
-      _processNotifyMem  = true;
-      _processStatusBarMem = true;
+      _processNotify = true;
+      _processStatusBar = true;
     }
     void Restore()
     {
-      _panel._processNotify = _processNotifyMem;
-      _panel._processStatusBar = _processStatusBarMem;
+      _panel._processNotify = _processNotify;
+      _panel._processStatusBar = _processStatusBar;
     }
-    CDisableNotify& operator=(const CDisableNotify &) {; }
   };
 
   // bool _passwordIsDefined;
@@ -647,11 +687,13 @@ public:
   void MessageBoxLastError(LPCWSTR caption);
   void MessageBoxLastError();
 
-  void MessageBoxErrorForUpdate(HRESULT errorCode, UINT resourceID);
+  // void MessageBoxErrorForUpdate(HRESULT errorCode, UINT resourceID);
 
   void MessageBoxErrorLang(UINT resourceID);
 
-  void OpenFocusedItemAsInternal();
+  void OpenAltStreams();
+
+  void OpenFocusedItemAsInternal(const wchar_t *type = NULL);
   void OpenSelectedItems(bool internal);
 
   void OpenFolderExternal(int index);
@@ -664,13 +706,14 @@ public:
       const UString &arcFormat,
       bool &encrypted);
   HRESULT OpenItemAsArchive(const UString &relPath, const UString &arcFormat, bool &encrypted);
-  HRESULT OpenItemAsArchive(int index);
+  HRESULT OpenItemAsArchive(int index, const wchar_t *type = NULL);
   void OpenItemInArchive(int index, bool tryInternal, bool tryExternal,
-      bool editMode, bool useEditor);
+      bool editMode, bool useEditor, const wchar_t *type = NULL);
   HRESULT OnOpenItemChanged(UInt32 index, const wchar_t *fullFilePath, bool usePassword, const UString &password);
   LRESULT OnOpenItemChanged(LPARAM lParam);
 
-  void OpenItem(int index, bool tryInternal, bool tryExternal);
+  bool IsVirus_Message(const UString &name);
+  void OpenItem(int index, bool tryInternal, bool tryExternal, const wchar_t *type = NULL);
   void EditItem(bool useEditor);
   void EditItem(int index, bool useEditor);
 
@@ -725,7 +768,7 @@ public:
   void CopyFromNoAsk(const UStringVector &filePaths);
   void CopyFromAsk(const UStringVector &filePaths);
 
- #ifdef _WIN32
+#ifdef _WIN32
   // empty folderPath means create new Archive to path of first fileName.
   void DropObject(IDataObject * dataObject, const UString &folderPath);
 

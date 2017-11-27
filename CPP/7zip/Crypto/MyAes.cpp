@@ -86,7 +86,7 @@ bool CAesCbcCoder::SetFunctions(UInt32 algo)
   if (algo == 2)
   {
     #ifdef MY_CPU_X86_OR_AMD64
-    #ifdef P7ZIP_USE_ASM
+    #ifdef _7ZIP_ASM
     if (g_AesCbc_Encode != AesCbc_Encode_Intel)
     #endif
     #endif

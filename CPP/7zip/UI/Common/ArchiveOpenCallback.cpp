@@ -40,12 +40,12 @@ STDMETHODIMP COpenCallbackImp::GetProperty(PROPID propID, PROPVARIANT *value)
   COM_TRY_BEGIN
   NCOM::CPropVariant prop;
   if (_subArchiveMode)
-    switch(propID)
+    switch (propID)
     {
       case kpidName: prop = _subArchiveName; break;
     }
   else
-    switch(propID)
+    switch (propID)
     {
       case kpidName:  prop = _fileInfo.Name; break;
       case kpidIsDir:  prop = _fileInfo.IsDir(); break;
@@ -65,7 +65,9 @@ struct CInFileStreamVol: public CInFileStream
   int FileNameIndex;
   COpenCallbackImp *OpenCallbackImp;
   CMyComPtr<IArchiveOpenCallback> OpenCallbackRef;
-  CInFileStreamVol(bool ignoreLink = false) : CInFileStream(ignoreLink) { } 
+
+  CInFileStreamVol() : CInFileStream(true) { }
+ 
   ~CInFileStreamVol()
   {
     if (OpenCallbackRef)
@@ -90,7 +92,7 @@ STDMETHODIMP COpenCallbackImp::GetStream(const wchar_t *name, IInStream **inStre
     return S_FALSE;
   if (_fileInfo.IsDir())
     return S_FALSE;
-  CInFileStreamVol *inFile = new CInFileStreamVol(true);
+  CInFileStreamVol *inFile = new CInFileStreamVol;
   CMyComPtr<IInStream> inStreamTemp = inFile;
   if (!inFile->Open(fullPath))
     return ::GetLastError();
@@ -119,6 +121,7 @@ STDMETHODIMP COpenCallbackImp::CryptoGetTextPassword(BSTR *password)
   }
   if (!Callback)
     return E_NOTIMPL;
+  PasswordWasAsked = true;
   return Callback->Open_CryptoGetTextPassword(password);
   COM_TRY_END
 }

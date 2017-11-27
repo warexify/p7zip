@@ -2,6 +2,8 @@
 
 #include "StdAfx.h"
 
+#include "../../../Common/MyWindows.h"
+
 #include "../../../Common/MyInitGuid.h"
 
 #include "../../../Common/CommandLineParser.h"
@@ -11,8 +13,6 @@
 #include "../../../Windows/DLL.h"
 #include "../../../Windows/FileDir.h"
 #else
-#include "Common/StringConvert.h"
-#include "Windows/System.h"
 #include "myPrivate.h"
 #endif
 #include "../../../Windows/FileName.h"
@@ -28,7 +28,7 @@
 
 using namespace NWindows;
 using namespace NFile;
-// using namespace NDir;
+// FIXME using namespace NDir;
 using namespace NCommandLineParser;
 
 #ifdef _WIN32
@@ -38,8 +38,7 @@ int g_CodePage = -1;
 extern CStdOutStream *g_StdStream;
 
 static const char *kCopyrightString =
-"\n7-Zip SFX " MY_VERSION_COPYRIGHT_DATE "\n"
-"p7zip Version " P7ZIP_VERSION ;
+"\n7-Zip SFX " MY_VERSION_COPYRIGHT_DATE "\n";
 
 static const int kNumSwitches = 6;
 
@@ -109,7 +108,7 @@ static const char *kHelpString =
     "\nUsage: 7zSFX [<command>] [<switches>...]\n"
     "\n"
     "<Commands>\n"
-    "  l: List contents of archive\n"
+    // "  l: List contents of archive\n"
     "  t: Test integrity of archive\n"
     "  x: eXtract files with full pathname (default)\n"
     "<Switches>\n"
@@ -233,7 +232,7 @@ void AddToCensorFromNonSwitchesStrings(NWildcard::CCensor &wildcardCensor,
 }
 
 
-#ifndef _WIN32
+#if 0 // #ifndef _WIN32
 static void GetArguments(int numArgs, const char *args[], UStringVector &parts)
 {
   parts.Clear();
@@ -261,7 +260,7 @@ int Main2(
   #ifdef _WIN32
   NCommandLineParser::SplitCommandLine(GetCommandLineW(), commandStrings);
   #else
-  extern void mySplitCommandLine(int numArgs, char *args[],UStringVector &parts);
+  // GetArguments(numArgs, args, commandStrings);
   mySplitCommandLine(numArgs,args,commandStrings);
   #endif
 
@@ -280,29 +279,7 @@ int Main2(
 
   #else
   // After mySplitCommandLine
-  g_StdOut << kCopyrightString << " (locale=" << my_getlocale() <<",Utf16=";
-  if (global_use_utf16_conversion) g_StdOut << "on";
-  else                             g_StdOut << "off";
-  g_StdOut << ",HugeFiles=";
-  if (sizeof(off_t) >= 8) g_StdOut << "on,";
-  else                    g_StdOut << "off,";
-  int nbcpu = NWindows::NSystem::GetNumberOfProcessors();
-  if (nbcpu > 1) g_StdOut << nbcpu << " CPUs";
-  else           g_StdOut << nbcpu << " CPU";
-
-#ifdef P7ZIP_USE_ASM
-{
-  const char * txt =",ASM";
-  #ifdef MY_CPU_X86_OR_AMD64
-  if (CPU_Is_Aes_Supported())
-  {
-     txt =",ASM,AES-NI";
-  }
-  #endif
-  g_StdOut << txt;
-}
-#endif
-  g_StdOut << ")\n";
+  showP7zipInfo(&g_StdOut);
 
   UString arcPath = commandStrings.Front();
 
@@ -399,22 +376,22 @@ int Main2(
     {
       CExtractCallbackConsole *ecs = new CExtractCallbackConsole;
       CMyComPtr<IFolderArchiveExtractCallback> extractCallback = ecs;
-      ecs->OutStream = g_StdStream;
+      ecs->Init(g_StdStream, &g_StdErr, g_StdStream);
 
       #ifndef _NO_CRYPTO
       ecs->PasswordIsDefined = passwordEnabled;
       ecs->Password = password;
       #endif
 
-      ecs->Init();
-
+      /*
       COpenCallbackConsole openCallback;
-      openCallback.OutStream = g_StdStream;
+      openCallback.Init(g_StdStream, g_StdStream);
 
       #ifndef _NO_CRYPTO
       openCallback.PasswordIsDefined = passwordEnabled;
       openCallback.Password = password;
       #endif
+      */
 
       CExtractOptions eo;
       eo.StdOutMode = false;
@@ -432,7 +409,7 @@ int Main2(
           codecs, CObjectVector<COpenType>(), CIntVector(),
           v1, v2,
           wildcardCensorHead,
-          eo, &openCallback, ecs,
+          eo, ecs, ecs,
           // NULL, // hash
           errorMessage, stat);
       if (!errorMessage.IsEmpty())
@@ -455,6 +432,9 @@ int Main2(
     }
     else
     {
+      throw CSystemException(E_NOTIMPL);
+
+      /*
       UInt64 numErrors = 0;
       UInt64 numWarnings = 0;
       HRESULT result = ListArchives(
@@ -477,6 +457,7 @@ int Main2(
       }
       if (result != S_OK)
         throw CSystemException(result);
+      */
     }
   }
   return 0;

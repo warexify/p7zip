@@ -74,8 +74,6 @@ bool CListViewDialog::OnSize(WPARAM /* wParam */, int xSize, int ySize)
   return false;
 }
 
-
-
 extern bool g_LVN_ITEMACTIVATE_Support;
 
 bool CListViewDialog::OnNotify(UINT /* controlID */, LPNMHDR header)
@@ -83,7 +81,7 @@ bool CListViewDialog::OnNotify(UINT /* controlID */, LPNMHDR header)
 #ifdef _WIN32
   if (header->hwndFrom != _listView)
     return false;
-  switch(header->code)
+  switch (header->code)
   {
     case LVN_ITEMACTIVATE:
       if (g_LVN_ITEMACTIVATE_Support)
@@ -104,7 +102,7 @@ bool CListViewDialog::OnNotify(UINT /* controlID */, LPNMHDR header)
     case LVN_KEYDOWN:
     {
       LPNMLVKEYDOWN keyDownInfo = LPNMLVKEYDOWN(header);
-      switch(keyDownInfo->wVKey)
+      switch (keyDownInfo->wVKey)
       {
         case VK_DELETE:
         {

@@ -35,7 +35,8 @@ UString MultiByteToUnicodeString(const AString &srcString, UINT codePage)
     
        size_t n = CFStringGetLength(cfpath2);
        for(size_t i =   0 ; i< n ;i++) {
-         resultString += CFStringGetCharacterAtIndex(cfpath2,i);
+         UniChar uc = CFStringGetCharacterAtIndex(cfpath2,i);
+         resultString += (wchar_t)uc; // FIXME
        }
 
        CFRelease(cfpath2);  
@@ -113,8 +114,8 @@ AString UnicodeStringToMultiByte(const UString &srcString, UINT codePage)
   if ((global_use_utf16_conversion) && (!srcString.IsEmpty()))
   {
     AString resultString;
-    bool bret = ConvertUnicodeToUTF8(srcString,resultString);
-    if (bret) return resultString;
+    ConvertUnicodeToUTF8(srcString,resultString);
+    return resultString;
   }
 
   AString resultString;
@@ -136,17 +137,17 @@ UString MultiByteToUnicodeString(const AString &srcString, UINT /* codePage */ )
   if ((global_use_utf16_conversion) && (!srcString.IsEmpty()))
   {
     UString resultString;
-    int numChars = mbstowcs(resultString.GetBuffer(srcString.Len()),srcString,srcString.Len()+1);
+    int numChars = mbstowcs(resultString.GetBuf(srcString.Len()),srcString,srcString.Len()+1);
     if (numChars >= 0) {
-        resultString.ReleaseBuffer(numChars);
+        resultString.ReleaseBuf_SetEnd(numChars);
 
 #if WCHAR_MAX > 0xffff
       for (int i = numChars; i >= 0; i--) {
         if (resultString[i] > 0xffff) {
           wchar_t c = resultString[i] - 0x10000;
           resultString.Delete(i);
-          resultString.Insert(i, ((c >> 10) & 0x3ff) + 0xd800);
-          resultString.Insert(i + 1, (c & 0x3ff) + 0xdc00);
+          wchar_t texts[]= { ((c >> 10) & 0x3ff) + 0xd800,  (c & 0x3ff) + 0xdc00 , 0 };
+          resultString.Insert(i, texts);
           numChars++;
         }
       }
@@ -178,16 +179,16 @@ AString UnicodeStringToMultiByte(const UString &src, UINT /* codePage */ )
     }
   }
 #else
-  UString &srcString = src;
+  const UString &srcString = src;
 #endif
 
   if ((global_use_utf16_conversion) && (!srcString.IsEmpty()))
   {
     AString resultString;
     int numRequiredBytes = srcString.Len() * 6+1;
-    int numChars = wcstombs(resultString.GetBuffer(numRequiredBytes),srcString,numRequiredBytes);
+    int numChars = wcstombs(resultString.GetBuf(numRequiredBytes),srcString,numRequiredBytes);
     if (numChars >= 0) {
-      resultString.ReleaseBuffer(numChars);
+      resultString.ReleaseBuf_SetEnd(numChars);
       return resultString;
     }
   }

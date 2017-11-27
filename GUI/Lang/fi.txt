@@ -3,7 +3,7 @@
 ;  4.30 : Jarko P.
 ;  4.42 : Juhani Valtasalmi
 ;  9.35b : T.Sakkara
-;
+;  15.05 : 2015-08-07 : Lauri Kenttä
 ;
 ;
 ;
@@ -45,24 +45,25 @@ Työ&kalut
 &Ohje
 540
 &Avaa
-Avaa sisäisesti
-Avaa &ulkoisesti
+Avaa s&isäisesti
+Avaa ulkoisesti
 &Näytä
 &Muokkaa
-&Uudelleennimeä
+Nimeä &uudelleen
 &Kopioi...
 &Siirrä...
 &Poista
 &Jaa osiin...
 &Yhdistä jaetut...
-Ominais&uudet
+&Ominaisuudet
 Ku&vaus
-Laske tarkistussumma
-Eroavaisuudet
+Laske tarkiste
+Erot
 Luo kansio
 Luo tiedosto
 &Lopeta
 Linkitä
+Vaihtoehtoiset tietovirrat
 600
 V&alitse kaikki
 Poista &valinnat
@@ -92,14 +93,14 @@ Vakiopalkki
 Suuret painikkeet
 Näytä painiketekstit
 800
-&Lisää Suosikit-kansioon
+&Lisää kansio Suosikkeihin
 Kirjanmerkki
 900
 &Asetukset...
 &Nopeustesti
 960
 &Sisältö...
-&Tietoja ohjelmasta
+&Tietoja ohjelmasta...
 1003
 Polku
 Nimi
@@ -117,7 +118,7 @@ Suojaus
 Jaa ennen
 Jaa jälkeen
 Sanakirja
-Tarkistussumma
+Tarkiste
 Laji
 Vastakohta
 Menetelmä
@@ -140,18 +141,18 @@ Lohkot
 Nimet
 
 64-bittinen
-Koodaus: UCS Big-endian
+Big-endian
 Suoritin
 Fyysinen koko
 Otsikon koko
-Tarkistussumma
+Tarkiste
 Ominaisuudet
 Näennäisosoite
 ID
 Lyhyt nimi
-Sovellus jossa luotu
+Luontisovellus
 Sektorikoko
-Moodi
+Tila
 Symbolinen linkki
 Virhe
 Aseman koko
@@ -160,7 +161,7 @@ Varausyksikön koko
 Nimi
 Paikallinen nimi
 Palveluntarjoja
-NT suojaukset
+NT-suojaukset
 Vaihtoehtoinen tietovirta
 Muu
 Poistettu
@@ -190,16 +191,19 @@ Upotetun segmentin koko
 Linkki
 Kiinteä linkki
 iNode
+
+Vain luku
 2100
 Asetukset
 Kieli
 Kieli:
 Muokkausohjelmat
 &Tekstieditori:
-&Eroavaisuuksien etsintä:
+&Erojen etsintä:
 2200
 Järjestelmäliitännät
 Liitä 7-Zip seuraaviin tiedostotyypeihin:
+Kaikki käyttäjät
 2301
 Liitä 7-Zip järjestelmän valikoihin.
 Ryhmitetty järjestelmävalikko
@@ -209,11 +213,11 @@ Näytä järjestelmävalikon kuvakkeet
 <Kansio>
 <Paketti>
 Avaa
-Purkaa...
+Pura...
 Lisää pakettiin...
 Eheystarkastus
-Purkaa tänne
-Purkaa kansioon {0}
+Pura tänne
+Pura kansioon {0}
 Lisää pakettiin {0}
 Pakkaa tiedostot ja lähetä...
 Lisää pakettiin {0} ja lähetä
@@ -245,7 +249,7 @@ Ei virheitä.
 Ei voida luoda kansioita '{0}.'
 Tätä pakettia ei voi päivittää.
 Tiedoston '{0}' pakkausta ei voi purkaa.
-Ei voi avata suojattua pakettia '{0}'. Onko salasana oikea?
+Ei voi avata suojattua pakettia '{0}'. Väärä salasana?
 Pakkaustapaa ei tueta
 Tiedosto {0} on jo olemassa
 Tiedostoa '{0}' on muutettu.\nHaluatko päivittää paketin?
@@ -256,20 +260,33 @@ Toimintoa ei voi suorittaa kansiosta, jonka nimi on pitkä.
 Valitse yksi tiedosto
 Valitse vähintään yksi tiedosto
 Liian monta kohdetta.
+Ei voida avata tiedostoa {0}-pakettina
+Tiedosto on avattu {0}-pakettina
+Paketti on auki eri alkukohdasta (offset)
 3300
 Puretaan paketti
 Lisätään pakettiin
 Eheystarkistus
 Avataan...
 Etsitään...
+Poistetaan
+3320
+Lisätään
+Päivitetään
+Analysoidaan
+Kopioidaan
+Pakataan uudestaan
+Ohitetaan
+Poistetaan
+Luodaan otsikkoa
 3400
-Purkaa
-&Purkaa kansioon
-Purkaa kansioon
+Pura
+&Pura kansioon
+Määritä puretuille tiedostoille sijainti.
 3410
-Polkujen sisällytys:
-Koko polku
-Ei käytössä
+Polut:
+Täydet polut
+Ei polkuja (vain nimi)
 Absoluuttiset polut
 Suhteelliset polut
 3420
@@ -278,13 +295,13 @@ Kysy tapauskohtaisesti
 Korvaa
 Ohita
 Uudelleennimeä automaattisesti
-Uudelleennimeä aiemmat automaattisesti
+Uudelleennimeä entiset automaattisesti
 3430
 Estä pääkansion kahdennus
-Palauta tiedoston suojaukset
+Palauta tiedostojen suojaukset
 3500
 Vahvista tiedoston korvaus
-Kansiossa on jo samannimisen tiedoston.
+Kansiossa on jo samanniminen tiedosto.
 Korvataanko aiempi tiedosto
 tällä tiedostolla?
 {0} tavua
@@ -293,19 +310,20 @@ tällä tiedostolla?
 Tiedoston '{0}' pakkaustapaa ei tueta.
 Sisältövirhe tiedostossa '{0}'. Tiedosto on viottunut.
 Tiedoston '{0}' eheystarkistus epäonnistui. Tiedosto on vioittunut.
-Virhe avattaessa suojattua tiedostoa '{0}'. Tarkasta salasana!
-Tarkistussummavirhe avattaessa suojattua tiedostoa '{0}'. Tarkasta salasana!
+Virhe avattaessa suojattua tiedostoa '{0}'. Väärä salasana?
+Tarkistevirhe avattaessa suojattua tiedostoa '{0}'. Väärä salasana?
 3710
-Tarkasta salasana!
+Väärä salasana?
 3721
 Pakkaustapaa ei tueta
 Sisältövirhe
-Tarkistussummavirhe
+Tarkistevirhe
 Sisältö ei ole käytettävissä
 Sisällön ennenaikainen loppuminen
 Varsinaisen tietosisällön jälkeen on ylimääräistä sisältöä
 Tiedosto ei ole pakattu
 Otsikkovirhe
+Väärä salasana
 3763
 Pakkauksen alku ei käytettävissä
 Pakkauksen alkua ei vahvistettu
@@ -349,8 +367,8 @@ Pakkaa yhteiset tiedostot
 Suojaus
 Salausalgoritmi
 Tiedosto&nimien suojaus
-Pakkauksessa tarvittava muisti:
-Purkauksessa tarvittava muisti:
+Pakkaamiseen käytettävä muisti:
+Purkamiseen käytettävä muisti:
 Poista pakkauksen jälkeen
 4040
 Tallenna symboliset linkit
@@ -362,7 +380,7 @@ Ei pakkausta
 Nopein
 Nopea
 Normaali
-Täysi
+Maksimi
 Ultra
 4060
 Lisää ja korvaa
@@ -392,7 +410,7 @@ Vahvista tiedoston poisto
 Vahvista kansion poisto
 Vahvista useiden kohteiden poisto
 Poistetaanko tiedosto '{0}'?
-Poistetaanko kansio '{0}' ja kaiken sen sisällön?
+Poistetaanko kansio '{0}' ja kaikki sen sisältö?
 Poistetaanko nämä {0} kohdetta?
 Poistetaan...
 Virhe poistettaessa tiedostoa tai kansiota
@@ -424,7 +442,7 @@ Dokumentit
 Järjestelmä
 7200
 Lisää
-Purkaa
+Pura
 Eheystarkistus
 Kopioi
 Siirrä
@@ -448,10 +466,10 @@ Valitse jaetusta tiedostosta vain ensimmäinen osa
 Tiedosto ei ole jaetun tiedoston osa
 Jaetun tiedoston osista löydettiin vain yksi
 7500
-Lasketaan tarkistussummaa...
-Tarkistussummat
-Sisällön tarkistussumma:
-Sisällön ja tiedostonimien tarkistussumma:
+Lasketaan tarkiste...
+Tarkisteet
+Sisällön tarkiste:
+Sisällön ja tiedostonimien tarkiste:
 7600
 Nopeustesti
 Muistin käyttö:
@@ -465,8 +483,8 @@ Suoritinkäyttö
 Luokitus / käyttö
 Läpäisty:
 7700
-Linkki
-Linkki
+Linkitys
+Linkitä
 Linkitys kohteesta:
 Linkitys kohteeseen:
 7710

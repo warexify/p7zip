@@ -1,3 +1,6 @@
+
+all: $(PCH_NAME) $(PROG)
+
 SRCS=MemLat.cpp
 
 MemLat.o : MemLat.cpp

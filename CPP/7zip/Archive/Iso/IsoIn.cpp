@@ -2,30 +2,101 @@
 
 #include "StdAfx.h"
 
+#include "../../../../C/CpuArch.h"
+
 #include "../../../Common/MyException.h"
 
 #include "../../Common/StreamUtils.h"
+
+#include "../HandlerCont.h"
 
 #include "IsoIn.h"
 
 namespace NArchive {
 namespace NIso {
- 
+
 struct CUnexpectedEndException {};
 struct CHeaderErrorException {};
 struct CEndianErrorException {};
 
+static const char * const kMediaTypes[] =
+{
+    "NoEmul"
+  , "1.2M"
+  , "1.44M"
+  , "2.88M"
+  , "HardDisk"
+};
+
+bool CBootInitialEntry::Parse(const Byte *p)
+{
+  Bootable = (p[0] == NBootEntryId::kInitialEntryBootable);
+  BootMediaType = p[1];
+  LoadSegment = GetUi16(p + 2);
+  SystemType = p[4];
+  SectorCount = GetUi16(p + 6);
+  LoadRBA = GetUi32(p + 8);
+  memcpy(VendorSpec, p + 12, 20);
+  if (p[5] != 0)
+    return false;
+  if (p[0] != NBootEntryId::kInitialEntryBootable
+      && p[0] != NBootEntryId::kInitialEntryNotBootable)
+    return false;
+  return true;
+}
+
+AString CBootInitialEntry::GetName() const
+{
+  AString s = (Bootable ? "Boot" : "NotBoot");
+  s += '-';
+  
+  if (BootMediaType < ARRAY_SIZE(kMediaTypes))
+    s += kMediaTypes[BootMediaType];
+  else
+  {
+    char name[16];
+    ConvertUInt32ToString(BootMediaType, name);
+    s += name;
+  }
+  
+  if (VendorSpec[0] == 1)
+  {
+    // "Language and Version Information (IBM)"
+
+    unsigned i;
+    for (i = 1; i < sizeof(VendorSpec); i++)
+      if (VendorSpec[i] > 0x7F)
+        break;
+    if (i == sizeof(VendorSpec))
+    {
+      s += '-';
+      for (i = 1; i < sizeof(VendorSpec); i++)
+      {
+        char c = VendorSpec[i];
+        if (c == 0)
+          break;
+        if (c == '\\' || c == '/')
+          c = '_';
+        s += c;
+      }
+    }
+  }
+
+  s += ".img";
+  return s;
+}
+
 Byte CInArchive::ReadByte()
 {
-  if (m_BufferPos >= BlockSize)
+  if (m_BufferPos >= kBlockSize)
     m_BufferPos = 0;
   if (m_BufferPos == 0)
   {
-    size_t processed = BlockSize;
+    size_t processed = kBlockSize;
     HRESULT res = ReadStream(_stream, m_Buffer, &processed);
     if (res != S_OK)
       throw CSystemException(res);
-    if (processed != BlockSize)
+    if (processed != kBlockSize)
       throw CUnexpectedEndException();
     UInt64 end = _position + processed;
     if (PhySize < end)
@@ -57,15 +128,6 @@ void CInArchive::SkipZeros(size_t size)
       throw CHeaderErrorException();
   }
 }
-
-UInt16 CInArchive::ReadUInt16Spec()
-{
-  UInt16 val = 0;
-  for (int i = 0; i < 2; i++)
-    val |= ((UInt16)(ReadByte()) << (8 * i));
-  return val;
-}
-
 
 UInt16 CInArchive::ReadUInt16()
 {
@@ -179,15 +241,15 @@ void CInArchive::ReadDirRecord2(CDirRecord &r, Byte len)
   Byte idLen = ReadByte();
   r.FileId.Alloc(idLen);
   ReadBytes((Byte *)r.FileId, idLen);
-  int padSize = 1 - (idLen & 1);
+  unsigned padSize = 1 - (idLen & 1);
   
-  // SkipZeros(1 - (idLen & 1));
-  Skip(1 - (idLen & 1)); // it's bug in some cd's. Must be zeros
+  // SkipZeros(padSize);
+  Skip(padSize); // it's bug in some cd's. Must be zeros
 
-  int curPos = 33 + idLen + padSize;
+  unsigned curPos = 33 + idLen + padSize;
   if (curPos > len)
     throw CHeaderErrorException();
-  int rem = len - curPos;
+  unsigned rem = len - curPos;
   r.SystemUse.Alloc(rem);
   ReadBytes((Byte *)r.SystemUse, rem);
 }
@@ -349,45 +411,94 @@ void CInArchive::ReadBootInfo()
 {
   if (!_bootIsDefined)
     return;
+  HeadersError = true;
+
   if (memcmp(_bootDesc.BootSystemId, kElToritoSpec, sizeof(_bootDesc.BootSystemId)) != 0)
     return;
   
-  const Byte *p = (const Byte *)_bootDesc.BootSystemUse;
-  UInt32 blockIndex = p[0] | ((UInt32)p[1] << 8) | ((UInt32)p[2] << 16) | ((UInt32)p[3] << 24);
+  UInt32 blockIndex = GetUi32(_bootDesc.BootSystemUse);
   SeekToBlock(blockIndex);
-  Byte b = ReadByte();
-  if (b != NBootEntryId::kValidationEntry)
+  
+  Byte buf[32];
+  ReadBytes(buf, 32);
+
+  if (buf[0] != NBootEntryId::kValidationEntry
+      || buf[2] != 0
+      || buf[3] != 0
+      || buf[30] != 0x55
+      || buf[31] != 0xAA)
     return;
+
   {
+    UInt32 sum = 0;
+    for (unsigned i = 0; i < 32; i += 2)
+      sum += GetUi16(buf + i);
+    if ((sum & 0xFFFF) != 0)
+      return;
+    /*
     CBootValidationEntry e;
-    e.PlatformId = ReadByte();
-    if (ReadUInt16Spec() != 0)
-      throw CHeaderErrorException();
-    ReadBytes(e.Id, sizeof(e.Id));
-    /* UInt16 checkSum = */ ReadUInt16Spec();
-    if (ReadByte() != 0x55)
-      throw CHeaderErrorException();
-    if (ReadByte() != 0xAA)
-      throw CHeaderErrorException();
+    e.PlatformId = buf[1];
+    memcpy(e.Id, buf + 4, sizeof(e.Id));
+    // UInt16 checkSum = GetUi16(p + 28);
+    */
   }
-  b = ReadByte();
-  if (b == NBootEntryId::kInitialEntryBootable || b == NBootEntryId::kInitialEntryNotBootable)
+
+  ReadBytes(buf, 32);
   {
     CBootInitialEntry e;
-    e.Bootable = (b == NBootEntryId::kInitialEntryBootable);
-    e.BootMediaType = ReadByte();
-    e.LoadSegment = ReadUInt16Spec();
-    e.SystemType = ReadByte();
-    if (ReadByte() != 0)
-      throw CHeaderErrorException();
-    e.SectorCount = ReadUInt16Spec();
-    e.LoadRBA = ReadUInt32Le();
-    if (ReadByte() != 0)
-      throw CHeaderErrorException();
+    if (!e.Parse(buf))
+      return;
     BootEntries.Add(e);
   }
-  else
-    return;
+
+  bool error = false;
+  
+  for (;;)
+  {
+    ReadBytes(buf, 32);
+    Byte headerIndicator = buf[0];
+    if (headerIndicator != NBootEntryId::kMoreHeaders
+        && headerIndicator != NBootEntryId::kFinalHeader)
+      break;
+
+    // Section Header
+    // Byte platform = p[1];
+    unsigned numEntries = GetUi16(buf + 2);
+    // id[28]
+      
+    for (unsigned i = 0; i < numEntries; i++)
+    {
+      ReadBytes(buf, 32);
+      CBootInitialEntry e;
+      if (!e.Parse(buf))
+      {
+        error = true;
+        break;
+      }
+      if (e.BootMediaType & (1 << 5))
+      {
+        // Section entry extension
+        for (unsigned j = 0;; j++)
+        {
+          ReadBytes(buf, 32);
+          if (j > 32 || buf[0] != NBootEntryId::kExtensionIndicator)
+          {
+            error = true;
+            break;
+          }
+          if ((buf[1] & (1 << 5)) == 0)
+            break;
+          // info += (buf + 2, 30)
+        }
+      }
+      BootEntries.Add(e);
+    }
+  
+    if (headerIndicator != NBootEntryId::kMoreHeaders)
+      break;
+  }
+    
+  HeadersError = error;
 }
 
 HRESULT CInArchive::Open2()
@@ -400,7 +511,7 @@ HRESULT CInArchive::Open2()
 
   PhySize = _position;
   m_BufferPos = 0;
-  BlockSize = kBlockSize;
+  // BlockSize = kBlockSize;
   
   for (;;)
   {
@@ -487,7 +598,7 @@ HRESULT CInArchive::Open2()
   ReadBootInfo();
 
   {
-    FOR_VECTOR(i, Refs)
+    FOR_VECTOR (i, Refs)
     {
       const CRef &ref = Refs[i];
       for (UInt32 j = 0; j < ref.NumExtents; j++)
@@ -499,12 +610,28 @@ HRESULT CInArchive::Open2()
     }
   }
   {
-    FOR_VECTOR(i, BootEntries)
+    FOR_VECTOR (i, BootEntries)
     {
       const CBootInitialEntry &be = BootEntries[i];
       UpdatePhySize(be.LoadRBA, GetBootItemSize(i));
     }
   }
+
+  if (PhySize < _fileSize)
+  {
+    UInt64 rem = _fileSize - PhySize;
+    const UInt64 kRemMax = 1 << 21;
+    if (rem <= kRemMax)
+    {
+      RINOK(_stream->Seek(PhySize, STREAM_SEEK_SET, NULL));
+      bool areThereNonZeros = false;
+      UInt64 numZeros = 0;
+      RINOK(ReadZeroTail(_stream, areThereNonZeros, numZeros, kRemMax));
+      if (!areThereNonZeros)
+        PhySize += numZeros;
+    }
+  }
+
   return S_OK;
 }
 

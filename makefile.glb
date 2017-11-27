@@ -9,12 +9,14 @@ CFLAGS=-c -I. \
 $(ALLFLAGS) $(ALLFLAGS_C)
 
 CXXFLAGS=-c -I. \
+-I../../../../C \
 -I../../../myWindows \
 -I../../../ \
 -I../../../include_windows \
 $(ALLFLAGS) $(ALLFLAGS_CPP)
 
-all: $(PCH_NAME) $(PROG)
+PCH_NAME=$(PRE_COMPILED_HEADER)
+
 
 include makefile.list
 include makefile.depend

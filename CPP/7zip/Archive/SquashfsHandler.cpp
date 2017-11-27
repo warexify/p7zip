@@ -8,6 +8,7 @@
 #include "../../../C/Xz.h"
 
 #include "../../Common/ComTry.h"
+#include "../../Common/MyLinux.h"
 #include "../../Common/IntToString.h"
 #include "../../Common/StringConvert.h"
 
@@ -27,10 +28,6 @@
 
 namespace NArchive {
 namespace NSquashfs {
-
-static void *SzAlloc(void *p, size_t size) { p = p; return MyAlloc(size); }
-static void SzFree(void *p, void *address) { p = p; MyFree(address); }
-static ISzAlloc g_Alloc = { SzAlloc, SzFree };
 
 static const UInt32 kNumFilesMax = (1 << 28);
 static const unsigned kNumDirLevelsMax = (1 << 10);
@@ -68,7 +65,7 @@ static const UInt32 kSignature32_LZ = 0x71736873;
 #define kMethod_LZO  3
 #define kMethod_XZ   4
 
-static const char *k_Methods[] =
+static const char * const k_Methods[] =
 {
     "Unknown"
   , "ZLIB"
@@ -79,14 +76,6 @@ static const char *k_Methods[] =
 
 static const UInt32 kMetadataBlockSizeLog = 13;
 static const UInt32 kMetadataBlockSize = (1 << kMetadataBlockSizeLog);
-
-#define MY_S_IFIFO  0x1000
-#define MY_S_IFCHR  0x2000
-#define MY_S_IFDIR  0x4000
-#define MY_S_IFBLK  0x6000
-#define MY_S_IFREG  0x8000
-#define MY_S_IFLNK  0xA000
-#define MY_S_IFSOCK 0xC000
 
 enum
 {
@@ -103,8 +92,8 @@ enum
 static const UInt32 k_TypeToMode[] =
 {
   0,
-  MY_S_IFDIR, MY_S_IFREG, MY_S_IFLNK, MY_S_IFBLK, MY_S_IFCHR, MY_S_IFIFO, MY_S_IFSOCK,
-  MY_S_IFDIR, MY_S_IFREG, MY_S_IFLNK, MY_S_IFBLK, MY_S_IFCHR, MY_S_IFIFO, MY_S_IFSOCK
+  MY_LIN_S_IFDIR, MY_LIN_S_IFREG, MY_LIN_S_IFLNK, MY_LIN_S_IFBLK, MY_LIN_S_IFCHR, MY_LIN_S_IFIFO, MY_LIN_S_IFSOCK,
+  MY_LIN_S_IFDIR, MY_LIN_S_IFREG, MY_LIN_S_IFLNK, MY_LIN_S_IFBLK, MY_LIN_S_IFCHR, MY_LIN_S_IFIFO, MY_LIN_S_IFSOCK
 };
 
 
@@ -758,7 +747,7 @@ UInt32 CNode::Parse4(const Byte *p, UInt32 size, const CHeader &_h)
   }
   
   unsigned offset = 20;
-  switch(Type)
+  switch (Type)
   {
     case kType_FIFO: case kType_FIFO + 7:
     case kType_SOCK: case kType_SOCK + 7:
@@ -943,7 +932,7 @@ static const Byte kArcProps[] =
   kpidHeadersSize,
   kpidFileSystem,
   kpidMethod,
-  kpidBlock,
+  kpidClusterSize,
   kpidBigEndian,
   kpidCTime,
   kpidCharacts
@@ -1556,7 +1545,7 @@ HRESULT CHandler::Open2(IInStream *inStream)
       const Byte *p = _inodesData.Data + pos;
       UInt32 size = totalSize - pos;
 
-      switch(_h.Major)
+      switch (_h.Major)
       {
         case 1:  size = n.Parse1(p, size, _h); break;
         case 2:  size = n.Parse2(p, size, _h); break;
@@ -1652,13 +1641,12 @@ AString CHandler::GetPath(int index) const
   len--;
 
   AString path;
-  char *dest = path.GetBuffer(len) + len;
+  char *dest = path.GetBuf_SetEnd(len) + len;
   index = indexMem;
   for (;;)
   {
     const CItem &item = _items[index];
     index = item.Parent;
-
     const Byte *p = _dirs.Data + item.Ptr;
     unsigned size = (_h.IsOldVersion() ? (unsigned)p[2] : (unsigned)Get16(p + 6)) + 1;
     p += _h.GetFileNameOffset();
@@ -1670,7 +1658,6 @@ AString CHandler::GetPath(int index) const
       break;
     *(--dest) = CHAR_PATH_SEPARATOR;
   }
-  path.ReleaseBuffer(len);
   return path;
 }
 
@@ -1823,7 +1810,7 @@ STDMETHODIMP CHandler::GetArchiveProperty(PROPID propID, PROPVARIANT *value)
 {
   COM_TRY_BEGIN
   NWindows::NCOM::CPropVariant prop;
-  switch(propID)
+  switch (propID)
   {
     case kpidMethod:
     {
@@ -1846,7 +1833,7 @@ STDMETHODIMP CHandler::GetArchiveProperty(PROPID propID, PROPVARIANT *value)
       AString res = "SquashFS";
       if (_h.SeveralMethods)
         res += "-LZMA";
-      res += ' ';
+      res.Add_Space();
       char s[16];
       ConvertUInt32ToString(_h.Major, s);
       res += s;
@@ -1856,7 +1843,7 @@ STDMETHODIMP CHandler::GetArchiveProperty(PROPID propID, PROPVARIANT *value)
       prop = res;
       break;
     }
-    case kpidBlock: prop = _h.BlockSize; break;
+    case kpidClusterSize: prop = _h.BlockSize; break;
     case kpidBigEndian: prop = _h.be; break;
     case kpidCTime:
       if (_h.CTime != 0)
@@ -1888,7 +1875,7 @@ STDMETHODIMP CHandler::GetProperty(UInt32 index, PROPID propID, PROPVARIANT *val
   bool isDir = node.IsDir();
   bool be = _h.be;
 
-  switch(propID)
+  switch (propID)
   {
     case kpidPath: prop = MultiByteToUnicodeString(GetPath(index), CP_OEMCP); break;
     case kpidIsDir: prop = isDir; break;
@@ -1905,7 +1892,7 @@ STDMETHODIMP CHandler::GetProperty(UInt32 index, PROPID propID, PROPVARIANT *val
     case kpidMTime:
     {
       UInt32 offset = 0;
-      switch(_h.Major)
+      switch (_h.Major)
       {
         case 1:
           if (node.Type == kType_FILE)
@@ -2049,7 +2036,8 @@ HRESULT CHandler::ReadBlock(UInt64 blockIndex, Byte *dest, size_t blockSize)
   }
   if (offsetInBlock + blockSize > _cachedUnpackBlockSize)
     return S_FALSE;
-  memcpy(dest, _cachedBlock + offsetInBlock, blockSize);
+  if (blockSize != 0)
+    memcpy(dest, _cachedBlock + offsetInBlock, blockSize);
   return S_OK;
 }
 
@@ -2116,11 +2104,8 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
     int res = NExtract::NOperationResult::kDataError;
     {
       CMyComPtr<ISequentialInStream> inSeqStream;
-      CMyComPtr<IInStream> inStream;
       HRESULT hres = GetStream(index, &inSeqStream);
-      if (inSeqStream)
-        inSeqStream.QueryInterface(IID_IInStream, &inStream);
-      if (hres == S_FALSE || !inStream)
+      if (hres == S_FALSE || !inSeqStream)
       {
         if (hres == E_OUTOFMEMORY)
           return hres;
@@ -2129,9 +2114,8 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
       else
       {
         RINOK(hres);
-        if (inStream)
         {
-          HRESULT hres = copyCoder->Code(inStream, outStream, NULL, NULL, progress);
+          HRESULT hres = copyCoder->Code(inSeqStream, outStream, NULL, NULL, progress);
           if (hres == S_OK)
           {
             if (copyCoderSpec->TotalSize == unpackSize)
@@ -2141,15 +2125,17 @@ STDMETHODIMP CHandler::Extract(const UInt32 *indices, UInt32 numItems,
           {
             res = NExtract::NOperationResult::kUnsupportedMethod;
           }
-          else if(hres != S_FALSE)
+          else if (hres != S_FALSE)
           {
             RINOK(hres);
           }
         }
       }
     }
+
     RINOK(extractCallback->SetOperationResult(res));
   }
+  
   return S_OK;
   COM_TRY_END
 }
@@ -2208,20 +2194,16 @@ STDMETHODIMP CHandler::GetStream(UInt32 index, ISequentialInStream **stream)
   COM_TRY_END
 }
 
-IMP_CreateArcIn
-
-static CArcInfo g_ArcInfo =
-  { "SquashFS", "squashfs", 0, 0xD2,
-  3 * (1 + 4),
-  {
+static const Byte k_Signature[] = {
     4, 'h', 's', 'q', 's',
     4, 's', 'q', 's', 'h',
-    4, 's', 'h', 's', 'q',
-  },
+    4, 's', 'h', 's', 'q' };
+
+REGISTER_ARC_I(
+  "SquashFS", "squashfs", 0, 0xD2,
+  k_Signature,
   0,
   NArcInfoFlags::kMultiSignature,
-  CreateArc };
-
-REGISTER_ARC(Cramfs)
+  NULL)
 
 }}

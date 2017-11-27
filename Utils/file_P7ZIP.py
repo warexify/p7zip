@@ -12,6 +12,8 @@ files_cpp=[
  'CPP/Windows/FileDir.cpp',
  'CPP/Windows/FileFind.cpp',
  'CPP/Windows/FileIO.cpp',
+ 'CPP/Windows/FileName.cpp',
+ 'CPP/Common/MyWindows.cpp',
  'CPP/myWindows/wine_date_and_time.cpp',
 ]
 

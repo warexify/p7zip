@@ -42,10 +42,13 @@
 #include "Windows/Synchronization.cpp"
 #include "Windows/FileFind.cpp"
 #include "Windows/TimeUtils.cpp"
+#include "Windows/System.cpp"
 #include "../C/Threads.c"
 #include "../../C/Ppmd.h"
 
 int g_CodePage = -1;
+
+int global_use_lstat = 0; // FIXME
 
 /* FIXME */
 

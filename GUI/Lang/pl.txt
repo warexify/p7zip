@@ -2,7 +2,7 @@
 ;       : cienislaw
 ;       : pixel
 ;  9.07 : F1xat
-;       : Łukasz Maria P. Pastuszczak
+;  9.33 : Łukasz Maria P. Pastuszczak
 ;
 ;
 ;
@@ -62,6 +62,7 @@ Diff
 Utwórz &folder
 U&twórz plik
 Za&kończ
+Dow&iązanie
 600
 Z&aznacz wszystko
 &Odznacz wszystko
@@ -84,6 +85,7 @@ Otwórz folder główny
 Do góry o jeden poziom
 Historia folderów...
 &Odśwież
+Automatyczne odświeżanie
 750
 Pasek archiwum
 Pasek standardowy
@@ -115,7 +117,7 @@ Zaszyfrowany
 Podzielony przed
 Podzielony po
 Słownik
-CRC
+
 Typ
 Anty
 Metoda
@@ -150,7 +152,7 @@ Krótka nazwa
 Generator
 Rozmiar sektora
 Tryb
-Dowiązanie
+Dowiązanie symboliczne
 Błąd
 Całkowity rozmiar
 Wolne miejsce
@@ -158,6 +160,36 @@ Rozmiar klastra
 Etykieta
 Nazwa lokalna
 Dostawca
+Zabezpieczenia NT
+Alternatywny strumień
+
+Usunięty
+Drzewo
+
+
+Rodzaj błędu
+Błędy
+Błędy
+Ostrzeżenia
+Ostrzeżenie
+Strumienie
+Alternatywne strumienie
+Rozmiar alternatywnych strumieni
+Rozmiar wirtualny
+Rozmiar po rozpakowaniu
+Całkowity rozmiar fizyczny
+Numer woluminu
+Podtyp
+Krótki komentarz
+Strona kodowa
+
+
+
+
+
+Dowiązanie
+Dowiązanie twarde
+I-węzeł
 2100
 Opcje
 Język
@@ -172,6 +204,7 @@ Skojarz program 7-Zip z:
 Zintegruj program 7-Zip z menu kontekstowym powłoki
 Kaskadowe menu kontekstowe
 Elementy menu kontekstowego:
+Ikony w menu kontekstowym
 2320
 <Folder>
 <Archiwum>
@@ -204,7 +237,7 @@ Pojedyncze kliknięcie otwiera element
 &Użyj dużych stron pamięci
 2900
 7-Zip - informacje
-7-Zip jest programem darmowym. Możesz jednak wspomóc jego rozwój poprzez rejestrację.
+7-Zip jest programem darmowym.
 3000
 System nie może przydzielić wymaganej ilości pamięci
 Nie wykryto błędów
@@ -234,16 +267,21 @@ Wypakuj
 &Wypakuj do:
 Wskaż lokalizację dla wypakowanych plików.
 3410
-Tryb ścieżek
+Tryb ścieżek:
 Pełne ścieżki
 Bez ścieżek
+Bezwzględne ścieżki
+Względne ścieżki
 3420
-Tryb nadpisywania
+Tryb nadpisywania:
 Monituj przed nadpisaniem
 Nadpisuj bez monitowania
 Pomiń istniejące pliki
 Automatycznie zmień nazwy
-Aut. zmień nazwy istniejących plików
+Automatycznie zmień nazwy istniejących plików
+3430
+Wyeliminuj podwojenie folderu głównego
+Przywróć zabezpieczenia plików
 3500
 Potwierdź zamianę pliku
 Folder docelowy zawiera już przetwarzany plik.
@@ -257,6 +295,24 @@ Błąd danych w „{0}”. Plik jest uszkodzony.
 CRC nie powiodła się dla „{0}”. Plik jest uszkodzony.
 Błąd danych w zaszyfrowanym pliku „{0}”. Nieprawidłowe hasło?
 CRC nie powiodła się dla zaszyfrowanego pliku „{0}”. Nieprawidłowe hasło?
+3710
+Nieprawidłowe hasło?
+3721
+Nieobsługiwana metoda kompresji
+Błąd danych
+CRC nie powiodła się
+Niedostępne dane
+Nieoczekiwany koniec danych
+Pewne dane znajdują się za końcem bloku użytecznych danych
+Nie rozpoznano archiwum
+Błąd nagłówków
+3763
+Niedostępny początek archiwum
+Niepotwierdzony początek archiwum
+
+
+
+Nieobsługiwana funkcja
 3800
 Wprowadź hasło
 Wprowadź hasło:
@@ -295,6 +351,12 @@ Metoda szyfrowania:
 &Zaszyfruj nazwy plików
 Użycie pamięci dla kompresji:
 Użycie pamięci dla dekompresji:
+Usuń pliki po skompresowaniu
+4040
+Zachowaj dowiązania symboliczne
+Zachowaj dowiązania twarde
+Zachowaj alternatywne strumienie danych
+Zachowaj zabezpieczenia plików
 4050
 Bez kompresji
 Najszybsza
@@ -324,7 +386,7 @@ Wybierz folder docelowy.
 Operacja nie jest obsługiwana dla tego folderu.
 Błąd podczas zmiany nazwy pliku lub folderu
 Potwierdź kopiowanie plików
-Czy na pewno chcesz skopiować pliki do archiwum?
+Czy na pewno chcesz skopiować pliki do archiwum
 6100
 Potwierdź usunięcie pliku
 Potwierdź usunięcie folderu
@@ -402,3 +464,14 @@ Wynik
 Użycie CPU
 Ocena / Użycie
 Przebiegi:
+7700
+Dowiązanie
+Dowiąż
+Element źródłowy:
+Element docelowy:
+7710
+Rodzaj dowiązania
+Dowiązanie twarde
+Dowiązanie symboliczne pliku
+Dowiązanie symboliczne katalogu
+Połączenie katalogów

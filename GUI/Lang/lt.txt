@@ -1,7 +1,7 @@
 ﻿;!@Lang2@!UTF-8!
 ;  2.30 : Marius Navickas : http://www.teisininkas.lt/ivairus/7-zip:
 ;  4.57 : Domas Jokubauskis
-;
+;  15.05 : Vaidas777 (terminų šaltinis: www.raštija.lt)
 ;
 ;
 ;
@@ -58,15 +58,17 @@ Jungti &failus...
 Savy&bės
 Kome&ntuoti
 Skaičiuoti kontrolinę sumą
-
+Sulyginti
 Sukurti aplanką
 Sukurti failą
 Išei&ti
+Nuoroda
+&Alternatyvūs srautai
 600
 Pažymėti &viską
 Nužymėti viską
 Atv&irkštinis žymėjimas
-Pasirikti...
+Parinkti...
 Atžymėti...
 Pasirinkti pagal tipą
 Atžymėti pagal tipą
@@ -79,18 +81,19 @@ Did&elės piktogramos
 Nerūšiuotos
 Nepaisyti aplankų
 &2 skydeliai
-&Parankinės
-Atverti pagrindinį aplanką
+&Mygtukų juostos
+Atverti šakninį aplanką
 Lygiu aukščiau
 Aplankų istorija...
 &Atnaujinti
+Automatiškai atnaujinti
 750
-Archyvo parankinė
-Standartinė parankinė
+Archyvo mygtukų juosta
+Standartinė mygtukų juosta
 Dideli mygtukai
-Rodyti mygtukų tekstą
+Rodyti užrašus ant mygtukų
 800
-&Pridėti katalogą prie mėgiamiausiųjų kaip
+&Pridėti aplanką prie mėgiamiausiųjų kaip
 Mėgiamiausias
 900
 &Nuostatos...
@@ -115,63 +118,97 @@ Komentaras
 Perskyra prieš
 Perskyra paskui
 Žodynas
-CRC
+
 Tipas
 Anti
 Būdas
 Kompiuterio OS
 Bylų sistema
-Vartotojas
+Naudotojas
 Grupė
 Blokas
 Komentaras
 Pozicija
-Aplankas
+Kelio priešdėlis
 Aplankai
-Vylos
+Failai
 Versija
-Dalis
-!!Multivolume
-!!Offset
+Tomas
+Daugiatomis
+Poslinkis
 Nuorodos
 Blokai
-Dalys
+Tomai
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+64-bit
+Mažėjantys baitai
+Procesorius
+Fizinis dysis
+Antraštės dydis
+Kontrolinė suma
+Charakteristikos
+Virtualus adresas
+ID
+Trumpas pavadinimas
+Kūrėjo programa
+Sektoriaus dydis
+Moda
+Simbolinė nuoroda
 Klaida
 Visas dydis
 Laisva vieta
 Blokinio dydis
-Pavadinimas
+Žymė
 Vietinis pavadinimas
-Tiekėjas
+Teikėjas
+NT saugumas
+Alternatyvus srautas
+Pagalbinis
+Ištrintas
+Medis
+
+
+Klaidos tipas
+Klaidos
+Klaidos
+Perspėjimai
+Perspėjimas
+Srautai
+Alternatyvūs srautai
+Alternatyvių srautų dydis
+Virtualus dydis
+Išpakuoto dydis
+Visas fizinis dydis
+Tomo numeris
+Subtipas
+Trumpas komentaras
+Kodų lentelė
+
+
+
+Pabaigos dydis
+Įterpto bloko dydis
+Nuoroda
+Patvarioji nuoroda
+iNode
+
+Tik skaityti
 2100
 Nustatymai
 Kalba
 Kalba:
 Redaktorius
 R&edaktorius:
-
+&Sulyginimas:
 2200
 Sistema
 Susieti 7-Zip su:
+Visi vartotojai
 2301
 Integruoti 7-Zip į kontekstinį meniu
 Pakopinis kontekstinis meniu
 Kontekstinio meniu įrašai:
+Piktogramos kontekstiniame meniu
 2320
 <Aplankas>
 <Archyvas>
@@ -191,7 +228,7 @@ Aplankai
 D&abartinis
 Nurodyta&s:
 Naudoti tik išimamiems diskams
-Nurodyti vietą laikinoms archyvinėms byloms.
+Nurodyti vietą laikiniems archyviniams failams.
 2500
 Nustatos
 Rodyti „..“ failų sąraše
@@ -199,44 +236,59 @@ Rodyti tikras failų piktogramas
 Rodyti sisteminį meniu
 &Žymėti visą eilutę
 Rodyti tinklelio linija&s
-
+Atverti vienu spustelėjimu
 &Kitoks žymėjimo būdas
 Naudoti didžiu&lius atmintinės puslapius
 2900
 Apie 7-Zip
-7-Zip yra nemokama programa. Vis dėlto, jeigu jums patinka 7-Zip ir jūs norėtumėte paremti jos tolesnį vystymą, prašome pinigais paremti 7-Zip projektą.
+7-Zip yra nemokama programa.
 3000
-
+Sistema begali skirti reikalingo atminties kiekio
 Klaidų nerasta
 Pasirinkta {0} objektų:
 Negalima sukurti aplanko „{0}“
 Šio archyvo negalima atnaujinti.
 Negalima atverti „{0}“ failo kaip archyvo
 Negalima atverti šifruoto archyvo „{0}“. Neteisingas slaptažodis?
-
-
-Failas „{0}“ buvo pakeistas.\nAr norite ją atnaujinti archyve?
+Nepalaikomas archyvo tipas
+Failas pavadinimu {0} yra
+Failas „{0}“ buvo pakeistas.\nAr norite jį atnaujinti archyve?
 Negalima atnaujinti failo\n„{0}“
 Negalima paleisti redaktoriaus.
-
-
-
-
+Šis failas panašus į virusą (failo pavadinime yra pasikartojančių tarpų)
+Šis veiksmas negali būti vykdomas iš aplanko, kuris turi ilgą kelią
+Jūs privalote pažymėti vieną failą
+Jūs privalote pažymėti bent vieną failą
 Per daug elementų
+Negalima atverti failo kaip {0} archyvo
+Failas yra atvertas kaip {0} archyvas
+Archyvas yra atvertas su ofsetu
 3300
 Išskleidžiama
 Glaudinama
-tikrinama
+Tikrinama
 Atidaroma...
-skenuojama...
+Skenuojama...
+Šalinama
+3320
+Glaudinama
+Atnaujinama
+Analizuojama
+Dubliuojama
+Glaudinama iš naujo
+Praleidžiama
+Šalinama
+Kuriama antraštė
 3400
 Išskleisti
 Iš&skleisti į:
 Nurodyti vietą išskleidžiamiesiems failams.
 3410
-Kelio režimas
+Kelio moda:
 Pilni keliai
 Jokių kelių
+Absoliutūs keliai
+Santykiniai keliai
 3420
 Perrašymo režimas
 Paklausti prieš perrašant
@@ -244,11 +296,14 @@ Perrašyti neįspėjant
 Praleisti esančius failus
 Automatiškai pervadinti
 Automatiškai pervadinti esančius failus
+3430
+Pašalinti šakninio aplanko pasikartojimą
+Atstatyti failų saugumo nuostatas
 3500
 Failų pakeitimo patvirtinimas
 Paskirtame aplanke jau yra apdorojamas failas.
 Ar norėtumėte pakeisti esančią failą
-šia failu?
+šiuo failu?
 {0} baitų
 A&utomatinis pervadinimas
 3700
@@ -257,6 +312,25 @@ Duomenų klaida „{0}“. Failas pažeistas.
 CRC klaida „{0}“. Failas pažeistas.
 Duomenų klaida šifruotame faile „{0}“. Neteisingas slaptažodis?
 CRC neatitikimas šifruotame faile „{0}“. Neteisingas slaptažodis?
+3710
+Neteisingas slaptažodis?
+3721
+Nepalaikomas suglaudinimo metodas
+Duomenų klaida
+CRC neatitikimas
+Nepasiekiami duomenys
+Netikėta duomenų pabaiga
+Yra papildomi duomenys po naudingų duomenų
+Tai nėra archyvas
+Klaida antraštėse
+Klaidingas slaptažodis
+3763
+Nepasiekiama archyvo pradžia
+Nepatvirtinta archyvo pradžia
+
+
+
+Nepalaikoma ypatybė
 3800
 Slaptažodžio įvedimas
 Įveskite slaptažodį:
@@ -287,14 +361,20 @@ Glaudini&mo būdas:
 Vientiso bloko dydis:
 CPU gijų skaičius:
 &Parametrai:
-Nustatymai
-Iš&sipakuojantis archyvas
-Glaudinti dalijamus failus
+Nuostatos
+Sukurti iš&sipakuojantį archyvą
+Glaudinti atvertus įrašymui failus
 Šifravimas
 Šifravimo metodas:
 Už&šifruoti failų pavadinimus
 Atmintinės naudojimas suglaudinimui:
 Atmintinės naudojimas išskleidimui:
+Ištrinti failus suglaudinus
+4040
+Įsiminti simbolines nuorodas
+Įsiminti patvariasias nuorodas
+Įsiminti alternatyvius duomenų srautus
+Įsiminti failų saugumo nuostatas
 4050
 Mažiausias
 Greitesnis
@@ -317,11 +397,11 @@ Kopijuoti
 Perkelti
 Kopijuoti į:
 Perkelti į:
-kopijuojama...
-perkeliama...
-pervadinama...
+Kopijuojama...
+Perkeliama...
+Pervadinama...
 Pasirinkite paskirties aplanką.
-Veiksmas nepalaikomas.
+Šiam aplankui veiksmas nepalaikomas.
 Klaida pervadinant failą ar aplanką
 Failų kopijavimo patvirtinimas
 Ar jūs esate įsitikinę, jog norite kopijuoti failus į archyvą?
@@ -332,9 +412,9 @@ Patvirtinkite kelių failų šalinimą
 Ar esate įsitikinę, jog norite pašalinti „{0}“?
 Ar esate įsitikinę, jog norite pašalinti „{0}“ aplanką ir visą jo turinį?
 Ar esate įsitikinę, jog norite pašalinti šiuos {0} elementus?
-šalinama...
+Šalinama...
 Klaida trinant failą ar aplanką
-
+Sistema negali perkelti failo į šiukšlinę, kadangi per ilgas kelias
 6300
 Sukurti aplanką
 Sukurti failą
@@ -347,8 +427,8 @@ Klaida kuriant failą
 6400
 Komentaras
 &Komentaras:
-Pasirinkti
-Nesirinkti
+Pažymėti
+Panaikinti žymėjimą
 Šablonas:
 6600
 Nuostatos
@@ -358,7 +438,7 @@ Pranešimas
 7100
 Kompiuteris
 Tinklas
-
+Dokumentai
 Sistema
 7200
 Glaudinti
@@ -372,7 +452,7 @@ Informacija
 Skaidyti failą
 &Skaidyti į:
 Skaidyti į dalis bai&tais:
-skaidoma...
+Skaidoma...
 Skaidymo patvirtinimas
 Ar jūs esate įsitikinę, jog norite failą skaidyti į {0} dalis?
 Dalies dydis privalo būti mažesnis už dalijamo failo dydį
@@ -381,12 +461,12 @@ Nurodytas dalies dydis: {0} baitai.\nAr jūs esate įsitikinę, jog norite archy
 7400
 Sujungti failus
 &Sujungti į:
-sujungiami failai...
-Pažymėkite tik pirmą failą
-
-
+Sujungiami failai...
+Pažymėkite tik pirmą suskaidyto archyvo failą
+Nepavyko atpažinti suskaldyto failo
+Nepavyko surasti daugiau nei vienos suskaldymo failo dalies
 7500
-kontrolinės sumos skaičiavimas...
+Skaičiuojama kontrolinė suma...
 Kontrolinės sumos informacija
 Duomenų CRC kontrolinė suma:
 Duomenų ir failų pavadinimų CRC kontrolinė suma:
@@ -395,10 +475,21 @@ Spartos bandymas
 Atmintinės naudojimas:
 Suglaudinama
 Išskleidžiama
-Vertinimas
-Galutinis vertinimas
+Įvertis
+Galutinis įvertis
 Dabartinis
-Vidutinis
+Galutinis
 CPU naudojimas
-Reitingas / naudojimas
+Įvertis/naudojimas
 Kartai:
+7700
+Nuoroda
+Sujungti
+Šaltinis:
+Tikslas:
+7710
+Nuorodos tipas
+Patvarioji nuoroda
+Failo simbolinė nuoroda
+Aplanko simbolinė nuoroda
+Sujungimo taškas (Junction)

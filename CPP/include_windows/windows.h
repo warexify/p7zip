@@ -179,13 +179,6 @@ DWORD WINAPI GetTickCount(VOID);
 
 /* #include <unknwn.h> */
 #include <basetyps.h>
-struct IEnumSTATPROPSTG;
-
-typedef struct  tagSTATPROPSTG {
-        const OLECHAR * lpwstrName; /* to avoid some warnings : LPOLESTR lpwstrName; */
-	PROPID propid;
-	VARTYPE vt;
-} STATPROPSTG;
 
 #ifdef __cplusplus
 extern "C" const IID IID_ISequentialStream;

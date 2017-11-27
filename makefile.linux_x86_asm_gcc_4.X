@@ -2,14 +2,14 @@
 # makefile for Linux (x86, PPC, alpha ...)
 #
 
-# OPTFLAGS=-mfpmath=sse -Ofast -flto -march=native -funroll-loops
-OPTFLAGS=-O
+# OPTFLAGS=-mfpmath=sse -Ofast -flto -march=native -funroll-loops -s
+OPTFLAGS=-O -s
 
-ALLFLAGS=${OPTFLAGS} -pipe -m32 -s \
+ALLFLAGS=${OPTFLAGS} -pipe -m32 \
     	-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE \
 	-DNDEBUG -D_REENTRANT -DENV_UNIX \
 	-D_7ZIP_LARGE_PAGES \
-	-DP7ZIP_USE_ASM \
+	-D_7ZIP_ASM \
 	$(LOCAL_FLAGS)
 
 ALLFLAGS_CPP=-DENV_HAVE_GCCVISIBILITYPATCH -fvisibility=hidden -fvisibility-inlines-hidden

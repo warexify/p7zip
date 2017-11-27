@@ -28,14 +28,13 @@ namespace NAttributes
 class CFileInfoBase
 {
   bool MatchesMask(UINT32 mask) const { return ((Attrib & mask) != 0); }
-protected:
-  void Clear();
 public:
   UInt64 Size;
   FILETIME CTime;
   FILETIME ATime;
   FILETIME MTime;
   DWORD Attrib;
+  bool IsAltStream;
   bool IsDevice;
 
   /*
@@ -45,6 +44,11 @@ public:
   UINT32 ReparseTag;
   #endif
   */
+
+  CFileInfoBase() { ClearBase(); }
+  void ClearBase() throw();
+
+  void SetAsDir() { Attrib = FILE_ATTRIBUTE_DIRECTORY; }
 
   bool IsArchived() const { return MatchesMask(FILE_ATTRIBUTE_ARCHIVE); }
   bool IsCompressed() const { return MatchesMask(FILE_ATTRIBUTE_COMPRESSED); }
@@ -63,8 +67,11 @@ public:
 struct CFileInfo: public CFileInfoBase
 {
   FString Name;
+  #if defined(_WIN32) && !defined(UNDER_CE)
+  // FString ShortName;
+  #endif
 
-  bool IsDots() const;
+  bool IsDots() const throw();
   bool Find(CFSTR wildcard, bool ignoreLink = false);
 };
 
@@ -108,7 +115,7 @@ public:
   bool IsHandleAllocated() const { return _handle != INVALID_HANDLE_VALUE && _handle != 0; }
   CFindChangeNotification(): _handle(INVALID_HANDLE_VALUE) {}
   ~CFindChangeNotification() { Close(); }
-  bool Close();
+  bool Close() throw();
   HANDLE FindFirst(CFSTR pathName, bool watchSubtree, DWORD notifyFilter);
   bool FindNext() { return BOOLToBool(::FindNextChangeNotification(_handle)); }
 };

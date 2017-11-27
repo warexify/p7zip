@@ -1,7 +1,7 @@
 #ifndef Q7FILEMANAGER_H
 #define Q7FILEMANAGER_H
 
-#include <QtGui/QMainWindow>
+#include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
 class QAbstractItemModel;

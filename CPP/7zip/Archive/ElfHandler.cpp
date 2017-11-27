@@ -226,25 +226,25 @@ void CSegment::Parse(const Byte *p, bool mode64, bool be)
 
 // Section types
 
-#define	SHT_NULL		       0
-#define	SHT_PROGBITS	     1
-#define	SHT_SYMTAB		     2
-#define	SHT_STRTAB		     3
-#define	SHT_RELA		       4
-#define	SHT_HASH		       5
-#define	SHT_DYNAMIC		     6
-#define	SHT_NOTE		       7
-#define	SHT_NOBITS		     8
-#define	SHT_REL			       9
-#define	SHT_SHLIB		      10
-#define	SHT_DYNSYM		    11
-#define	SHT_UNKNOWN12	    12
-#define	SHT_UNKNOWN13	    13
-#define	SHT_INIT_ARRAY    14
-#define	SHT_FINI_ARRAY	  15
-#define	SHT_PREINIT_ARRAY	16
-#define	SHT_GROUP		      17
-#define	SHT_SYMTAB_SHNDX	18
+#define SHT_NULL           0
+#define SHT_PROGBITS       1
+#define SHT_SYMTAB         2
+#define SHT_STRTAB         3
+#define SHT_RELA           4
+#define SHT_HASH           5
+#define SHT_DYNAMIC        6
+#define SHT_NOTE           7
+#define SHT_NOBITS         8
+#define SHT_REL            9
+#define SHT_SHLIB         10
+#define SHT_DYNSYM        11
+#define SHT_UNKNOWN12     12
+#define SHT_UNKNOWN13     13
+#define SHT_INIT_ARRAY    14
+#define SHT_FINI_ARRAY    15
+#define SHT_PREINIT_ARRAY 16
+#define SHT_GROUP         17
+#define SHT_SYMTAB_SHNDX  18
 
 
 static const CUInt32PCharPair g_SectTypes[] =
@@ -554,11 +554,11 @@ static const CUInt32PCharPair g_OS[] =
   { 255, "Standalone" }
 };
 
-#define	ET_NONE 0
-#define	ET_REL	1
-#define	ET_EXEC	2
-#define	ET_DYN	3
-#define	ET_CORE	4
+#define ET_NONE 0
+#define ET_REL  1
+#define ET_EXEC 2
+#define ET_DYN  3
+#define ET_CORE 4
 
 static const char *g_Types[] =
 {
@@ -632,7 +632,7 @@ enum
   kpidInfoSection
 };
 
-static const STATPROPSTG kProps[] =
+static const CStatProp kProps[] =
 {
   { NULL, kpidPath, VT_BSTR },
   { NULL, kpidSize, VT_UI8 },
@@ -641,8 +641,8 @@ static const STATPROPSTG kProps[] =
   { NULL, kpidVa, VT_UI8 },
   { NULL, kpidType, VT_BSTR },
   { NULL, kpidCharacts, VT_BSTR }
-  , { (LPOLESTR)L"Link Section", kpidLinkSection, VT_BSTR}
-  , { (LPOLESTR)L"Info Section", kpidInfoSection, VT_BSTR}
+  , { "Link Section", kpidLinkSection, VT_BSTR}
+  , { "Info Section", kpidInfoSection, VT_BSTR}
 };
 
 IMP_IInArchive_Props_WITH_NAME
@@ -963,15 +963,13 @@ STDMETHODIMP CHandler::AllowTail(Int32 allowTail)
   return S_OK;
 }
 
-IMP_CreateArcIn
+static const Byte k_Signature[] = { 0x7F, 'E', 'L', 'F' };
 
-static CArcInfo g_ArcInfo =
-  { "ELF", "elf", 0, 0xDE,
-  4, { 0x7F, 'E', 'L', 'F' },
+REGISTER_ARC_I(
+  "ELF", "elf", 0, 0xDE,
+  k_Signature,
   0,
   NArcInfoFlags::kPreArc,
-  CreateArc };
-
-REGISTER_ARC(Elf)
+  NULL)
 
 }}

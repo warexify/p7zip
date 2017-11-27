@@ -14,10 +14,15 @@ MY_ASM_START
 
 %macro MY_PROLOG  1  ; MY_PROLOG macro reg:req
     %ifdef x64
-    mov     RCX,RDI
-    mov     R8 ,RDX 
-    mov     RDX,RSI
-
+	  %ifdef CYGWIN64
+		; ivAes : %rcx
+        ; data : %rdx
+        ; numBlocks : %r8
+	  %else
+        mov     RCX,RDI
+        mov     R8 ,RDX
+        mov     RDX,RSI
+      %endif
     ; movdqa  [r4 + 8], xmm6
     ; movdqa  [r4 + 8 + 16], xmm7
     %endif
@@ -26,6 +31,9 @@ MY_ASM_START
     push    r5
 
 %ifdef x64
+    %ifdef CYGWIN64
+	  push    r6
+    %endif
     mov     rN, r8
 %else
     push    r6
@@ -33,7 +41,7 @@ MY_ASM_START
     mov     edx,   [r4 + REG_SIZE * 5]
     mov     rN,   [r4 + REG_SIZE * 6]
 %endif
-    
+
     mov     x6, [r1 + 16]
     shl     x6, 5
 
@@ -42,7 +50,11 @@ MY_ASM_START
 %endmacro
 
 %macro MY_EPILOG 0
-%ifndef x64
+%ifdef x64
+    %ifdef CYGWIN64
+		pop     r6
+    %endif
+%else
     pop     r6
 %endif
     pop     r5
@@ -65,9 +77,9 @@ ways16 equ (ways * 16)
   %1 xmm0,%2
 %define i 1
   %1 xmm1,%2
-%define i 2  
+%define i 2
   %1 xmm2,%2
-%define i 3  
+%define i 3
   %1 xmm3,%2
 
 %endmacro
@@ -75,14 +87,14 @@ ways16 equ (ways * 16)
 %macro LOAD_OP 2  ; LOAD_OP macro op:req, offs:req
     %1      xmm0, [r1 + r3 %2]
 %endmacro
-  
+
 %macro LOAD_OP_W 2 ; LOAD_OP_W macro op:req, offs:req
     movdqa  xmm7, [r1 + r3 %2]
     ; OP_W    %1, xmm7
   %1 xmm0,xmm7
   %1 xmm1,xmm7
   %1 xmm2,xmm7
-  %1 xmm3,xmm7    
+  %1 xmm3,xmm7
 %endmacro
 
 
@@ -116,18 +128,18 @@ MY_PROC AesCbc_Decode_Intel, 3
   nextBlocks2:
     mov     x3, x6
     OP_W    movdqa, [rD + i * 16]
-    
+
     LOAD_OP_W  pxor, +32
-       
+
     DECODE  LOAD_OP_W
-    
+
     ;OP_W    CBC_DEC_UPDATE, i * 16
     CBC_DEC_UPDATE xmm0, 0 * 16
     CBC_DEC_UPDATE xmm1, 1 * 16
     CBC_DEC_UPDATE xmm2, 2 * 16
     CBC_DEC_UPDATE xmm3, 3 * 16
-    
-    
+
+
     add     rD, ways16
   check2:
     sub     rN, ways
@@ -141,9 +153,9 @@ MY_PROC AesCbc_Decode_Intel, 3
     movdqa  xmm1, [rD]
     LOAD_OP movdqa, +32
     pxor    xmm0, xmm1
-    
+
     DECODE  LOAD_OP
-    
+
     pxor    xmm0, xmm6
     movdqa  [rD], xmm0
     movdqa  xmm6, xmm1
@@ -183,9 +195,9 @@ MY_PROC AesCbc_Encode_Intel, 3
     mov     r3, r6
     pxor    xmm0, [rD]
     pxor    xmm0, [r1 + r3 - 32]
-    
+
     ENCODE  LOAD_OP
-    
+
     movdqa  [rD], xmm0
     add     rD, 16
   check_e:
@@ -218,7 +230,7 @@ MY_PROC AesCtr_Code_Intel, 3
     mov     DWORD [r5 + 4], 0
     mov     DWORD [r5 + 8], 0
     mov     DWORD [r5 + 12], 0
-    
+
     add     r1, r6
     neg     r6
     add     r6, 32
@@ -237,13 +249,13 @@ MY_PROC AesCtr_Code_Intel, 3
 ;    endm
     paddq   xmm6, xmm7
     movdqa  xmm0, xmm6
-   
+
     paddq   xmm6, xmm7
     movdqa  xmm1, xmm6
-    
+
     paddq   xmm6, xmm7
     movdqa  xmm2, xmm6
-    
+
     paddq   xmm6, xmm7
     movdqa  xmm3, xmm6
 
@@ -251,21 +263,21 @@ MY_PROC AesCtr_Code_Intel, 3
 
     mov     r3, r6
     LOAD_OP_W  pxor, -32
-    
+
     ENCODE  LOAD_OP_W
-    
+
     ;OP_W    XOR_UPD_1, i * 16
     XOR_UPD_1 xmm0, 0 * 16
     XOR_UPD_1 xmm1, 1 * 16
     XOR_UPD_1 xmm2, 2 * 16
     XOR_UPD_1 xmm3, 3 * 16
-    
+
     ;OP_W    XOR_UPD_2, i * 16
     XOR_UPD_2 xmm0, 0 * 16
     XOR_UPD_2 xmm1, 1 * 16
     XOR_UPD_2 xmm2, 2 * 16
-    XOR_UPD_2 xmm3, 3 * 16  
-    
+    XOR_UPD_2 xmm3, 3 * 16
+
     add     rD, ways16
   check2_c:
     sub     rN, ways

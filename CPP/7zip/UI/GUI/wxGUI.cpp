@@ -38,6 +38,18 @@
 #include "Windows/Window.h"
 #include "Windows/Control/DialogImpl.h"
 
+#include "Common/StringConvert.h"
+
+bool GetProgramFolderPath(UString &folder)
+{
+  const char *p7zip_home_dir = getenv("P7ZIP_HOME_DIR");
+  if (p7zip_home_dir == 0) p7zip_home_dir="./";
+
+  folder = MultiByteToUnicodeString(p7zip_home_dir);
+
+  return true;
+}
+
 
 // FIXME
 
@@ -571,6 +583,7 @@ TransformProcessType(&PSN,kProcessTransformToForegroundApplication);
 //////////////////////////////////////////
 
 #include "resource2.h"
+#include "resource3.h"
 #include "ExtractRes.h"
 // #include "resourceGui.h"
 #include "../FileManager/PropertyNameRes.h"
@@ -703,7 +716,13 @@ static CStringTable g_stringTable[] =
   { IDS_CANT_OPEN_ENCRYPTED_ARCHIVE  ,L"Can not open encrypted archive '{0}'. Wrong password?" },
   { IDS_UNSUPPORTED_ARCHIVE_TYPE  ,L"Unsupported archive type" },
 
+  { IDS_CANT_OPEN_AS_TYPE   ,L"Can not open the file as {0} archive" },
+  { IDS_IS_OPEN_AS_TYPE     ,L"The file is open as {0} archive" },
+  { IDS_IS_OPEN_WITH_OFFSET ,L"The archive is open with offset" },
+
   { IDS_PROGRESS_EXTRACTING ,L"Extracting" },
+
+  { IDS_PROGRESS_SKIPPING ,L"Skipping" },
 
   { IDS_EXTRACT_SET_FOLDER  ,L"Specify a location for extracted files." },
 
@@ -724,7 +743,7 @@ static CStringTable g_stringTable[] =
   { IDS_EXTRACT_MESSAGE_DATA_ERROR_ENCRYPTED ,L"Data error in encrypted file '{0}'. Wrong password?" },
   { IDS_EXTRACT_MESSAGE_CRC_ERROR_ENCRYPTED  ,L"CRC failed in encrypted file '{0}'. Wrong password?" },
 
-  { IDS_EXTRACT_MSG_WRONG_PSW            ,L"Wrong password?" },
+  { IDS_EXTRACT_MSG_WRONG_PSW_GUESS          ,L"Wrong password?" },
   // { IDS_EXTRACT_MSG_ENCRYPTED            ,L"Encrypted file" },
 
   { IDS_EXTRACT_MSG_UNSUPPORTED_METHOD   ,L"Unsupported compression method" },
@@ -735,12 +754,26 @@ static CStringTable g_stringTable[] =
   { IDS_EXTRACT_MSG_DATA_AFTER_END       ,L"There are some data after the end of the payload data" },
   { IDS_EXTRACT_MSG_IS_NOT_ARC           ,L"Is not archive" },
   { IDS_EXTRACT_MSG_HEADERS_ERROR        ,L"Headers Error" },
+  { IDS_EXTRACT_MSG_WRONG_PSW_CLAIM      ,L"Wrong password" },
 
   { IDS_OPEN_MSG_UNAVAILABLE_START  ,L"Unavailable start of archive" },
   { IDS_OPEN_MSG_UNCONFIRMED_START  ,L"Unconfirmed start of archive" },
   // { IDS_OPEN_MSG_ERROR_FLAGS + 5  ,L"Unexpected end of archive" },
   // { IDS_OPEN_MSG_ERROR_FLAGS + 6  ,L"There are data after the end of archive" },
   { IDS_OPEN_MSG_UNSUPPORTED_FEATURE  ,L"Unsupported feature" },
+
+
+  // resource3.rc
+  { IDS_PROGRESS_REMOVE     ,L"Removing" },
+
+  { IDS_PROGRESS_ADD        ,L"Adding" },
+  { IDS_PROGRESS_UPDATE     ,L"Updating" },
+  { IDS_PROGRESS_ANALYZE    ,L"Analyzing" },
+  { IDS_PROGRESS_REPLICATE  ,L"Replicating" },
+  { IDS_PROGRESS_REPACK     ,L"Repacking" },
+
+  { IDS_PROGRESS_DELETE     ,L"Deleting" },
+  { IDS_PROGRESS_HEADER     ,L"Header creating" },
 
 
 	{ 0 , 0 }

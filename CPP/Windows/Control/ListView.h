@@ -41,7 +41,7 @@ typedef struct tagLVCOLUMNW
     LPWSTR pszText;
     int cchTextMax;
     int iSubItem;
-    int iOrder; // FIXME
+    // FIXME int iOrder; // not available
 } LVCOLUMNW;
 
 #define  LVCOLUMN   LVCOLUMNW
@@ -87,83 +87,85 @@ namespace NControl {
 
 class CListView // : public NWindows::CWindow
 {
-	wxListCtrl *_list;
+    wxListCtrl *_list;
 public:
-	CListView() : _list(0) {}
-	void Attach(wxWindow * newWindow);
+    CListView() : _list(0) {}
+    void Attach(wxWindow * newWindow);
 
-	operator HWND() const;
+    operator HWND() const;
 
         void SetUnicodeFormat() { /* FIXME */ ; }
 
 
-	int GetItemCount() const;
+    int GetItemCount() const;
 
-	int InsertItem(int index, LPCTSTR text);
-	int InsertItem(const LVITEM* item);
+    int InsertItem(int index, LPCTSTR text);
+    int InsertItem(const LVITEM* item);
 
-	void SetItem(const LVITEM* item);
+    void SetItem(const LVITEM* item);
 
-	int SetSubItem(int index, int subIndex, LPCTSTR text);
+    int SetSubItem(int index, int subIndex, LPCTSTR text);
 
-	void SetUnicodeFormat(bool fUnicode) { return ;  }
+    void SetUnicodeFormat(bool fUnicode) { return ;  }
 
-	void InsertColumn(int columnIndex, LPCTSTR text, int width);
+    void InsertColumn(int columnIndex, LPCTSTR text, int width);
 
-	void InsertColumn(int columnIndex, const LVCOLUMNW *columnInfo);
+    void InsertColumn(int columnIndex, const LVCOLUMNW *columnInfo);
 
-	void DeleteAllItems();
+    void DeleteAllItems();
 
-	void SetRedraw(bool);
+    void SetRedraw(bool);
 
-	void SetItemCount(int );
+    void SetItemCount(int );
 
-	void InvalidateRect(void *, bool);
+    void InvalidateRect(void *, bool);
 
-	int GetSelectedCount() const;
+    int GetSelectedCount() const;
 
-	void /* bool */ EnsureVisible(int index, bool partialOK);
+    void /* bool */ EnsureVisible(int index, bool partialOK);
 
-	void SetItemState(int index, UINT state, UINT mask);
+    void SetItemState(int index, UINT state, UINT mask);
 
-	void SetItemState_FocusedSelected(int index) { SetItemState(index, LVIS_FOCUSED | LVIS_SELECTED, LVIS_FOCUSED | LVIS_SELECTED); }
+    void SetItemState_FocusedSelected(int index) { SetItemState(index, LVIS_FOCUSED | LVIS_SELECTED, LVIS_FOCUSED | LVIS_SELECTED); }
 
-	void SetItemState_Selected(int index, bool select) { SetItemState(index, select ? LVIS_SELECTED : 0, LVIS_SELECTED); }
-	void SetItemState_Selected(int index) { SetItemState(index, LVIS_SELECTED, LVIS_SELECTED); }
+    void SetItemState_Selected(int index, bool select) { SetItemState(index, select ? LVIS_SELECTED : 0, LVIS_SELECTED); }
+    void SetItemState_Selected(int index) { SetItemState(index, LVIS_SELECTED, LVIS_SELECTED); }
 
-	UINT GetItemState(int index, UINT mask) const;
+    UINT GetItemState(int index, UINT mask) const;
 
-	bool IsItemSelected(int index) const { return GetItemState(index, LVIS_SELECTED) == LVIS_SELECTED; }
+    bool IsItemSelected(int index) const { return GetItemState(index, LVIS_SELECTED) == LVIS_SELECTED; }
 
-	void /* bool */  Update();
+    void /* bool */  Update();
 
-	bool DeleteColumn(int columnIndex);
+    bool DeleteColumn(int columnIndex);
 
-	bool GetItemParam(int itemIndex, LPARAM &param) const;
+    bool GetItemParam(int itemIndex, LPARAM &param) const;
 
-	int GetNextItem(int startIndex, UINT flags) const;
+    int GetNextItem(int startIndex, UINT flags) const;
 
-	int GetFocusedItem() const;
+    int GetFocusedItem() const;
 
-	void RedrawAllItems();
-	  // FIXME added
-	int GetColumnCount();
+    void RedrawAllItems();
+      // FIXME added
+    int GetColumnCount();
 
-	void SetFocus();
+    void SetFocus();
 
-	void RedrawItem(int item);
+    void RedrawItem(int item);
 
-	bool SortItems(PFNLVCOMPARE compareFunction, LPARAM dataParam);
+    bool SortItems(PFNLVCOMPARE compareFunction, LPARAM dataParam);
 
-	bool GetColumn(int columnIndex, LVCOLUMN* columnInfo);
+    bool GetColumn(int columnIndex, LVCOLUMN* columnInfo);
 
-	// HWND EditLabel(int itemIndex)
-	void EditLabel(int itemIndex);
+    // HWND EditLabel(int itemIndex)
+    void EditLabel(int itemIndex);
 
-	bool SetColumnWidthAuto(int iCol) { 
-		return true; // FIXME SetColumnWidth(iCol, LVSCW_AUTOSIZE);
-	}
+    bool SetColumnWidthAuto(int iCol) {
+        return true; // FIXME SetColumnWidth(iCol, LVSCW_AUTOSIZE);
+    }
 
+private:
+    void _InsertColumn(int columnIndex, LPCTSTR text, int format, int width);
 
 };
 

@@ -1,8 +1,8 @@
 ﻿;!@Lang2@!UTF-8!
 ;  3.12 : Alan Šimek
 ;  4.53 : Hasan Osmanagić
-;  9.07 : Stjepan Treger
-;  9.35 : 2014-12-08 : Stjepan Treger
+;  9.07 : 
+; 15.05 : 2015-06-15 : Stjepan Treger  
 ;
 ;
 ;
@@ -63,6 +63,7 @@ Stvo&ri mapu
 Stvori &datoteku
 &Izlaz
 Poveznica
+&Alternativni tokovi
 600
 Odaberi &sve
 Poništi odabir
@@ -92,8 +93,8 @@ Standardna alatna traka
 Velike tipke
 Prikaži tekst
 800
-Dodaj u popis omiljenih uz
-prečicu
+Dod&aj u popis omiljenih kao
+Zabilješka
 900
 &Mogućnosti...
 M&jerenje
@@ -117,7 +118,7 @@ Enkripcija
 Podjeli prije
 Podjeli poslije
 Rječnik
-CRC
+
 Prema tipu
 Anti
 Način
@@ -190,6 +191,8 @@ Veličina ugrađenog odsječka
 Poveznica
 Čvrsta poveznica
 iNode
+
+Samo za čitanje
 2100
 Mogućnosti
 Jezik
@@ -200,6 +203,7 @@ Program za uspoređivanje:
 2200
 Sustav
 Poveži 7-Zip sa:
+Svi korisnici
 2301
 Integriraj 7-Zip u padajući kontekstni izbornik
 Padajući kontekstni izbornik
@@ -256,18 +260,31 @@ Operaciju nemoguće pozvati iz mape koja ima dugačku putanju.
 Morate obilježiti jednu datoteku
 Morate obilježiti jednu ili više datoteka
 Previše stavki
+Nemoguće otvoriti datoteku kao {0} arhivu
+Datoteka je otvorena kao {0} arhiva
+Arhiva je otvorena sa pomakom
 3300
 Raspakiranje
 Sažimanje u arhiv
 Testiranje
 Otvaranje u tijeku...
 Skeniram...
+Uklanjanje
+3320
+Dodavanje
+Ažuriranje
+Analiziranje
+Replikiranje
+Repakiranje
+Preskakanje
+Brisanje
+Stvaranje zaglavlja
 3400
 Raspakiraj
 &Raspakiraj u:
 Lokacija za raspakiranje datoteka.
 3410
-Putanja mapa
+Putanja mapa:
 Potpune putanje
 Bez putanja
 Apsolutne putanje
@@ -306,6 +323,7 @@ Neočekivan kraj podataka
 Postoji još podataka nakon glavnih podataka
 Nije arhiva
 Greška zaglavlja
+Kriva lozinka
 3763
 Neočekivan početak arhive
 Nepotvrđen početak arhive

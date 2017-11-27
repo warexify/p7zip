@@ -11,6 +11,11 @@ namespace NWindows {
 namespace NFile {
 namespace NName {
 
+int FindSepar(const wchar_t *s) throw();
+#ifndef USE_UNICODE_FSTRING
+int FindSepar(const FChar *s) throw();
+#endif
+
 const TCHAR kDirDelimiter = CHAR_PATH_SEPARATOR;
 const TCHAR kAnyStringWildcard = '*';
 
@@ -19,10 +24,11 @@ void NormalizeDirPathPrefix(CSysString &dirPath); // ensures that it ended with 
 void NormalizeDirPathPrefix(UString &dirPath); // ensures that it ended with '\\'
 #endif
 
-bool IsAbsolutePath(const wchar_t *s);
+bool IsAbsolutePath(const wchar_t *s) throw();
+unsigned GetRootPrefixSize(const wchar_t *s) throw();
 
 bool GetFullPath(CFSTR dirPrefix, CFSTR path, FString &fullPath);
-// FIXME bool GetFullPath(CFSTR path, FString &fullPath);
+bool GetFullPath(CFSTR path, FString &fullPath);
 
 }}}
 

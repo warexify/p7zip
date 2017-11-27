@@ -22,71 +22,75 @@
 
 #if 0
 
-
-IDD_BENCH DIALOG 0, 0, xSize, ySize MY_MODAL_DIALOG_STYLE | WS_MINIMIZEBOX
+IDD_BENCH  DIALOG  0, 0, xs, ys  MY_MODAL_DIALOG_STYLE | WS_MINIMIZEBOX
 CAPTION "Benchmark"
 MY_FONT
 BEGIN
-OK  PUSHBUTTON  "&Restart", IDB_RESTART, bXPos1, marg, bXSize, bYSize
-OK  PUSHBUTTON  "&Stop",    IDB_STOP,    bXPos1,   27, bXSize, bYSize
+  PUSHBUTTON  "&Restart", IDB_RESTART, bx1, m, bxs, bys
+  PUSHBUTTON  "&Stop",    IDB_STOP,    bx1, m + bys + 6, bxs, bys
   
-  PUSHBUTTON  "&Help",    IDHELP,             bXPos2, bYPos, bXSize,bYSize
-  PUSHBUTTON  "Cancel",   IDCANCEL,           bXPos1, bYPos, bXSize, bYSize
+  PUSHBUTTON  "&Help",  IDHELP,   bx2, by, bxs, bys
+  PUSHBUTTON  "Cancel", IDCANCEL, bx1, by, bxs, bys
   
-OK  LTEXT     "&Dictionary size:", IDT_BENCH_DICTIONARY, marg, marg + 1, g0XSize, 8
-OK  COMBOBOX  IDC_BENCH_DICTIONARY, g1XPos, marg, g1XSize, 140, CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+  LTEXT  "&Dictionary size:", IDT_BENCH_DICTIONARY, m, m + 1, g0xs, 8
+  COMBOBOX  IDC_BENCH_DICTIONARY, g1x, m, g1xs, 140, MY_COMBO
 
-  LTEXT     "&Number of CPU threads:", IDT_BENCH_MEMORY, marg, 24, g0XSize, 8
-  COMBOBOX  IDC_BENCH_NUM_THREADS, g1XPos, 23, g1XSize, 140, CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+  LTEXT  "Memory usage:", IDT_BENCH_MEMORY, gc2x, m + 1, gc2xs, 8
+  LTEXT  "", IDT_BENCH_MEMORY_VAL, gc2x + gc2xs, m + 1, 40, 8
 
-  LTEXT     "Memory usage:", IDT_BENCH_MEMORY, gc2XPos, marg + 1, gc2XSize, 8
-  LTEXT     "0 MB", IDT_BENCH_MEMORY_VAL, gc2XPos + gc2XSize, marg + 1, 40, 8
-  LTEXT     "1", IDC_BENCHMARK_HARDWARE_THREADS, gc2XPos, 24, 40, 8
+  LTEXT  "&Number of CPU threads:", IDT_BENCH_NUM_THREADS, m, 28, g0xs, 8
+  COMBOBOX  IDC_BENCH_NUM_THREADS, g1x, 27, g1xs, 140, MY_COMBO
+  LTEXT  "", IDT_BENCH_HARDWARE_THREADS, gc2x, 28, 40, 8
 
-  RTEXT     "CPU Usage", IDT_BENCH_USAGE_LABEL,           gUsagePos,  53, gUsageSize,  8
-  RTEXT     "Speed", IDT_BENCH_SPEED,               gSpeedPos,  53, gSpeedSize,  8
-  RTEXT     "Rating / Usage", IDT_BENCH_RPU_LABEL,          gRpuPos,  53, gRpuSize,    8
-  RTEXT     "Rating", IDT_BENCH_RATING_LABEL,            gRatingPos,  53, gRatingSize, 8
+  RTEXT  "CPU Usage", IDT_BENCH_USAGE_LABEL,    xUsage,  54, sUsage,  8
+  RTEXT  "Speed", IDT_BENCH_SPEED,              xSpeed,  54, sSpeed,  8
+  RTEXT  "Rating / Usage", IDT_BENCH_RPU_LABEL, xRpu,    54, sRpu,    8
+  RTEXT  "Rating", IDT_BENCH_RATING_LABEL,      xRating, 54, sRating, 8
   
-  GROUPBOX  "Compressing", IDG_BENCH_COMPRESSING,              marg,  64,      xSize2, 40
+  GROUPBOX  "Compressing", IDG_BENCH_COMPRESSING, m, 64, xc, GROUP_Y_SIZE
  
-  LTEXT     "Current", IDT_BENCH_CURRENT,                   g10XPos,  76, gLabelSize,  8
-  RTEXT     "100%", IDT_BENCH_COMPRESS_USAGE1,          gUsagePos,  76, gUsageSize,  8
-  RTEXT     "100 KB/s", IDT_BENCH_COMPRESS_SPEED,      gSpeedPos,  76, gSpeedSize,  8
-  RTEXT     "0", IDT_BENCH_COMPRESS_RPU,                 gRpuPos,  76, gRpuSize,    8
-  RTEXT     "0", IDT_BENCH_COMPRESS_RATING,           gRatingPos,  76, gRatingSize, 8
+  LTEXT  "Current", IDT_BENCH_CURRENT,   g4x,      76, sLabel,  8
+  RTEXT  "", IDT_BENCH_COMPRESS_USAGE1,  xUsage,   76, sUsage,  8
+  RTEXT  "", IDT_BENCH_COMPRESS_SPEED1,  xSpeed,   76, sSpeed,  8
+  RTEXT  "", IDT_BENCH_COMPRESS_RPU1,    xRpu,     76, sRpu,    8
+  RTEXT  "", IDT_BENCH_COMPRESS_RATING1, xRating,  76, sRating, 8
   
-  LTEXT     "Resulting", IDT_BENCH_RESULTING,               g10XPos,  89, gLabelSize,  8
-  RTEXT     "100%", IDT_BENCH_COMPRESS_USAGE12,         gUsagePos,  89, gUsageSize,  8
-  RTEXT     "100 KB/s", IDT_BENCH_COMPRESS_SPEED2,     gSpeedPos,  89, gSpeedSize,  8
-  RTEXT     "0", IDT_BENCH_COMPRESS_RPU2,                gRpuPos,  89, gRpuSize,    8
-  RTEXT     "0", IDT_BENCH_COMPRESS_RATING2,          gRatingPos,  89, gRatingSize, 8
+  LTEXT  "Resulting", IDT_BENCH_RESULTING, g4x,    89, sLabel,  8
+  RTEXT  "", IDT_BENCH_COMPRESS_USAGE2,  xUsage,   89, sUsage,  8
+  RTEXT  "", IDT_BENCH_COMPRESS_SPEED2,  xSpeed,   89, sSpeed,  8
+  RTEXT  "", IDT_BENCH_COMPRESS_RPU2,    xRpu,     89, sRpu,    8
+  RTEXT  "", IDT_BENCH_COMPRESS_RATING2, xRating,  89, sRating, 8
   
-  GROUPBOX  "Decompressing", IDG_BENCH_DECOMPRESSING,          marg, 111, xSize2, 40
+  GROUPBOX  "Decompressing", IDG_BENCH_DECOMPRESSING, m, 111, xc, GROUP_Y_SIZE
 
-  LTEXT     "Current", IDT_BENCH_CURRENT2,                  g10XPos, 123,  gLabelSize, 8
-  RTEXT     "100%", IDT_BENCH_DECOMPR_USAGE1,        gUsagePos, 123,  gUsageSize, 8
-  RTEXT     "100 KB/s", IDT_BENCH_DECOMPR_SPEED1,    gSpeedPos, 123,  gSpeedSize, 8
-  RTEXT     "0", IDT_BENCH_DECOMPR_RPU1,               gRpuPos, 123,    gRpuSize, 8
-  RTEXT     "0", IDT_BENCH_DECOMPR_RATING1,         gRatingPos, 123, gRatingSize, 8
+  LTEXT  "Current", IDT_BENCH_CURRENT2,  g4x,     123, sLabel,  8
+  RTEXT  "", IDT_BENCH_DECOMPR_USAGE1,   xUsage,  123, sUsage,  8
+  RTEXT  "", IDT_BENCH_DECOMPR_SPEED1,   xSpeed,  123, sSpeed,  8
+  RTEXT  "", IDT_BENCH_DECOMPR_RPU1,     xRpu,    123, sRpu,    8
+  RTEXT  "", IDT_BENCH_DECOMPR_RATING1,  xRating, 123, sRating, 8
   
-  LTEXT     "Resulting", IDT_BENCH_RESULTING2,              g10XPos, 136,  gLabelSize, 8
-  RTEXT     "100%", IDT_BENCH_DECOMPR_USAGE2,       gUsagePos, 136,  gUsageSize, 8
-  RTEXT     "100 KB/s", IDT_BENCH_DECOMPR_SPEED2,   gSpeedPos, 136,  gSpeedSize, 8
-  RTEXT     "0", IDT_BENCH_DECOMPR_RPU2,              gRpuPos, 136,    gRpuSize, 8
-  RTEXT     "0", IDT_BENCH_DECOMPR_RATING2,        gRatingPos, 136, gRatingSize, 8
+  LTEXT  "Resulting", IDT_BENCH_RESULTING2, g4x,  136, sLabel,  8
+  RTEXT  "", IDT_BENCH_DECOMPR_USAGE2,   xUsage,  136, sUsage,  8
+  RTEXT  "", IDT_BENCH_DECOMPR_SPEED2,   xSpeed,  136, sSpeed,  8
+  RTEXT  "", IDT_BENCH_DECOMPR_RPU2,     xRpu,    136, sRpu,    8
+  RTEXT  "", IDT_BENCH_DECOMPR_RATING2,  xRating, 136, sRating, 8
   
-  GROUPBOX  "Total Rating", IDG_BENCH_TOTAL_RATING, gTotalRatingPos, 163, gTotalRatingSize, 38
-  RTEXT     "0", IDT_BENCH_TOTAL_USAGE_VAL,             gUsagePos, 181,  gUsageSize, 8
-  RTEXT     "0", IDT_BENCH_TOTAL_RPU_VAL,                 gRpuPos, 181,    gRpuSize, 8
-  RTEXT     "0", IDG_BENCH_TOTAL_RATING_VAL,           gRatingPos, 181, gRatingSize, 8
+  GROUPBOX  "Total Rating", IDG_BENCH_TOTAL_RATING, xTotalRating, 163, sTotalRating, GROUP_Y2_SIZE
+
+  RTEXT  "", IDT_BENCH_TOTAL_USAGE_VAL,  xUsage,  176, sUsage,  8
+  RTEXT  "", IDT_BENCH_TOTAL_RPU_VAL,    xRpu,    176, sRpu,    8
+  RTEXT  "", IDT_BENCH_TOTAL_RATING_VAL, xRating, 176, sRating, 8
+
+  RTEXT  "", IDT_BENCH_CPU, m, 202, xc, 8
+  RTEXT  "", IDT_BENCH_VER, m, 216, xc, 8
   
-  LTEXT     "Elapsed time:", IDT_BENCH_ELAPSED,    marg, 163, g2XSize, 8
-  LTEXT     "Size:", IDT_BENCH_SIZE,               marg, 176, g2XSize, 8
-  LTEXT     "Passes:", IDT_BENCH_PASSES,           marg, 189, g2XSize, 8
-  RTEXT     "00:00:00", IDT_BENCH_ELAPSED_VAL, g3XPos, 163, g3XSize, 8
-  RTEXT     "0", IDT_BENCH_SIZE_VAL,           g3XPos, 176, g3XSize, 8
-  RTEXT     "0", IDT_BENCH_PASSES_VAL,         g3XPos, 189, g3XSize, 8
+  LTEXT  "Elapsed time:", IDT_BENCH_ELAPSED, m, 163, g2xs, 8
+  LTEXT  "Size:", IDT_BENCH_SIZE,            m, 176, g2xs, 8
+  LTEXT  "Passes:", IDT_BENCH_PASSES,        m, 189, g2xs, 8
+
+  RTEXT  "", IDT_BENCH_ELAPSED_VAL,        g3x, 163, g3xs, 8
+  RTEXT  "", IDT_BENCH_SIZE_VAL,           g3x, 176, g3xs, 8
+  RTEXT  "", IDT_BENCH_PASSES_VAL,         g3x, 189, g3xs, 8
 END
 #endif // #if 0
 
@@ -217,6 +221,9 @@ class CBenchmarkDialogImpl : public NWindows::NControl::CModalDialogImpl
 	topsizer->Add(grpCompress, 0, wxALL|wxEXPAND, 5);
 	topsizer->Add(grpDecompress, 0, wxALL|wxEXPAND, 5);
 	topsizer->Add(grp_ElapsedTime_TotalRating, 0, wxALL|wxEXPAND, 5);
+
+	topsizer->Add(new wxStaticText(this, IDT_BENCH_CPU, _T("")) , 0,  wxALL|wxALIGN_RIGHT, 5 );
+	topsizer->Add(new wxStaticText(this, IDT_BENCH_VER, _T("")) , 0,  wxALL|wxALIGN_RIGHT, 5 );
 
 	topsizer->Add(CreateButtonSizer(wxHELP|wxCANCEL), 0, wxALL|wxEXPAND, 5);
 

@@ -25,7 +25,7 @@ SET(CMAKE_CXX_FLAGS "-fvisibility=hidden -fvisibility-inlines-hidden")
 
 add_subdirectory(7za)
 
-add_subdirectory(7zd)
+add_subdirectory(7z_)
 
 add_subdirectory(7zG)
 

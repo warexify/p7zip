@@ -24,9 +24,6 @@ void logMsg(const QString & text)
     gbl_logMsg->appendPlainText(text);
 }
 
-
-
-
 static QStandardItemModel *createEmptyModel(QObject *parent)
 {
     QStandardItemModel *model = new QStandardItemModel(0, 7, parent);
@@ -139,11 +136,8 @@ void Q7FileManager::item_doubleClicked(const QModelIndex & ind)
 
             bool bret = QDesktopServices::openUrl(url);
             logMsg(tr(" FILE : %1 => %2").arg(name).arg(bret));
-
         }
-
     }
-
 }
 
 void Q7FileManager::setDir(const QString & dirPath)
@@ -211,7 +205,6 @@ void Q7FileManager::setSourceModel(QAbstractItemModel *model)
 {
     m_listView_proxyModel->setSourceModel(model);
 }
-
 
 Q7FileManager::~Q7FileManager()
 {

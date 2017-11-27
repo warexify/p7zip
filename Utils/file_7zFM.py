@@ -102,6 +102,7 @@ files_cpp=[
  'CPP/7zip/UI/FileManager/ViewSettings.cpp',
  'CPP/7zip/UI/FileManager/wxFM.cpp',
  'CPP/7zip/UI/GUI/HashGUI.cpp',
+ 'CPP/7zip/UI/GUI/UpdateCallbackGUI2.cpp',
  'CPP/Common/CRC.cpp',
  'CPP/Common/CrcReg.cpp',
  'CPP/Common/IntToString.cpp',

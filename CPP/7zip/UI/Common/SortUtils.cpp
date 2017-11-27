@@ -16,8 +16,11 @@ void SortFileNames(const UStringVector &strings, CUIntVector &indices)
 {
   unsigned numItems = strings.Size();
   indices.ClearAndSetSize(numItems);
-  unsigned *vals = &indices[0];
-  for (unsigned i = 0; i < numItems; i++)
-    vals[i] = i;
+  if (numItems > 0) // FIXED for -fsanitize=address
+  {
+    unsigned *vals = &indices[0];
+    for (unsigned i = 0; i < numItems; i++)
+      vals[i] = i;
+  }
   indices.Sort(CompareStrings, (void *)&strings);
 }

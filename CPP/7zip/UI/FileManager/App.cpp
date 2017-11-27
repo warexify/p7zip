@@ -52,8 +52,8 @@ void CPanelCallbackImp::SetFocusToPath(int index)
   if (g_App.NumPanels == 1)
     newPanelIndex = g_App.LastFocusedPanel;
   _app->RefreshTitle();
-  // _app->Panels[newPanelIndex]._headerComboBox.SetFocus();
-  // _app->Panels[newPanelIndex]._headerComboBox.ShowDropDown();
+  // FIXME _app->Panels[newPanelIndex]._headerComboBox.SetFocus();
+  // FIXME _app->Panels[newPanelIndex]._headerComboBox.ShowDropDown();
 }
 
 
@@ -61,8 +61,8 @@ void CPanelCallbackImp::OnCopy(bool move, bool copyToSame) { _app->OnCopy(move, 
 void CPanelCallbackImp::OnSetSameFolder() { _app->OnSetSameFolder(_index); }
 void CPanelCallbackImp::OnSetSubFolder()  { _app->OnSetSubFolder(_index); }
 void CPanelCallbackImp::PanelWasFocused() { _app->SetFocusedPanel(_index); _app->RefreshTitle(_index); }
-void CPanelCallbackImp::DragBegin() { /* FIXME _app->DragBegin(_index)*/ ; }
-void CPanelCallbackImp::DragEnd() { /* FIXME _app->DragEnd()*/ ; }
+void CPanelCallbackImp::DragBegin() { /* FIXME _app->DragBegin(_index) */ ; }
+void CPanelCallbackImp::DragEnd() { /* FIXME _app->DragEnd() */ ; }
 void CPanelCallbackImp::RefreshTitle(bool always) { _app->RefreshTitle(_index, always); }
 
 void CApp::ReloadLang()
@@ -146,8 +146,8 @@ HRESULT CApp::CreateOnePanel(int panelIndex, const UString &mainPath, const UStr
 
 #ifdef _WIN32
 static void CreateToolbar(HWND parent,
-    NWindows::NControl::CImageList &imageList,
-    NWindows::NControl::CToolBar &toolBar,
+    NControl::CImageList &imageList,
+    NControl::CToolBar &toolBar,
     bool largeButtons)
 {
   toolBar.Attach(::CreateWindowEx(0, TOOLBARCLASSNAME, NULL, 0
@@ -377,7 +377,8 @@ void CApp::Save()
     if (panel._parentFolders.IsEmpty())
       path = panel._currentFolderPrefix;
     else
-      path = GetFolderPath(panel._parentFolders[0].ParentFolder);
+      path = panel._parentFolders[0].ParentFolderPath;
+      // GetFolderPath(panel._parentFolders[0].ParentFolder);
     SavePanelPath(i, path);
     listMode.Panels[i] = panel.GetListViewMode();
     SaveFlatView(i, panel._flatModeForArc);
@@ -393,9 +394,12 @@ void CApp::Release()
     Panels[i].Release();
 }
 
-// reduces path to part that exists on disk
+// reduces path to part that exists on disk (or root prefix of path)
+// output path is normalized (with WCHAR_PATH_SEPARATOR)
 static void ReducePathToRealFileSystemPath(UString &path)
 {
+  unsigned prefixSize = GetRootPrefixSize(path);
+
   while (!path.IsEmpty())
   {
     if (NFind::DoesDirExist(us2fs(path)))
@@ -403,63 +407,59 @@ static void ReducePathToRealFileSystemPath(UString &path)
       NName::NormalizeDirPathPrefix(path);
       break;
     }
-    int pos = path.ReverseFind(WCHAR_PATH_SEPARATOR);
+    int pos = path.ReverseFind_PathSepar();
     if (pos < 0)
     {
       path.Empty();
       break;
     }
     path.DeleteFrom(pos + 1);
-    if (path.Len() == 3 && path[1] == L':')
+    if ((unsigned)pos + 1 == prefixSize)
       break;
-    if (path.Len() > 2 && path[0] == WCHAR_PATH_SEPARATOR && path[1] == WCHAR_PATH_SEPARATOR)
-    {
-      int nextPos = path.Find(WCHAR_PATH_SEPARATOR, 2); // pos after \\COMPNAME
-      if (nextPos > 0 && path.Find(WCHAR_PATH_SEPARATOR, nextPos + 1) == pos)
-        break;
-    }
     path.DeleteFrom(pos);
   }
 }
 
-// return true for dir\, if dir exist
+// returns: true, if such dir exists or is root
+/*
 static bool CheckFolderPath(const UString &path)
 {
   UString pathReduced = path;
   ReducePathToRealFileSystemPath(pathReduced);
   return (pathReduced == path);
 }
+*/
 
 extern UString ConvertSizeToString(UInt64 value);
 
-static UString AddSizeValue(UInt64 size)
+static void AddSizeValue(UString &s, UInt64 size)
 {
-  return MyFormatNew(IDS_FILE_SIZE, ConvertSizeToString(size));
+  s += MyFormatNew(IDS_FILE_SIZE, ConvertSizeToString(size));
 }
 
 static void AddValuePair1(UString &s, UINT resourceID, UInt64 size)
 {
-  s += LangString(resourceID);
+  AddLangString(s, resourceID);
   s += L": ";
-  s += AddSizeValue(size);
-  s += L'\n';
+  AddSizeValue(s, size);
+  s.Add_LF();
 }
 
 void AddValuePair2(UString &s, UINT resourceID, UInt64 num, UInt64 size)
 {
   if (num == 0)
     return;
-  s += LangString(resourceID);
+  AddLangString(s, resourceID);
   s += L": ";
   s += ConvertSizeToString(num);
 
   if (size != (UInt64)(Int64)-1)
   {
     s += L"    ( ";
-    s += AddSizeValue(size);
+    AddSizeValue(s, size);
     s += L" )";
   }
-  s += L'\n';
+  s.Add_LF();
 }
 
 static void AddPropValueToSum(IFolderFolder *folder, int index, PROPID propID, UInt64 &sum)
@@ -503,7 +503,7 @@ UString CPanel::GetItemsInfoString(const CRecordVector<UInt32> &indices)
   if (numDefined == 2)
     AddValuePair1(info, IDS_PROP_SIZE, filesSize + foldersSize);
   
-  info += L"\n";
+  info.Add_LF();
 #ifdef _WIN32
   info += _currentFolderPrefix;
 #else
@@ -515,7 +515,6 @@ UString CPanel::GetItemsInfoString(const CRecordVector<UInt32> &indices)
     info += tmp;
   }
 #endif
-
   
   for (i = 0; i < indices.Size() && (int)i < (int)kCopyDialog_NumInfoLines - 6; i++)
   {
@@ -523,7 +522,7 @@ UString CPanel::GetItemsInfoString(const CRecordVector<UInt32> &indices)
     int index = indices[i];
     info += GetItemRelPath(index);
     if (IsItem_Folder(index))
-      info += WCHAR_PATH_SEPARATOR;
+      info.Add_PathSepar();
   }
   if (i != indices.Size())
     info += L"\n  ...";
@@ -531,6 +530,20 @@ UString CPanel::GetItemsInfoString(const CRecordVector<UInt32> &indices)
 }
 
 bool IsCorrectFsName(const UString &name);
+
+
+
+/* Returns true, if path is path that can be used as path for File System functions
+*/
+
+/*
+static bool IsFsPath(const FString &path)
+{
+  if (!IsAbsolutePath(path))
+    return false;
+  unsigned prefixSize = GetRootPrefixSize(path);
+}
+*/
 
 void CApp::OnCopy(bool move, bool copyToSame, int srcPanelIndex)
 {
@@ -541,7 +554,12 @@ void CApp::OnCopy(bool move, bool copyToSame, int srcPanelIndex)
   CPanel::CDisableTimerProcessing disableTimerProcessing1(destPanel);
   CPanel::CDisableTimerProcessing disableTimerProcessing2(srcPanel);
 
-  if (!srcPanel.DoesItSupportOperations())
+  if (move)
+  {
+    if (!srcPanel.CheckBeforeUpdate(IDS_MOVE))
+      return;
+  }
+  else if (!srcPanel.DoesItSupportOperations())
   {
     srcPanel.MessageBoxErrorLang(IDS_OPERATION_IS_NOT_SUPPORTED);
     return;
@@ -568,13 +586,15 @@ void CApp::OnCopy(bool move, bool copyToSame, int srcPanelIndex)
       srcPanel.GetOperatedIndicesSmart(indices);
       if (indices.Size() == 0)
         return;
-      destPath = destPanel._currentFolderPrefix;
+      destPath = destPanel.GetFsPath();
       if (NumPanels == 1)
         ReducePathToRealFileSystemPath(destPath);
     }
   }
+  
   UStringVector copyFolders;
   ReadCopyHistory(copyFolders);
+  
   {
     CCopyDialog copyDialog;
 
@@ -607,10 +627,10 @@ void CApp::OnCopy(bool move, bool copyToSame, int srcPanelIndex)
     if (IsAbsolutePath(destPath))
       destPath.Empty();
     else
-      destPath = srcPanel._currentFolderPrefix;
+      destPath = srcPanel.GetFsPath();
     destPath += correctName;
 
-    #ifndef UNDER_CE
+    #if defined(_WIN32) && !defined(UNDER_CE)
     if (destPath.Len() > 0 && destPath[0] == '\\')
       if (destPath.Len() == 1 || destPath[1] != '\\')
       {
@@ -619,42 +639,98 @@ void CApp::OnCopy(bool move, bool copyToSame, int srcPanelIndex)
       }
     #endif
 
-    if (indices.Size() > 1 ||
-        (!destPath.IsEmpty() && destPath.Back() == WCHAR_PATH_SEPARATOR) ||
-        NFind::DoesDirExist(us2fs(destPath)) ||
-        srcPanel.IsArcFolder())
+    bool possibleToUseDestPanel = false;
+
+    if (CompareFileNames(destPath, destPanel.GetFsPath()) == 0)
     {
-      CreateComplexDir(us2fs(destPath));
-      NName::NormalizeDirPathPrefix(destPath);
-      if (!CheckFolderPath(destPath))
+      if (NumPanels == 1 || CompareFileNames(destPath, srcPanel.GetFsPath()) == 0)
       {
-        if (NumPanels < 2 || destPath != destPanel._currentFolderPrefix || !destPanel.DoesItSupportOperations())
-        {
-          srcPanel.MessageBoxErrorLang(IDS_OPERATION_IS_NOT_SUPPORTED);
-          return;
-        }
-        useDestPanel = true;
+        srcPanel.MessageBoxMyError(L"Can not copy files onto itself");
+        return;
+      }
+
+      if (destPanel.DoesItSupportOperations())
+        possibleToUseDestPanel = true;
+    }
+
+    bool destIsFsPath = false;
+
+    if (possibleToUseDestPanel)
+    {
+      if (destPanel.IsFSFolder() || destPanel.IsAltStreamsFolder())
+        destIsFsPath = true;
+      else if (destPanel.IsFSDrivesFolder() || destPanel.IsRootFolder())
+      {
+        srcPanel.MessageBoxErrorLang(IDS_OPERATION_IS_NOT_SUPPORTED);
+        return;
       }
     }
     else
     {
-      if (!IsCorrectFsName(destPath))
+#ifdef _WIN32
+      if (IsAltPathPrefix(us2fs(destPath)))
       {
-        srcPanel.MessageBoxError(E_INVALIDARG);
+        // we allow alt streams dest only to alt stream folder in second panel
+        srcPanel.MessageBoxErrorLang(IDS_OPERATION_IS_NOT_SUPPORTED);
         return;
-      }
-      int pos = destPath.ReverseFind(WCHAR_PATH_SEPARATOR);
-      if (pos >= 0)
-      {
-        UString prefix = destPath.Left(pos + 1);
-        CreateComplexDir(us2fs(prefix));
-        if (!CheckFolderPath(prefix))
+        /*
+        FString basePath = us2fs(destPath);
+        basePath.DeleteBack();
+        if (!DoesFileOrDirExist(basePath))
         {
-          srcPanel.MessageBoxErrorLang(IDS_OPERATION_IS_NOT_SUPPORTED);
+          srcPanel.MessageBoxError2Lines(basePath, ERROR_FILE_NOT_FOUND); // GetLastError()
           return;
         }
+        destIsFsPath = true;
+        */
+      }
+      else
+#endif
+      {
+        if (indices.Size() == 1 &&
+          !destPath.IsEmpty() && destPath.Back() != WCHAR_PATH_SEPARATOR)
+        {
+          int pos = destPath.ReverseFind_PathSepar();
+          if (pos < 0)
+          {
+            srcPanel.MessageBoxErrorLang(IDS_OPERATION_IS_NOT_SUPPORTED);
+            return;
+          }
+          {
+            /*
+            #ifdef _WIN32
+            UString name = destPath.Ptr(pos + 1);
+            if (name.Find(L':') >= 0)
+            {
+              srcPanel.MessageBoxErrorLang(IDS_OPERATION_IS_NOT_SUPPORTED);
+              return;
+            }
+            #endif
+            */
+            UString prefix = destPath.Left(pos + 1);
+            if (!CreateComplexDir(us2fs(prefix)))
+            {
+              srcPanel.MessageBoxError2Lines(prefix, GetLastError());
+              return;
+            }
+          }
+          // bool isFolder = srcPanael.IsItem_Folder(indices[0]);
+        }
+        else
+        {
+          NName::NormalizeDirPathPrefix(destPath);
+          if (!CreateComplexDir(us2fs(destPath)))
+          {
+            srcPanel.MessageBoxError2Lines(destPath, GetLastError());
+            return;
+          }
+        }
+        destIsFsPath = true;
       }
     }
+
+    if (!destIsFsPath)
+      useDestPanel = true;
 
     AddUniqueStringToHeadOfList(copyFolders, destPath);
     while (copyFolders.Size() > 20)
@@ -662,16 +738,15 @@ void CApp::OnCopy(bool move, bool copyToSame, int srcPanelIndex)
     SaveCopyHistory(copyFolders);
   }
 
-  /*
-  if (destPath == destPanel._currentFolderPrefix)
-  {
-    if (destPanel.GetFolderTypeID() == L"PhysDrive")
-      useDestPanel = true;
-  }
-  */
+  bool useSrcPanel = !useDestPanel || !srcPanel.Is_IO_FS_Folder();
 
-  bool useSrcPanel = (!useDestPanel || !srcPanel.IsFsOrDrivesFolder() || destPanel.IsFSFolder());
   bool useTemp = useSrcPanel && useDestPanel;
+  if (useTemp && NumPanels == 1)
+  {
+    srcPanel.MessageBoxErrorLang(IDS_OPERATION_IS_NOT_SUPPORTED);
+    return;
+  }
+  
   CTempDir tempDirectory;
   FString tempDirPrefix;
   if (useTemp)
@@ -690,6 +765,7 @@ void CApp::OnCopy(bool move, bool copyToSame, int srcPanelIndex)
   CPanel::CDisableNotify disableNotify2(srcPanel);
 
   HRESULT result = S_OK;
+  
   if (useSrcPanel)
   {
     CCopyToOptions options;
@@ -709,12 +785,13 @@ void CApp::OnCopy(bool move, bool copyToSame, int srcPanelIndex)
     if (useTemp)
       folderPrefix = fs2us(tempDirPrefix);
     else
-      folderPrefix = srcPanel._currentFolderPrefix;
+      folderPrefix = srcPanel.GetFsPath();
     filePaths.ClearAndReserve(indices.Size());
     FOR_VECTOR (i, indices)
-      filePaths.AddInReserved(srcPanel.GetItemRelPath(indices[i]));
+      filePaths.AddInReserved(srcPanel.GetItemRelPath2(indices[i]));
     result = destPanel.CopyFrom(move, folderPrefix, filePaths, true, 0);
   }
+  
   if (result != S_OK)
   {
     // disableNotify1.Restore();
@@ -729,15 +806,18 @@ void CApp::OnCopy(bool move, bool copyToSame, int srcPanelIndex)
   }
 
   RefreshTitleAlways();
+  
   if (copyToSame || move)
   {
     srcPanel.RefreshListCtrl(srcSelState);
   }
+  
   if (!copyToSame)
   {
     destPanel.RefreshListCtrl(destSelState);
     srcPanel.KillSelection();
   }
+
   disableNotify1.Restore();
   disableNotify2.Restore();
   srcPanel.SetFocusToList();
@@ -864,7 +944,7 @@ void CApp::RefreshTitle(int panelIndex, bool always)
 void AddUniqueStringToHead(UStringVector &list, const UString &s)
 {
   for (unsigned i = 0; i < list.Size();)
-    if (s.IsEqualToNoCase(list[i]))
+    if (s.IsEqualTo_NoCase(list[i]))
       list.Delete(i);
     else
       i++;
@@ -881,7 +961,7 @@ void CFolderHistory::Normalize()
 
 void CFolderHistory::AddString(const UString &s)
 {
-  NWindows::NSynchronization::CCriticalSectionLock lock(_criticalSection);
+  NSynchronization::CCriticalSectionLock lock(_criticalSection);
   AddUniqueStringToHead(Strings, s);
   Normalize();
 }

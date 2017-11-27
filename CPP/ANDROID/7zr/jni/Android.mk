@@ -9,10 +9,9 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := 7zr
 
 LOCAL_CFLAGS := -DANDROID_NDK  -fexceptions \
-		-DNDEBUG -D_REENTRANT -DENV_UNIX \
-                 -DBREAK_HANDLER -D_NO_CRYPTO \
-  -DUNICODE \
-  -D_UNICODE \
+	-DNDEBUG -D_REENTRANT -DENV_UNIX \
+	-DBREAK_HANDLER -D_NO_CRYPTO \
+	-DUNICODE -D_UNICODE -DUNIX_USE_WIN_FILE \
 	-I../../../7zip/Archive \
 	-I../../../7zip/Archive/7z \
 	-I../../../7zip/Archive/BZip2 \
@@ -53,7 +52,6 @@ LOCAL_SRC_FILES := \
   ../../../../CPP/7zip/Archive/7z/7zSpecStream.cpp \
   ../../../../CPP/7zip/Archive/7z/7zUpdate.cpp \
   ../../../../CPP/7zip/Archive/Common/CoderMixer2.cpp \
-  ../../../../CPP/7zip/Archive/Common/CoderMixer2MT.cpp \
   ../../../../CPP/7zip/Archive/Common/CrossThreadProgress.cpp \
   ../../../../CPP/7zip/Archive/Common/DummyOutStream.cpp \
   ../../../../CPP/7zip/Archive/Common/HandlerOut.cpp \
@@ -73,7 +71,6 @@ LOCAL_SRC_FILES := \
   ../../../../CPP/7zip/Common/InBuffer.cpp \
   ../../../../CPP/7zip/Common/InOutTempBuffer.cpp \
   ../../../../CPP/7zip/Common/LimitedStreams.cpp \
-  ../../../../CPP/7zip/Common/LockedStream.cpp \
   ../../../../CPP/7zip/Common/MethodId.cpp \
   ../../../../CPP/7zip/Common/MethodProps.cpp \
   ../../../../CPP/7zip/Common/OffsetStream.cpp \
@@ -89,7 +86,6 @@ LOCAL_SRC_FILES := \
   ../../../../CPP/7zip/Compress/Bcj2Register.cpp \
   ../../../../CPP/7zip/Compress/BcjCoder.cpp \
   ../../../../CPP/7zip/Compress/BcjRegister.cpp \
-  ../../../../CPP/7zip/Compress/BranchCoder.cpp \
   ../../../../CPP/7zip/Compress/BranchMisc.cpp \
   ../../../../CPP/7zip/Compress/BranchRegister.cpp \
   ../../../../CPP/7zip/Compress/ByteSwap.cpp \
@@ -167,6 +163,8 @@ LOCAL_SRC_FILES := \
   ../../../../C/7zCrcOpt.c \
   ../../../../C/7zStream.c \
   ../../../../C/Alloc.c \
+  ../../../../C/Bcj2.c \
+  ../../../../C/Bcj2Enc.c \
   ../../../../C/Bra.c \
   ../../../../C/Bra86.c \
   ../../../../C/BraIA64.c \

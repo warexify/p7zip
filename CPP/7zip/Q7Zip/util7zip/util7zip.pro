@@ -23,6 +23,7 @@ SOURCES += util7zip.cpp \
  ../../../Windows/FileIO.cpp \
  ../../../Windows/FileName.cpp \
  ../../../Windows/PropVariant.cpp \
+../../Common/PropId.cpp \
 ../../UI/FileManager/RootFolder.cpp \
 ../../UI/FileManager/FSDrives.cpp \
 ../../UI/FileManager/FSFolder.cpp \
@@ -32,6 +33,8 @@ SOURCES += util7zip.cpp \
  ../../../../C/Alloc.c \
  ../../../../C/Threads.c \
 
+# ../../UI/FileManager/LangUtils.cpp \
+
 
 
 INCLUDEPATH += ../../../myWindows
@@ -40,6 +43,6 @@ INCLUDEPATH += ../../../include_windows
 INCLUDEPATH += ../../UI/FileManager
 
 #DEFINES += _FILE_OFFSET_BITS=64 _LARGEFILE_SOURCE NDEBUG _REENTRANT
-DEFINES +=  ENV_UNIX UNICODE _UNICODE
+DEFINES +=  UNICODE  _UNICODE  UNIX_USE_WIN_FILE
 DEFINES += LANG NEW_FOLDER_INTERFACE EXTERNAL_CODECS
 

@@ -74,14 +74,24 @@
 %macro MY_PUSH_4_REGS 0
     push    r3
     push    r5
-%ifndef x64
+%ifdef x64
+  %ifdef CYGWIN64
+    push    r6
+    push    r7
+  %endif
+%else
     push    r6
     push    r7
 %endif
 %endmacro
 
 %macro MY_POP_4_REGS 0
-%ifndef x64
+%ifdef x64
+  %ifdef CYGWIN64
+    pop     r7
+    pop     r6
+  %endif
+%else
     pop     r7
     pop     r6
 %endif

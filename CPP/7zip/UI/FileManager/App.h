@@ -52,7 +52,7 @@ public:
 
 class CApp;
 
-#if _WIN32
+#ifdef _WIN32
 class CDropTarget:
   public IDropTarget,
   public CMyUnknownImp
@@ -160,7 +160,7 @@ public:
   void SetFocusedPanel(int index)
   {
     LastFocusedPanel = index;
-    // _dropTargetSpec->TargetPanelIndex = LastFocusedPanel;
+    // FIXME _dropTargetSpec->TargetPanelIndex = LastFocusedPanel;
   }
 
 #ifdef _WIN32
@@ -196,13 +196,14 @@ public:
 
   // File Menu
   void OpenItem() { GetFocusedPanel().OpenSelectedItems(true); }
-  void OpenItemInside() { GetFocusedPanel().OpenFocusedItemAsInternal(); }
+  void OpenItemInside(const wchar_t *type) { GetFocusedPanel().OpenFocusedItemAsInternal(type); }
   void OpenItemOutside() { GetFocusedPanel().OpenSelectedItems(false); }
   void EditItem(bool useEditor) { GetFocusedPanel().EditItem(useEditor); }
   void Rename() { GetFocusedPanel().RenameFile(); }
   void CopyTo() { OnCopy(false, false, GetFocusedPanelIndex()); }
   void MoveTo() { OnCopy(true, false, GetFocusedPanelIndex()); }
   void Delete(bool toRecycleBin) { GetFocusedPanel().DeleteItems(toRecycleBin); }
+  HRESULT CalculateCrc2(const UString &methodName);
   void CalculateCrc(const UString &methodName);
   void DiffFiles();
   void Split();
@@ -212,6 +213,7 @@ public:
   
   #ifndef UNDER_CE
   void Link();
+  void OpenAltStreams() { GetFocusedPanel().OpenAltStreams(); }
   #endif
 
   void CreateFolder() { GetFocusedPanel().CreateFolder(); }

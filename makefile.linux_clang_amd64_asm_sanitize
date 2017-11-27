@@ -1,12 +1,13 @@
 
-OPTFLAGS=-g2 -fsanitize=undefined -ftrapv -fsanitize=address -fno-omit-frame-pointer
+OPTFLAGS=-g2 -fsanitize=undefined -ftrapv -fsanitize=address -fno-omit-frame-pointer -fno-sanitize=alignment
 
 
 ALLFLAGS=-m64 ${OPTFLAGS} -pipe \
+	-DDONT_REDEFINE_NEW \
     	-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE \
 	-DNDEBUG -D_REENTRANT -DENV_UNIX \
 	-D_7ZIP_LARGE_PAGES \
-	-DP7ZIP_USE_ASM \
+	-D_7ZIP_ASM \
 	$(LOCAL_FLAGS)
 
 CXX=clang++

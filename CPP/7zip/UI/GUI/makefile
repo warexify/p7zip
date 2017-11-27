@@ -1,16 +1,8 @@
-PROG=../../../../bin/7zG$(BINSUFFIX)
 
-LOCAL_FLAGS=\
-	-DUNICODE -D_UNICODE \
-	-DLANG \
-	-DEXTERNAL_CODECS \
-	-I. \
-	`wx-config --unicode=yes --cxxflags`
+TARGET_FLAGS=`wx-config --unicode=yes --cxxflags`
 
 include ../../../../makefile.crc32
 include ../../../../makefile.machine
-
-PCH_NAME=$(PRE_COMPILED_HEADER)
 
 LIBS=`wx-config --unicode=yes --libs` $(LOCAL_LIBS_DLL)
 

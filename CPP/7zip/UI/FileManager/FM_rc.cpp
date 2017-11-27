@@ -70,6 +70,7 @@ static inline wxBitmap _wxGetBitmapFromMemory(const unsigned char *data, int len
 typedef wxListCtrl CExplorerListCtrl;
 
 class MyFrame;
+class myToolBar;
 
 class SevenZipPanel : public wxPanel
 {
@@ -194,6 +195,7 @@ protected:
 private:
 	SevenZipPanel * _panel1;
 	SevenZipPanel * _panel2;
+	myToolBar     * m_toolBar;
     DECLARE_EVENT_TABLE()
 };
 
@@ -244,6 +246,8 @@ MyFrame::MyFrame(void (*wm_create)(HWND),wxFrame *frame, const wxString& title,
        : wxFrame(frame, wxID_ANY, title, wxPoint(x, y), wxSize(w, h))
 {
 printf("===MyFrame::MyFrame===BEGIN===\n");
+
+	m_toolBar = 0;
 
 	this->SetIcon(wxICON(p7zip_32));
 	
@@ -354,48 +358,48 @@ void MyFrame::PopulateToolbar(wxToolBar* p_toolBar)
  toolBar->AddTool(wxID_NEW, _T("New"),toolBarBitmaps[Tool_new], wxNullBitmap, wxITEM_NORMAL,
  _T("New file"), _T("This is help for new file tool"));
  */
-	myToolBar toolBar(p_toolBar,true);
+   m_toolBar = new myToolBar(p_toolBar,true);
 
-	const int kWidth  = 24;
-	const int kHeight = 24;
-	
-	UString msg;
+   const int kWidth  = 24;
+   const int kHeight = 24;
 
-	// FIXME toolBar->SetToolBitmapSize(wxSize(24,24));
-	toolBar.SetToolBitmapSize(wxSize(kWidth,kHeight));
 	
-	
-#if 0 // FIXME
-    msg = LangString(0x03020400); // { kAddCommand, IDB_ADD, IDB_ADD2, IDS_ADD, 0x03020400}
-    if (msg == ,L"") msg = ,L"Add";
-	toolBar.AddTool(kAddCommand, (const wchar_t *)msg, wxGetBitmapFromMemory(ADD2));
+   UString msg;
 
-    msg = LangString(0x03020401); // { kExtractCommand, IDB_EXTRACT, IDB_EXTRACT2, IDS_EXTRACT, 0x03020401}
-    if (msg == ,L"") msg = ,L"Extract";	
-	toolBar.AddTool(kExtractCommand,(const wchar_t *)msg, wxGetBitmapFromMemory(EXTRACT2));
-	
-    msg = LangString(0x03020402); // { kTestCommand , IDB_TEST, IDB_TEST2, IDS_TEST, 0x03020402}
-    if (msg == ,L"") msg = ,L"Test";	
-	toolBar.AddTool(kTestCommand,(const wchar_t *)msg, wxGetBitmapFromMemory(TEST2));
+   // FIXME toolBar->SetToolBitmapSize(wxSize(24,24));
+   m_toolBar->SetToolBitmapSize(wxSize(kWidth,kHeight));
 
-	toolBar.AddSeparator();
+    msg = LangString(IDS_ADD); //  kMenuCmdID_Toolbar_Add,     IDB_ADD,     IDB_ADD2,     IDS_ADD },
+    if (msg == L"") msg = L"Add";
+	m_toolBar->AddTool(kMenuCmdID_Toolbar_Add, (const wchar_t *)msg, wxGetBitmapFromMemory(ADD2));
+	
+    msg = LangString(IDS_EXTRACT); // { kMenuCmdID_Toolbar_Extract, IDB_EXTRACT, IDB_EXTRACT2, IDS_EXTRACT },
+    if (msg == L"") msg = L"Extract";	
+	m_toolBar->AddTool(kMenuCmdID_Toolbar_Extract,(const wchar_t *)msg, wxGetBitmapFromMemory(EXTRACT2));
+	
+    msg = LangString(IDS_TEST); // { kMenuCmdID_Toolbar_Test,    IDB_TEST,    IDB_TEST2,    IDS_TEST }
+    if (msg == L"") msg = L"Test";	
+   m_toolBar->AddTool(kMenuCmdID_Toolbar_Test,(const wchar_t *)msg, wxGetBitmapFromMemory(TEST2));
+	
+   m_toolBar->AddSeparator();
 
-    msg = LangString(0x03020420); // { IDM_COPY_TO, IDB_COPY, IDB_COPY2, IDS_BUTTON_COPY, 0x03020420}
-    if (msg == ,L"") msg = ,L"Copy";		
-	toolBar.AddTool(IDM_COPY_TO, (const wchar_t *)msg, wxGetBitmapFromMemory(COPY2));
+    msg = LangString(IDS_BUTTON_COPY); // { IDM_COPY_TO,    IDB_COPY,   IDB_COPY2,   IDS_BUTTON_COPY },
+    if (msg == L"") msg = L"Copy";		
+    m_toolBar->AddTool(IDS_BUTTON_COPY, (const wchar_t *)msg, wxGetBitmapFromMemory(COPY2));
 	
-    msg = LangString(0x03020421); // { IDM_MOVE_TO, IDB_MOVE, IDB_MOVE2, IDS_BUTTON_MOVE, 0x03020421}
-    if (msg == ,L"") msg = ,L"Move";		
-	toolBar.AddTool(IDM_MOVE_TO, (const wchar_t *)msg, wxGetBitmapFromMemory(MOVE2));
+    msg = LangString(IDS_BUTTON_MOVE); // { IDM_MOVE_TO,    IDB_MOVE,   IDB_MOVE2,   IDS_BUTTON_MOVE }
+    if (msg == L"") msg = L"Move";		
+    m_toolBar->AddTool(IDM_MOVE_TO, (const wchar_t *)msg, wxGetBitmapFromMemory(MOVE2));
 	
-    msg = LangString(0x03020422); // { IDM_DELETE, IDB_DELETE, IDB_DELETE2, IDS_BUTTON_DELETE, 0x03020422}
-    if (msg == ,L"") msg = ,L"Delete";	
-	toolBar.AddTool(IDM_DELETE, (const wchar_t *)msg, wxGetBitmapFromMemory(DELETE2));
+    msg = LangString(IDS_BUTTON_DELETE); // { IDM_DELETE,     IDB_DELETE, IDB_DELETE2, IDS_BUTTON_DELETE } ,
+    if (msg == L"") msg = L"Delete";	
+    m_toolBar->AddTool(IDM_DELETE, (const wchar_t *)msg, wxGetBitmapFromMemory(DELETE2));
 	
-    msg = LangString(0x03020423); // { IDM_FILE_PROPERTIES, IDB_INFO, IDB_INFO2, IDS_BUTTON_INFO, 0x03020423}
-    if (msg == ,L"") msg = ,L"Info";	
-	toolBar.AddTool(IDM_FILE_PROPERTIES, (const wchar_t *)msg, wxGetBitmapFromMemory(INFO2));
+    msg = LangString(IDS_BUTTON_INFO); // { IDM_PROPERTIES, IDB_INFO,   IDB_INFO2,   IDS_BUTTON_INFO }
+    if (msg == L"") msg = L"Info";	
+    m_toolBar->AddTool(IDM_PROPERTIES, (const wchar_t *)msg, wxGetBitmapFromMemory(INFO2));
 
+#if 0
 	////////////////////////////////////////////////////////
 
 	/* FIXME
@@ -411,22 +415,22 @@ void MyFrame::PopulateToolbar(wxToolBar* p_toolBar)
 	toolBar.AddSeparator();
 
 	wxIcon i_plus = wxArtProvider::GetIcon(wxART_ADD_BOOKMARK    , wxART_TOOLBAR  , wxSize(kWidth,kHeight));
-	toolBar.AddTool(wxID_ANY, wxT("Add Bookmark"), i_plus);
+	m_toolBar->AddTool(wxID_ANY, wxT("Add Bookmark"), i_plus);
 
 	wxIcon i_go_up_dir = wxArtProvider::GetIcon(wxART_GO_DIR_UP   , wxART_TOOLBAR  , wxSize(kWidth,kHeight));
-	toolBar.AddTool(wxID_ANY, wxT("Go up dir"), i_go_up_dir);
+	m_toolBar->AddTool(wxID_ANY, wxT("Go up dir"), i_go_up_dir);
 
 	wxIcon i_folder = wxArtProvider::GetIcon(wxART_FOLDER   , wxART_TOOLBAR  , wxSize(kWidth,kHeight));
-	toolBar.AddTool(wxID_ANY, wxT("Folder"), i_folder);
+	m_toolBar->AddTool(wxID_ANY, wxT("Folder"), i_folder);
 
 	wxIcon i_missing_image = wxArtProvider::GetIcon(wxART_MISSING_IMAGE   , wxART_TOOLBAR  , wxSize(kWidth,kHeight));
-	toolBar.AddTool(wxID_ANY, wxT("missing image"), i_missing_image);
+	m_toolBar->AddTool(wxID_ANY, wxT("missing image"), i_missing_image);
 	*/
 
 	///////////////////////////////////////////////////////
 
 #endif
-	toolBar.Realize();
+	m_toolBar->Realize();
 
 	// toolBar->SetRows(!(toolBar->IsVertical()) ? m_rows : 10 / m_rows);
 }
@@ -484,6 +488,8 @@ void rc_MyLoadMenu(HWND hWnd)
 	{
 		m->Append(IDM_OPEN, _T("&Open"));  // FIXME "&Open\tEnter" - don't use Enter to support combobox enter ...
 		m->Append(IDM_OPEN_INSIDE,_T("Open &Inside\tCtrl+PgDn"));
+		m->Append(IDM_OPEN_INSIDE_ONE,_T("Open Inside *"));
+		m->Append(IDM_OPEN_INSIDE_PARSER,_T("Open Inside #"));
 		m->Append(IDM_OPEN_OUTSIDE,_T("Open O&utside\tShift+Enter"));
 		m->Append(IDM_FILE_VIEW,_T("&View\tF3"));
 		m->Append(IDM_FILE_EDIT,_T("&Edit\tF4"));
@@ -852,6 +858,7 @@ REGISTER_STRINGTABLE(g_stringTable)
 		pMainSizer->Add(m_pStatusBar, 0, wxALL|wxEXPAND, 0);
 		SetSizer(pMainSizer);
 		SetAutoLayout (true);
+		SetMinSize(wxSize(800,400));
 		Layout();
 
 		

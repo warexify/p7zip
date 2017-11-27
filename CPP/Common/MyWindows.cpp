@@ -11,12 +11,14 @@
 static inline void *AllocateForBSTR(size_t cb) { return ::malloc(cb); }
 static inline void FreeForBSTR(void *pv) { ::free(pv);}
 
+/* FIXME
 static UINT MyStringLen(const wchar_t *s)
 { 
   UINT i;
   for (i = 0; s[i] != '\0'; i++);
   return i;
 }
+*/
 
 BSTR SysAllocStringByteLen(LPCSTR psz, UINT len)
 {
