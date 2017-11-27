@@ -226,6 +226,8 @@ ItemNameUtils.o : ../../Archive/Common/ItemNameUtils.cpp
 	$(CXX) $(CFLAGS) ../../Archive/Common/ItemNameUtils.cpp
 OutStreamWithCRC.o : ../../Archive/Common/OutStreamWithCRC.cpp
 	$(CXX) $(CFLAGS) ../../Archive/Common/OutStreamWithCRC.cpp
+MultiStream.o : ../../Archive/Common/MultiStream.cpp
+	$(CXX) $(CFLAGS) ../../Archive/Common/MultiStream.cpp
 ArchiveCommandLine.o : ../../UI/Common/ArchiveCommandLine.cpp
 	$(CXX) $(CFLAGS) ../../UI/Common/ArchiveCommandLine.cpp
 ArchiveExtractCallback.o : ../../UI/Common/ArchiveExtractCallback.cpp
@@ -270,6 +272,8 @@ MyAES.o : ../../Crypto/AES/MyAES.cpp
 	$(CXX) $(CFLAGS) ../../Crypto/7zAES/7zAES.cpp
 SHA256.o : ../../Crypto/7zAES/SHA256.cpp
 	$(CXX) $(CFLAGS) ../../Crypto/7zAES/SHA256.cpp
+SplitHandler.o : ../../Archive/Split/SplitHandler.cpp
+	$(CXX) $(CFLAGS) ../../Archive/Split/SplitHandler.cpp
 blocksort.o : ../../Compress/BZip2/Original/blocksort.c
 	$(CC) $(CFLAGS) ../../Compress/BZip2/Original/blocksort.c
 bzlib.o : ../../Compress/BZip2/Original/bzlib.c

@@ -1,4 +1,19 @@
 
+Version 4.14
+============
+
+  - From Windows version of 7-zip 4.14 :
+    - STL using was reduced
+    - 7za now supports Split(001) archives
+    - "7za | more" now works
+    - Bugs item #1093095 : Usage banner now says "7za" (instead of "7z") when the binary is "7za"
+
+  - use of AString instead of std::string (no more need of #include <string>")
+  - makefile.linux_gcc_2.95_no_need_for_libstdc added to build 7za for the
+    p7zip*_bin.tar.bz2 package.
+    7za provided by p7zip*_bin.tar.bz2 is build on Debian 3.0 with gcc 2.95.4
+    and should now find the locale on all kinds of Linux (Debian, Fedora, Mandrake, ...).
+
 Version 4.13
 ============
   - new port of 7za from the source of 7za 4.13Beta for Windows

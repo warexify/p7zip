@@ -4,6 +4,7 @@ PROG=../../../bin/7za
 LOCAL_FLAGS= \
 -DEXCLUDE_COM -DNO_REGISTRY -DFORMAT_7Z -DFORMAT_BZIP2 -DFORMAT_ZIP \
 -DFORMAT_TAR -DFORMAT_GZIP -DCOMPRESS_LZMA -DCOMPRESS_BCJ_X86 \
+-DFORMAT_SPLIT \
 -DCOMPRESS_BCJ2 -DCOMPRESS_COPY -DCOMPRESS_MF_MT -DCOMPRESS_PPMD \
 -DCOMPRESS_DEFLATE -DCOMPRESS_DEFLATE64 -DCOMPRESS_IMPLODE -DCOMPRESS_BZIP2 \
 -DCRYPTO_ZIP -DCRYPTO_7ZAES -DCRYPTO_AES
@@ -101,6 +102,7 @@ LockedStream.o \
 MT.o \
 Main.o \
 MainAr.o \
+MultiStream.o \
 MyAES.o \
 OffsetStream.o \
 OpenCallbackConsole.o \
@@ -116,6 +118,7 @@ PropVariantConversions.o \
 RangeCoderBit.o \
 SHA256.o \
 SortUtils.o \
+SplitHandler.o \
 StreamBinder.o \
 StreamObjects.o \
 Synchronization.o \

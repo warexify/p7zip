@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 
+#include "Common/String.h"
 #ifdef _UNICODE
 #include "../Common/StringConvert.h"
 #endif
@@ -9,9 +10,8 @@
 #include <dirent.h>
 #include <unistd.h>
 #include <errno.h>
-#include <string>
 
-extern void my_windows_split_path(const std::string &p_path, std::string &dir , std::string &base);
+extern void my_windows_split_path(const AString &p_path, AString &dir , AString &base);
 
 
 #include "myPrivate.h"
@@ -23,8 +23,8 @@ typedef struct {
 #define IDENT_DIR_HANDLER 0x12345678
   int IDENT;
   DIR *dirp;
-  std::string pattern;
-  std::string directory;
+  AString pattern;
+  AString directory;
 }
 t_st_dir;
 
@@ -118,10 +118,10 @@ extern "C" HANDLE WINAPI FindFirstFileA(LPCSTR lpFileName, WIN32_FIND_DATA *lpFi
  
   nameWindowToUnixA(lpFileName,cb);
 
-  std::string base,dir;
+  AString base,dir;
   my_windows_split_path(cb,dir,base);
 
-  TRACEN((printf("FindFirstFileA : %s (dirname=%s,pattern=%s)\n",lpFileName,dir.c_str(),base.c_str())))
+  TRACEN((printf("FindFirstFileA : %s (dirname=%s,pattern=%s)\n",lpFileName,(const char *)dir,(const char *)base)))
 
   retour = new t_st_dir;
   if (retour == 0) {
@@ -130,7 +130,7 @@ extern "C" HANDLE WINAPI FindFirstFileA(LPCSTR lpFileName, WIN32_FIND_DATA *lpFi
   }
 
   retour->IDENT = IDENT_DIR_HANDLER;
-  retour->dirp = opendir(dir.c_str());
+  retour->dirp = opendir((const char *)dir);
   TRACEN((printf("FindFirstFileA : dirp=%p\n",retour->dirp)))
   retour->directory = dir;
   retour->pattern   = base;
@@ -138,8 +138,8 @@ extern "C" HANDLE WINAPI FindFirstFileA(LPCSTR lpFileName, WIN32_FIND_DATA *lpFi
   if (retour->dirp) {
     struct dirent *dp;
     while ((dp = readdir(retour->dirp)) != NULL) {
-      if (filtre_pattern(dp->d_name,retour->pattern.c_str(),0) == 1) {
-        fillin_WIN32_FIND_DATA(lpFindData,retour->directory.c_str(),dp->d_name);
+      if (filtre_pattern(dp->d_name,(const char *)retour->pattern,0) == 1) {
+        fillin_WIN32_FIND_DATA(lpFindData,(const char *)retour->directory,dp->d_name);
         TRACEN((printf("FindFirstFileA -%s- ret_handle=%ld\n",dp->d_name,(unsigned long)retour)))
         return (HANDLE)retour;
       }
@@ -163,8 +163,8 @@ extern "C" BOOL WINAPI FindNextFileA( HANDLE handle, WIN32_FIND_DATA  *lpFindDat
   if (retour->dirp) {
     struct dirent *dp;
     while ((dp = readdir(retour->dirp)) != NULL) {
-      if (filtre_pattern(dp->d_name,retour->pattern.c_str(),0) == 1) {
-        fillin_WIN32_FIND_DATA(lpFindData,retour->directory.c_str(),dp->d_name);
+      if (filtre_pattern(dp->d_name,(const char *)retour->pattern,0) == 1) {
+        fillin_WIN32_FIND_DATA(lpFindData,(const char *)retour->directory,dp->d_name);
         TRACEN((printf("FindNextFileA -%s- ret_handle=%ld\n",dp->d_name,(unsigned long)retour)))
         return TRUE;
       }

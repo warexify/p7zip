@@ -17,34 +17,38 @@
 
 #include "myPrivate.h"
 
-#include <string>
-
 // #define TRACEN(u) u;
 #define TRACEN(u)  /* */
 
-
-void my_windows_split_path(const std::string &p_path, std::string &dir , std::string &base)
+void my_windows_split_path(const AString &p_path, AString &dir , AString &base)
 {
-	size_t pos = p_path.find_last_of("/");
-	if (pos == std::string::npos) {
+	int pos = p_path.ReverseFind('/');
+	if (pos == -1) {
 		// no separator
 		dir  = ".";
-		if (p_path.empty()) base = ".";
-		else              base = p_path;
-	} else if ((pos+1) < p_path.size()) {
+		if (p_path.IsEmpty()) base = ".";
+		else                  base = p_path;
+	} else if ((pos+1) < p_path.Length()) {
 		// true separator
-		base = p_path.substr(pos+1);
+		base = p_path.Mid(pos+1);
 		while ((pos >= 1) && (p_path[pos-1] == '/')) pos--;
 		if (pos == 0) dir = "/";
-               	else          dir = p_path.substr(0,pos);
+               	else          dir = p_path.Left(pos);
 	} else {
 		// separator at the end of the path
-		pos = p_path.find_last_not_of("/");
-		if (pos == std::string::npos) {
+		// pos = p_path.find_last_not_of("/");
+                pos = -1;
+                int ind = 0;
+                while (p_path[ind])
+                {
+                   if (p_path[ind] != '/') pos = ind;
+                   ind++;
+                }
+		if (pos == -1) {
 			base = "/";
                 	dir = "/";
 		} else {
-			my_windows_split_path(p_path.substr(0,pos+1),dir,base);
+			my_windows_split_path(p_path.Left(pos+1),dir,base);
 		}
 	}
 }
@@ -62,31 +66,6 @@ extern "C" void mySetModuleFileNameA(const char * moduleFileName)
 	myModuleFileName = ptr;
 	TRACEN((printf("mySetModuleFileNameA(%s) &myModuleFileName=%p\n",myModuleFileName,&myModuleFileName)))
 }
-
-#if 0 // not needed any more
-void mySetModuleFileName_resolve_link(const char * moduleName)
-{
-	char new_path[2048];
-
-	std::string filename = moduleName;
-	ssize_t len = 0;
-	int max_try = 50;
-	while ((len != -1) && (max_try != 0))
-	{
-		len = readlink(filename.c_str(),new_path,sizeof(new_path)-1);
-		if (len != -1) {
-			new_path[len] = '\0';
-			// printf("new_path='%s'\n",new_path);
-			filename = new_path;
-			max_try--;
-		} /* else {
-			printf("len = %d (errno=%d,%s)\n",(int)len,errno,strerror(errno));
-		} */
-	}
-
-	mySetModuleFileNameA(filename.c_str());
-}
-#endif
 
 DWORD GetModuleFileNameA( HMODULE hModule, LPSTR lpFilename, DWORD nSize)
 {
@@ -134,29 +113,25 @@ static DWORD mySearchPathA( LPCSTR path, LPCSTR name, LPCSTR ext,
 			
 			return ret;
 		}
-		std::string module_path(myModuleFileName);
-		std::string dir,name2,dir_path;
-		int ind = 0;
-		while (module_path[ind]) {
-			if (module_path[ind] == '\\') module_path[ind]='/';
-			ind++;
-		}
+		AString module_path(myModuleFileName);
+		module_path.Replace('\\','/');
+		AString dir,name2,dir_path;
 		my_windows_split_path(module_path,dir,name2);
 		dir_path = dir;
 		dir_path += "/";
 		dir_path += name;
 
-		file = fopen(dir_path.c_str(),"r");
+		file = fopen((const char *)dir_path,"r");
 		if (file)
 		{
-			DWORD ret = strlen(dir_path.c_str());
+			DWORD ret = strlen((const char *)dir_path);
 			fclose(file);
 			if (ret >= buflen) {
 				SetLastError(ERROR_FILENAME_EXCED_RANGE);
 				return 0;
 			}
-			strcpy(buffer,dir_path.c_str());
-			if (lastpart) *lastpart = buffer + (strlen(dir.c_str()) + 1);
+			strcpy(buffer,(const char *)dir_path);
+			if (lastpart) *lastpart = buffer + (strlen((const char *)dir) + 1);
 			
 			return ret;
 		}

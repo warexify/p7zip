@@ -38,7 +38,7 @@ struct CItem
 #ifdef _WIN32
     { return (Mode & _S_IFMT) == _S_IFDIR; }
 #else
-    { return (Mode &  S_IFMT) ==  S_IFDIR; }
+    { return (Mode & S_IFMT) == S_IFDIR; }
 #endif
 };
 

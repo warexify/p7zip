@@ -12,6 +12,7 @@ OBJS=myEvents.o myFiles.o myGetTickCount.o myFindFile.o myDirectoryAndPath.o \
 	mySplitCommandLine.o \
 	test_emul.o \
 	../BUILD/Common/Vector.o \
+	../BUILD/Common/String.o \
 	../BUILD/Common/MyWindows.o
 
 include ../makefile.glb

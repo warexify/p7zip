@@ -6,7 +6,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
-#include <string>
+
+#include <Common/String.h>
 
 #include "myPrivate.h"
 
@@ -96,7 +97,7 @@ class CFileHandlerInternal
   public:
    int ident_file;
    int fd;
-   std::string unix_filename;
+   AString unix_filename;
 };
 
 bool myGetFileLength(t_file_handle hFile,UINT64 &length) {
@@ -258,7 +259,7 @@ BOOL WINAPI SetFileTime( t_file_handle hFile,
      return false;
   }
 
-  ret = stat(hFile->unix_filename.c_str(),&oldbuf);
+  ret = stat((const char*)(hFile->unix_filename),&oldbuf);
   if (ret == 0) {
     buf.actime  = oldbuf.st_atime;
     buf.modtime = oldbuf.st_mtime;
@@ -271,7 +272,7 @@ BOOL WINAPI SetFileTime( t_file_handle hFile,
   if (lpLastWriteTime)
        RtlTimeToSecondsSince1970( (LARGE_INTEGER *) lpLastWriteTime, (DWORD *)&buf.modtime );
 
-  ret = utime(hFile->unix_filename.c_str(), &buf);
+  ret = utime((const char *)(hFile->unix_filename), &buf);
   return (ret == 0);
 }
 

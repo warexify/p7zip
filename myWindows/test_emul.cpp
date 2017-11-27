@@ -74,6 +74,9 @@ void test_mbs(void)
       0 };
    wchar_t wstr2[256];
    char    astr[256];
+   extern int global_use_utf16_conversion;
+
+   global_use_utf16_conversion = 1;
 
    size_t len1 = wcslen(wstr1);
 
@@ -119,6 +122,68 @@ void test_mbs(void)
 }
 #endif
 
+static void test_astring(int num)
+{
+   AString strResult;
+
+   strResult = "first part : ";
+   char number[256];
+   sprintf(number,"%d",num);
+   strResult += AString(number);
+
+   strResult += " : last part";
+
+   printf("strResult -%s-\n",(const char *)strResult);
+
+}
+
+
+extern void my_windows_split_path(const AString &p_path, AString &dir , AString &base);
+
+static struct {
+  const char *path;
+  const char *dir;
+  const char *base;
+} tabSplit[]=
+{
+  { "",".","." },
+  { "/","/","/" },
+  { ".",".","." },
+  { "//","/","/" },
+  { "///","/","/" },
+  { "dir",".","dir" },
+  { "/dir","/","dir" },
+  { "/dir/","/","dir" },
+  { "/dir/base","/dir","base" },
+  { "/dir//base","/dir","base" },
+  { "/dir///base","/dir","base" },
+  { "//dir/base","//dir","base" },
+  { "///dir/base","///dir","base" },
+  { "/dir/base/","/dir","base" },
+  { 0,0,0 }
+};
+
+static void test_split_astring()
+{
+  int ind = 0;
+  while (tabSplit[ind].path)
+  {
+    AString path(tabSplit[ind].path);
+    AString dir;
+    AString base;
+
+    my_windows_split_path(path,dir,base);
+
+    if ((dir != tabSplit[ind].dir) || (base != tabSplit[ind].base))
+    {
+       printf("ERROR : '%s' '%s' '%s'\n",(const char *)path,(const char *)dir,(const char *)base);
+    }
+    ind++;
+  }
+  printf("test_split_astring : done\n");
+}
+
+
 int main()
 {
 	printf("sizeof(Byte)   : %d\n",(int)sizeof(Byte));
@@ -135,6 +200,16 @@ int main()
 	setlocale(LC_ALL,"");
 	test_mbs();
 #endif
+	test_astring(12345);
+	test_split_astring();
+
+/*
+        int pos = 6;
+        std::string stdstr("123456789");
+        printf("-%s- -%s-\n",stdstr.substr(pos+1).c_str(),stdstr.substr(0,pos).c_str());
+        AString astr("123456789");
+        printf("-%s- -%s-\n",(const char *)astr.Mid(pos+1),(const char *)astr.Left(pos));
+*/
 
 	return 0;
 }

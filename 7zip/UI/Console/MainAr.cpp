@@ -2,6 +2,8 @@
 
 #include "StdAfx.h"
 
+// #include <locale.h>
+
 #include "Windows/Error.h"
 
 #include "Common/StdOutStream.h"
@@ -62,9 +64,9 @@ int numArguments, const char *arguments[]
   {
     return Main2(
 #ifndef _WIN32
-                 numArguments, arguments
+      numArguments, arguments
 #endif
-                );
+    );
   }
   catch(const CNewException &)
   {
@@ -111,7 +113,7 @@ int numArguments, const char *arguments[]
     g_StdErr << kExceptionErrorMessage << s << endl;
     return (NExitCode::kFatalError);
   }
-  catch(const AString &s) // FIXED : added
+  catch(const AString &s)
   {
     g_StdErr << kExceptionErrorMessage << s << endl;
     return (NExitCode::kFatalError);

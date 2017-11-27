@@ -27,6 +27,10 @@
 #include "../../Archive/GZip/GZipHandler.h"
 #endif
 
+#ifdef FORMAT_SPLIT
+#include "../../Archive/Split/SplitHandler.h"
+#endif
+
 #ifdef FORMAT_TAR
 #include "../../Archive/Tar/TarHandler.h"
 #endif
@@ -101,9 +105,14 @@ HRESULT IsArchiveItemAnti(IInArchive *archive, UInt32 index, bool &result)
   return IsArchiveItemProp(archive, index, kpidIsAnti, result);
 }
 
+// Static-SFX (for Linux) can be big
+const UInt64 kMaxCheckStartPosition = 
+#ifdef _WIN32
+1 << 20;
+#else
+1 << 22;
+#endif
 
-// const UInt64 kMaxCheckStartPosition = 1 << 20; // FIXED : support 7zCon.sfx compiled with flag "-g2"
-const UInt64 kMaxCheckStartPosition = 1 << 24; // 16 Mo
 
 HRESULT ReOpenArchive(IInArchive *archive, const UString &fileName)
 {
@@ -215,6 +224,11 @@ HRESULT OpenArchive(
       archive = new NArchive::NGZip::CHandler;
     #endif
 
+    #ifdef FORMAT_SPLIT
+    if (archiverInfo.Name.CompareNoCase(L"Split") == 0)
+      archive = new NArchive::NSplit::CHandler;
+    #endif
+
     #ifdef FORMAT_TAR
     if (archiverInfo.Name.CompareNoCase(L"Tar") == 0)
       archive = new NArchive::NTar::CHandler;
@@ -224,6 +238,7 @@ HRESULT OpenArchive(
     if (archiverInfo.Name.CompareNoCase(L"Zip") == 0)
       archive = new NArchive::NZip::CHandler;
     #endif
+
 
     #ifndef EXCLUDE_COM
     if (!archive)

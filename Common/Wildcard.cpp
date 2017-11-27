@@ -70,9 +70,7 @@ static bool EnhancedMaskTest(const UString &mask, int maskPos,
   {
     wchar_t c = name[namePos];
     if (maskChar != c)
-#ifdef ENV_UNIX // Unix Filesystem are case sensitive.
-      if (maskChar != c)
-#else
+#ifdef _WIN32
       if (MyCharUpper(maskChar) != MyCharUpper(c))
 #endif
         return false;
